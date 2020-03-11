@@ -50,7 +50,7 @@ def convertir_posicion_real_a_representacion(posicion_real):
 ## Devuelve la posicion real (columna, fila). Ejm (a, 4)
 def convertir_representacion_a_posicion_real(representacion):
     posible_y = {0:'a',1:'b',2:'c',3:'d',4:'e',5:'f',6:'g',7:'h'}
-    posicion_real = [ 8 - representacion[1] , posible_y[ representacion[0] ] ]
+    posicion_real = [ posible_y[ representacion[0] ] , 8 - representacion[1] ]
     return posicion_real
 
 ## Convierte una pieza real en una pieza tablero
@@ -124,6 +124,13 @@ def colocar_piezas_iniciales_en_tablero(tablero,piezas_iniciales):
 ## Devuelve True si la posicion es valida, False en caso contrario
 def validar_posicion(posicion):
     return not (posicion[0] < 0 or posicion[0] > 7 or posicion[1] < 0 or posicion[1] > 7)
+
+## Recibe un string de dos caracteres columna fila
+## De la forma "a7", "d4"
+def validar_posicion_real(posicion):
+    columnas_validas = ['a','b','c','d','e','f','g','h']
+    filas_validas = ['1','2','3','4','5','6','7','8']
+    return posicion[0] in columnas_validas and posicion[1] in filas_validas
 
 ## Calcula el indice de una posicion del tablero
 ## Recibe una posicion (fila, columna)
@@ -467,7 +474,228 @@ def hay_jaque_mate(tablero,posibles_movimientos,turno):
     if len(movimientos_legales) == 0:
         return True
     return False
+
+def iniciar_juego(tablero,turno,J1,J2):
+
+    ##Pendiente el log en archivo log_partida = [log_de_tablero_inicial,log_de_movimientos]
+    log_de_tablero_inicial = copy.deepcopy(tablero)
+    log_de_movimientos = []
+
+    while True:
+        posibles_movimientos = generar_posibles_movimientos(tablero)
+        movimientos_legales = obtener_movimientos_legales(tablero,posibles_movimientos,turno)
+        if len(movimientos_legales) == 0:
+            break
+
+        jaque = hay_jaque(tablero,posibles_movimientos,turno)
         
+        if turno == 'B':
+            pieza_de_coronamiento = 6
+        else:
+            pieza_de_coronamiento = -6
+
+        if turno == J1: ## Turno del jugador, espera que el jugador ingrese el movimiento
+            print("Ingrese la casilla a mover y la casilla donde se mueve, con formato: \ncolumna fila. Ejm (a7)")
+            posicion_inicial = input("Ingrese la casilla inicial: ")
+            posicion_destino = input("Ingrese la casilla destino: ")
+            if not(validar_posicion_real(posicion_inicial) and validar_posicion_real(posicion_destino)):
+                print("Error en las posiciones ingresadas")
+                continue
+            
+            posicion_inicial = convertir_posicion_real_a_representacion([posicion_inicial[0],posicion_inicial[1]])
+            posicion_destino = convertir_posicion_real_a_representacion([posicion_destino[0],posicion_destino[1]])
+            movimiento = [posicion_inicial,posicion_destino]
+
+            tablero = mover_pieza(tablero,movimiento,pieza_de_coronamiento)
+            turno = J2
+        else:
+            movimiento = [] ## Obtener movimiento usando minimax
+            tablero = mover_pieza(tablero,movimiento,pieza_de_coronamiento)
+            turno = J1
+
+def evaluacion_del_juego(tablero,turno):
+    puntuacion = 0
+    ## f(P)= 20000(K-K') + 900(Q-Q') + 500(R-R') + 330(B-B') + 320(N-N') + 100(P-P') - 50(D-D'+S-S'+I-I') + 10(M-M')
+    ##
+    piezas = obtener_todas_las_piezas(tablero)
+    piezas_blancas = piezas[0]
+    piezas_negras = piezas[1]
+    valor_de_piezas = [100,320,330,500,900,20000]
+    
+    valor_material = 0
+    for i in range(0,7):
+        valor_material += valor_de_piezas[i] * ( piezas_blancas[i] - piezas_negras[i] )
+    
+    posibles_movimientos = generar_posibles_movimientos(tablero)
+    valor_de_movilidad = 10 * (obtener_movimientos_legales(tablero,posibles_movimientos,'B') - obtener_movimientos_legales(tablero,posibles_movimientos,'N'))
+
+    estados_de_peon = obtener_estados_de_peon(tablero)
+    peones_blancos = estados_de_peon[0]
+    peones_negros = estados_de_peon[1]
+
+    valor_de_estados_de_peon = 0
+    for i in range(0,3):
+        valor_de_estados_de_peon = -50 * ( peones_blancos[i] - peones_negros[i] )
+    
+    puntuacion = valor_material - valor_de_estados_de_peon + valor_de_movilidad
+    return puntuacion
+
+def es_peon_aislado(tablero,posicion):
+    fila = posicion[0]
+    columna = posicion[1]
+
+    for i in range(fila-1,fila+2):
+        for j in range(columna-1,columna+2):
+
+            if validar_posicion([i,j]) and [i,j] != posicion:
+                casilla_objetivo = obtener_pieza_de_casilla(tablero,[i,j])
+                if casilla_objetivo != 0:
+                    return False
+    return True
+
+def es_peon_atrasado(tablero,posicion):
+    fila = posicion[0]
+    columna = posicion[1]
+    color_de_pieza = obtener_color_de_pieza(tablero,posicion)
+    atrasado = 0
+    
+    for i in range(fila-1,fila+2):
+        for j in range(columna-1,columna+2):
+
+            if validar_posicion([i,j]) and [i,j] != posicion:
+                casilla_objetivo = obtener_pieza_de_casilla(tablero,[i,j])   
+
+                if color_de_pieza == 'B':
+                    if i == fila-1:
+
+                        if j == columna-1 or j == columna+1:
+                            if casilla_objetivo == 0:
+                                continue
+                            elif casilla_objetivo == 1:
+                                atrasado += 1
+                            else:
+                                return False
+                        else:
+                            if casilla_objetivo != 0:
+                                return False
+                    else:
+                        if casilla_objetivo != 0:
+                            return False
+                else:
+                    if i == fila+1:
+
+                        if j == columna-1 or j == columna+1:
+                            if casilla_objetivo == 0:
+                                continue
+                            elif casilla_objetivo == -1:
+                                atrasado += 1
+                            else:
+                                return False
+                        else:
+                            if casilla_objetivo != 0:
+                                return False
+                    else:
+                        if casilla_objetivo != 0:
+                            return False
+    if atrasado > 0:
+        return True
+    return False
+
+
+def es_peon_doble(tablero,posicion):
+    fila = posicion[0]
+    columna = posicion[1]
+    color_de_pieza = obtener_color_de_pieza(tablero,posicion)
+    doble = 0
+    
+    for i in range(fila-1,fila+2):
+        for j in range(columna-1,columna+2):
+
+            if validar_posicion([i,j]) and [i,j] != posicion:
+                casilla_objetivo = obtener_pieza_de_casilla(tablero,[i,j])   
+
+                if color_de_pieza == 'B':
+                    if i == fila-1:
+
+                        if j == columna:
+                            if casilla_objetivo == 0:
+                                return False
+                            elif casilla_objetivo == 1:
+                                doble += 1
+                            else:
+                                return False
+                        else:
+                            if casilla_objetivo != 0:
+                                return False
+                    else:
+                        if casilla_objetivo != 0:
+                            return False
+                else:
+                    if i == fila+1:
+
+                        if j == columna:
+                            if casilla_objetivo == 0:
+                                return False
+                            elif casilla_objetivo == -1:
+                                doble += 1
+                            else:
+                                return False
+                        else:
+                            if casilla_objetivo != 0:
+                                return False
+                    else:
+                        if casilla_objetivo != 0:
+                            return False
+    if doble > 0:
+        return True
+    return False
+
+## Devuelve la cantidad de estados especiales de peon
+## Revisa peones dobles, peones atrasados y peones aislados respectivamente para blancas y negras
+## [ [0,0,0],[0,0,0]]
+def obtener_estados_de_peon(tablero):
+
+    estados_de_peon = [ [0,0,0] , [0,0,0] ]
+    for fila in range(0,8):
+        for columna in range(0,8):
+            casilla_objetivo = obtener_pieza_de_casilla(tablero,[fila,columna])
+            
+            if casilla_objetivo == 1:
+                if es_peon_doble(tablero,[fila,columna]):
+                    estados_de_peon[0][0] += 1
+                elif es_peon_atrasado(tablero,[fila,columna]):
+                    estados_de_peon[0][1] += 1
+                elif es_peon_aislado(tablero,[fila,columna]):
+                    estados_de_peon[0][2] += 1
+
+            elif casilla_objetivo == -1:
+                if es_peon_doble(tablero,[fila,columna]):
+                    estados_de_peon[1][0] += 1
+                elif es_peon_atrasado(tablero,[fila,columna]):
+                    estados_de_peon[1][1] += 1
+                elif es_peon_aislado(tablero,[fila,columna]):
+                    estados_de_peon[1][2] += 1
+
+    return estados_de_peon
+
+
+
+## Devuelve la cantidad de piezas del tablero
+## [ [0,0,0,0,0,0],[0,0,0,0,0,0]]
+def obtener_todas_las_piezas(tablero):
+    piezas = [ [0,0,0,0,0,0], [0,0,0,0,0,0] ]
+    for fila in range(0,8):
+        for columna in range(0,8):
+            casilla_objetivo = obtener_pieza_de_casilla(tablero,[fila,columna])
+            if casilla_objetivo == 0:
+                continue
+            elif casilla_objetivo > 0:
+                piezas[0][casilla_objetivo] += 1
+            else:
+                piezas[1][abs(casilla_objetivo)] += 1
+    return piezas
+
+
 
 
 
