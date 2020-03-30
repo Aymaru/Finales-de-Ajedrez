@@ -490,9 +490,9 @@ def iniciar_juego(tablero,turno,J1,J2):
         jaque = hay_jaque(tablero,posibles_movimientos,turno)
         
         if turno == 'B':
-            pieza_de_coronamiento = 6
+            pieza_de_coronamiento = 5
         else:
-            pieza_de_coronamiento = -6
+            pieza_de_coronamiento = -5
 
         if turno == J1: ## Turno del jugador, espera que el jugador ingrese el movimiento
             print("Ingrese la casilla a mover y la casilla donde se mueve, con formato: \ncolumna fila. Ejm (a7)")

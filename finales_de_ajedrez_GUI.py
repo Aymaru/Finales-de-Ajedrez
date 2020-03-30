@@ -1,4 +1,3 @@
-
 from tkinter import *
 from tkinter import ttk
 from time import *
@@ -68,10 +67,7 @@ class Application(Frame):
         self.root.geometry("800x600")
         self.root.title("Instituto Tecnológico de Costa Rica")
         self.root["bg"] = "black"
-        self.fondo = PhotoImage(file="fondoMain.gif") # Crea una imagen de fondo
-        self.lblFondo = Label(self.root, image=self.fondo, background='black')
-        self.lblFondo.grid(row=0, column=0)
-        
+        self.crearWidgets()
 
     def crearWidgets(self):
         ##Tablero
@@ -79,7 +75,7 @@ class Application(Frame):
         self.tablero = PhotoImage(file='tablero.gif')
         self.lblTalero = Label(self.canvasTablero, image=self.tablero, background='black')
         self.canvasTablero.place(x=28,y=80)
-        self.lblTalero.grid(row=0, column=0)
+        self.lblTalero.place(x=0, y=0)
         ##SalidaResultador
         self.canvasResutados = Canvas(self.root, height=200, width=230,borderwidth=3,relief="solid", highlightthickness=2)
         self.canvasResutados.place(x = 545, y = 100)
@@ -237,23 +233,7 @@ class Application(Frame):
             self.listaPeonesIDB.append(self.listaPeonesB[n])
             num = 42 * n
             self.listaPeonesB[n].place(x = 64.4 + num, y = 365.2)
-   
-class Configuracion(Frame):
-    """Crea la ventana de espera
-    """
-    def __init__(self, master):
-        """Crea una instancia de la clase Espera
-        """    
-        self.root = master  # Crea una pantalla
-        Frame.__init__(self, master)
-        self.root.resizable(0,0)
-        self.root.geometry("400x400")
-        self.root.title("Instituto Tecnológico de Costa Rica")
-        self.root["bg"] = "black"
-        self.fondo = PhotoImage(file="fondoConfig.gif") # Crea una imagen de fondo
-        self.lblFondo = Label(self.root, image=self.fondo, background='black')
-        self.lblFondo.grid(row=0, column=0)
-        sleep()
+
 
 def inicio():
     """Funcion main del programa donde se ejecutan las instrucciones.
@@ -261,8 +241,8 @@ def inicio():
     # Desarrollo del interfaz del programa.
     root = Tk() # Creación de la Ventana principal.
     app = Application(root)
-    app.crearWidgets()
+    #app.crearWidgets()
     app.mainloop() # Espera a que se cierre la panatalla.
     
 
-Espera()
+inicio()
