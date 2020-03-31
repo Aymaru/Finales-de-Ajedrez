@@ -31,11 +31,12 @@ piezas_iniciales = [ ['N','R','a',8], ['B','C','c',8], ['B','D','f',8],
 
 ## Genera un vector de 64 espacios vacios representados por 0
 ## Representa el tablero del juego
-def generar_tablero_inicial_vacio():
-    global tablero
+def generar_tablero_inicial_vacio(tablero):
+    new_tablero = []
     for i in range(0,64):
-        tablero.append(0)
-    return
+        new_tablero.append(0)
+    tablero = new_tablero
+    return tablero
 
 ## Convierte una posicion real de ajedrez a la representacion del tablero
 ## Recibe una posicion real (columna, fila). Ejm (a, 4)
@@ -152,8 +153,7 @@ def colocar_pieza_en_casilla(tablero,pieza,posicion):
 
 ## imprime en consola el tablero con las piezas.
 ## metodo momentaneo, mientras realizamos la interfaz.
-def imprimir_tablero():
-    global tablero
+def imprimir_tablero(tablero):
     etiqueta_de_fila = ['8','7','6','5','4','3','2','1']
     etiqueta_de_columna = "     a    b    c    d    e    f    g    h"
     etiqueta_de_linea_inicial = "   _______________________________________ "
@@ -681,7 +681,7 @@ def obtener_estados_de_peon(tablero):
 
 
 ## Devuelve la cantidad de piezas del tablero
-## [ [0,0,0,0,0,0],[0,0,0,0,0,0]]
+## [ [0,0,0,0,0,0],[0,0,0,0,0,0] ]
 def obtener_todas_las_piezas(tablero):
     piezas = [ [0,0,0,0,0,0], [0,0,0,0,0,0] ]
     for fila in range(0,8):
