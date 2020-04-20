@@ -441,9 +441,9 @@ def hay_jaque(tablero,posibles_movimientos,turno):
 def es_movimiento_legal(tablero,movimiento,turno):
 
     if turno == 'B':
-        pieza_de_coronamiento = 6
+        pieza_de_coronamiento = 5
     else:
-        pieza_de_coronamiento = -6
+        pieza_de_coronamiento = -5
         
     color_de_pieza = obtener_color_de_pieza(tablero,movimiento[0])
     if color_de_pieza == turno:

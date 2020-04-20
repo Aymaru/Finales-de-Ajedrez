@@ -921,7 +921,7 @@ class Alfil():
             self.imagen = "BA.gif"
 
 # Aquí inicia el programa.
-Inicio()
+##Inicio()
 
 
 ##master = Tk()
