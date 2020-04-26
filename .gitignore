@@ -1,3 +1,4 @@
 *.DS_store
-./__pychache__
-./*/__pychache__
+__pycache__/
+GUI/__pycache__/
+Juego/__pycache__/
