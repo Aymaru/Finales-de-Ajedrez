@@ -41,9 +41,7 @@ class Posicion:
     ## Recibe una posicion (fila, columna)
     ## Devuelve un entero con el indice
     def calcular_posicion_tablero(self):
-        return  8 * self.fila + self.columna
-        
-
+        return  8 * self.fila + self.columna    
 
     ## Funcion auxiliar, modifica fila,columna de una posicion a otra.
     ## Recibe una posicion (2,1), y dos enteros para aumentar cada uno respectivamente

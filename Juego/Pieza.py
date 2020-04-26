@@ -1,4 +1,4 @@
-import Posicion
+from Juego import Posicion
 
 ## Cada pieza se representa asi [ color, tipo, columna, fila ]
 ## Ejm. ['B','D','a',5]

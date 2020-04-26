@@ -218,6 +218,7 @@ class Configuracion(Frame):
             """
             #self.printearTablero()
             Ajedrez(self.componentes[0],self.componentes[1],self.componentes[2],self.valor.get(),self.movIniciales)
+            #Ajedrez(piezasJug1,piezasJug2,tablero,tipoJuego,movPreCargados):
 
     def popUp(self,tipo,mensaje):
         """Ventana que muestra un mensaje al usuario
@@ -337,10 +338,10 @@ class Configuracion(Frame):
         if(pieza.idChar == self.temporalP):  # Verifica la pieza
             if(pieza.id == self.temporalId): # Verifica el ID
                 if(self.componentes[2].existePieza(self.temporalFil,self.convertirLetra(self.temporalCol)) == False):
-                    self.componentes[2].agregarPieza(self.temporalFil,self.convertirLetra(self.temporalCol),pieza)
+                    self.componentes[2].agregarPieza(self.temporalFil,self.convertirLetra(self.temporalCol), pieza)
                 else:                        # Existe una pieza previamente asignada
                     self.componentes[2].eliminarPieza(self.temporalFil,self.convertirLetra(self.temporalCol))
-                    self.componentes[2].agregarPieza(self.temporalFil,self.convertirLetra(self.temporalCol),pieza)
+                    self.componentes[2].agregarPieza(self.temporalFil,self.convertirLetra(self.temporalCol), pieza)
             else:
                 pass # Es la pieza, pero no con la identificación.
         else:
@@ -551,7 +552,7 @@ class Ajedrez(Frame):
                             col = cuadro[5]
                             posXTablero = pieza.posiciones[2]
                             posYTablero = pieza.posiciones[3]
-                            #print(col,posXTablero,fila,posYTablero)
+                            #print(col,posXTablero,fila,posYTablero) [posXPozo,posYPozo,posPivotXTablero,posPivotYTablero]
                             movX = posXTablero + (col-1) * 48
                             movY = posYTablero + (fila-1) * 46
                             #print(movX,movY)
@@ -921,7 +922,7 @@ class Alfil():
             self.imagen = "BA.gif"
 
 # Aquí inicia el programa.
-##Inicio()
+Inicio()
 
 
 ##master = Tk()

@@ -1,4 +1,4 @@
-import Posicion
+from Juego import Posicion
 
 class Movimiento:
 

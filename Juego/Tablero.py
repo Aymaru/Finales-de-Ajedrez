@@ -1,7 +1,7 @@
 import copy
-import Posicion
-import Pieza
-import Movimiento
+from Juego import Posicion
+from Juego import Pieza
+from Juego import Movimiento
 
 ## representacion del tablero
 

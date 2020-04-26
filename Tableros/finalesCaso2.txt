@@ -1,12 +1,1 @@
-Finales de Ajedrez - Inicio de Juego - Caso # 1
-_____________________________________________________________________
-8 ||  0    |   0   |   0   | ND1D8 | NR1E8 |   0   |   0   | NT2H8 ||
-7 ||  0    |   0   |   0   | NP4D7 | NP5E7 | NP6F7 | NP7G7 |   0   ||
-6 ||  0    |   0   | BA1C6 |   0   |   0   |   0   |   0   |   0   ||
-5 ||  0    | NA1B5 |   0   |   0   |   0   |   0   |   0   | BP8H5 ||
-4 || NP1A4 |   0   |   0   |   0   | BP5E4 |   0   |   0   |   0   ||
-3 ||  0    |   0   |   0   |   0   |   0   |   0   |   0   | NC2H3 ||
-2 || BP1A2 | BP2B2 |   0   | BP4D2 |   0   | BP6F2 | BP7G2 |   0   ||
-1 ||  0    | BC1B1 |   O   |   0   | BR1E1 | BA2F1 | BC2G1 |   0   ||
-_____________________________________________________________________
-       A       B       C       D       E       F       G       H
+NDd8,NRe8,NTh8,NPd7,NPe7,NPf7,NPg7,BAc6,NAb5,BPh5,NPa4,BPe4,NCh3,BPa2,BPb2,BPd2,BPf2,BPg2,BCb1,BRe1,BAf1,BCg1
