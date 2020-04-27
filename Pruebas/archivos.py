@@ -6,7 +6,7 @@
 ##                     ['B','R','b',1]]
 
 import os.path as path
-import Pieza
+from Juego import Pieza
 
 #Agrega la representacion de una tablero al archivo de tableros
 def escribir_linea(file,texto):

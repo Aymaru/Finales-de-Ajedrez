@@ -11,7 +11,7 @@ class Juego:
         self.colocar_piezas_iniciales(piezas_iniciales)
     
     def colocar_piezas_iniciales(self,piezas_iniciales):
-        piezas = piezas_iniciales.split(",")
+        piezas = piezas_iniciales.split(",") ##Esto creo que se debe cambiar por espacios, a como lo pide el profe y cambiar las comas por espacios en los archivos de juego
         piezas_iniciales = []
         for pieza in piezas:
             piezas_iniciales.append(list(pieza))

@@ -404,5 +404,3 @@ class Tablero:
         return False  
 
 
-   
-

@@ -42,6 +42,9 @@ class Pieza():
     def calcular_posicion_en_tablero(self,posicion):
         self.posicion_en_tablero = Posicion.Posicion(self.posicion_inicial.fila + (posicion.fila * 46),self.posicion_inicial.columna + (posicion.columna*48))
 
+    def colocar_posicion_en_tablero(self,posicion):
+        self.posicion_en_tablero = Posicion.Posicion(posicion.fila,posicion.columna)
+        
     def colocar_imagen_en_tablero(self):
         self.id_canvas = self.canvas.create_image(self.posicion_en_tablero.columna,self.posicion_en_tablero.fila,image = self.imagen)
         self.canvas.pack()

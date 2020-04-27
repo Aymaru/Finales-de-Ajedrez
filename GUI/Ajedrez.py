@@ -47,7 +47,10 @@ class Ajedrez(tk.Frame):
         self.imagen()
         self.btn_regresar()
         self.historial_movimientos()
+        self.inicializar_cantidad_de_capturas()
         self.colocar_piezas_en_tablero()
+        self.generar_posiciones_de_capturas()
+        self.colocar_piezas_capturadas()
 
     def dimensiones(self):
         """Define los aspectos de la ventana principal
@@ -131,6 +134,7 @@ class Ajedrez(tk.Frame):
         Configuracion.Configuracion(self.master)
 
     def colocar_piezas_en_tablero(self):
+        
         self.piezas = []
         for fila in range(0,8):
             for columna in range(0,8):
@@ -139,11 +143,212 @@ class Ajedrez(tk.Frame):
                 if pieza_actual == 0:
                     self.piezas.append(None)
                 else:
+                    self.contar_captura(pieza_actual)
                     pieza = Pieza.Pieza(self.canvas,pieza_actual)
                     pieza.calcular_posicion_en_tablero(casilla_actual)
                     pieza.colocar_imagen_en_tablero()
                     self.piezas.append(pieza)
-                    
+
+    def inicializar_cantidad_de_capturas(self):
+        self.cantidad_capturas_blancas_peones = 8
+        self.cantidad_capturas_blancas_caballos = 2
+        self.cantidad_capturas_blancas_alfiles = 2
+        self.cantidad_capturas_blancas_torres = 2
+        self.cantidad_capturas_blancas_dama = 1
+        self.cantidad_capturas_negras_peones = 8
+        self.cantidad_capturas_negras_caballos = 2
+        self.cantidad_capturas_negras_alfiles = 2
+        self.cantidad_capturas_negras_torres = 2
+        self.cantidad_capturas_negras_dama = 1
+    
+    def contar_captura(self,pieza):
+        if pieza == 1:
+            self.cantidad_capturas_blancas_peones -= 1
+        elif pieza == 2:
+            self.cantidad_capturas_blancas_caballos -= 1
+        elif pieza == 3:
+            self.cantidad_capturas_blancas_alfiles -= 1
+        elif pieza == 4:
+            self.cantidad_capturas_blancas_torres -= 1
+        elif pieza == 5:
+            self.cantidad_capturas_blancas_dama -= 1
+        elif pieza == -1:
+            self.cantidad_capturas_negras_peones -= 1
+        elif pieza == -2:
+            self.cantidad_capturas_negras_caballos -= 1
+        elif pieza == -3:
+            self.cantidad_capturas_negras_alfiles -= 1
+        elif pieza == -4:
+            self.cantidad_capturas_negras_torres -= 1
+        elif pieza == -5:
+            self.cantidad_capturas_negras_dama -= 1
+
+    def colocar_piezas_capturadas(self):
+
+        if self.cantidad_capturas_blancas_peones > 0:
+            i = 0
+            for i in range(0,self.cantidad_capturas_blancas_peones):
+                pieza = Pieza.Pieza(self.canvas,1)
+                posicion_de_captura = self.posiciones_de_capturas_blancas_peones[i]
+                pieza.colocar_posicion_en_tablero(posicion_de_captura)
+                pieza.colocar_imagen_en_tablero()
+                self.posiciones_de_capturas_blancas_peones[i] = pieza
+        
+        if self.cantidad_capturas_blancas_caballos > 0:
+            i = 0
+            for i in range(0,self.cantidad_capturas_blancas_caballos):
+                pieza = Pieza.Pieza(self.canvas,2)
+                posicion_de_captura = self.posiciones_de_capturas_blancas_caballos[i]
+                pieza.colocar_posicion_en_tablero(posicion_de_captura)
+                pieza.colocar_imagen_en_tablero()
+                self.posiciones_de_capturas_blancas_caballos[i] = pieza
+        
+        if self.cantidad_capturas_blancas_alfiles > 0:
+            i = 0
+            for i in range(0,self.cantidad_capturas_blancas_alfiles):
+                pieza = Pieza.Pieza(self.canvas,3)
+                posicion_de_captura = self.posiciones_de_capturas_blancas_alfiles[i]
+                pieza.colocar_posicion_en_tablero(posicion_de_captura)
+                pieza.colocar_imagen_en_tablero()
+                self.posiciones_de_capturas_blancas_alfiles[i] = pieza
+        
+        if self.cantidad_capturas_blancas_torres > 0:
+            i = 0
+            for i in range(0,self.cantidad_capturas_blancas_torres):
+                pieza = Pieza.Pieza(self.canvas,4)
+                posicion_de_captura = self.posiciones_de_capturas_blancas_torres[i]
+                pieza.colocar_posicion_en_tablero(posicion_de_captura)
+                pieza.colocar_imagen_en_tablero()
+                self.posiciones_de_capturas_blancas_torres[i] = pieza
+        
+        if self.cantidad_capturas_blancas_dama > 0:
+            i = 0
+            for i in range(0,self.cantidad_capturas_blancas_dama):
+                pieza = Pieza.Pieza(self.canvas,5)
+                posicion_de_captura = self.posiciones_de_capturas_blancas_dama[i]
+                pieza.colocar_posicion_en_tablero(posicion_de_captura)
+                pieza.colocar_imagen_en_tablero()
+                self.posiciones_de_capturas_blancas_dama[i] = pieza
+
+        if self.cantidad_capturas_negras_peones > 0:
+            i = 0
+            for i in range(0,self.cantidad_capturas_negras_peones):
+                pieza = Pieza.Pieza(self.canvas,-1)
+                posicion_de_captura = self.posiciones_de_capturas_negras_peones[i]
+                pieza.colocar_posicion_en_tablero(posicion_de_captura)
+                pieza.colocar_imagen_en_tablero()
+                self.posiciones_de_capturas_negras_peones[i] = pieza
+        
+        if self.cantidad_capturas_negras_caballos > 0:
+            i = 0
+            for i in range(0,self.cantidad_capturas_negras_caballos):
+                pieza = Pieza.Pieza(self.canvas,-2)
+                posicion_de_captura = self.posiciones_de_capturas_negras_caballos[i]
+                pieza.colocar_posicion_en_tablero(posicion_de_captura)
+                pieza.colocar_imagen_en_tablero()
+                self.posiciones_de_capturas_negras_caballos[i] = pieza
+        
+        if self.cantidad_capturas_negras_alfiles > 0:
+            i = 0
+            for i in range(0,self.cantidad_capturas_negras_alfiles):
+                pieza = Pieza.Pieza(self.canvas,-3)
+                posicion_de_captura = self.posiciones_de_capturas_negras_alfiles[i]
+                pieza.colocar_posicion_en_tablero(posicion_de_captura)
+                pieza.colocar_imagen_en_tablero()
+                self.posiciones_de_capturas_negras_alfiles[i] = pieza
+        
+        if self.cantidad_capturas_negras_torres > 0:
+            i = 0
+            for i in range(0,self.cantidad_capturas_negras_torres):
+                pieza = Pieza.Pieza(self.canvas,-4)
+                posicion_de_captura = self.posiciones_de_capturas_negras_torres[i]
+                pieza.colocar_posicion_en_tablero(posicion_de_captura)
+                pieza.colocar_imagen_en_tablero()
+                self.posiciones_de_capturas_negras_torres[i] = pieza
+        
+        if self.cantidad_capturas_negras_dama > 0:
+            i = 0
+            for i in range(0,self.cantidad_capturas_negras_dama):
+                pieza = Pieza.Pieza(self.canvas,-5)
+                posicion_de_captura = self.posiciones_de_capturas_negras_dama[i]
+                pieza.colocar_posicion_en_tablero(posicion_de_captura)
+                pieza.colocar_imagen_en_tablero()
+                self.posiciones_de_capturas_negras_dama[i] = pieza
+
+    def generar_posiciones_de_capturas(self):
+        ## Posiciones de Blancas Capturadas
+
+        ##Peones
+        # [ [211.98 , 460.32] , [211.98 ,  485.32] , [211.98 , 510.32] , [241.38 , 460.32] , [241.38 , 485.32] , [241.38 , 510.32] , [271.02 , 475.32] , [271.02 , 495.32] ]
+        self.posiciones_de_capturas_blancas_peones = []
+        self.posiciones_de_capturas_blancas_peones.append(Posicion.Posicion(211.98 , 460.32))
+        self.posiciones_de_capturas_blancas_peones.append(Posicion.Posicion(211.98 , 485.32))
+        self.posiciones_de_capturas_blancas_peones.append(Posicion.Posicion(211.98 , 510.32))
+        self.posiciones_de_capturas_blancas_peones.append(Posicion.Posicion(241.38 , 460.32))
+        self.posiciones_de_capturas_blancas_peones.append(Posicion.Posicion(241.38 , 485.32))
+        self.posiciones_de_capturas_blancas_peones.append(Posicion.Posicion(241.38 , 510.32))
+        self.posiciones_de_capturas_blancas_peones.append(Posicion.Posicion(271.02 , 475.32))
+        self.posiciones_de_capturas_blancas_peones.append(Posicion.Posicion(271.02 , 495.32))
+
+        ##Caballos
+        # [ [140 , 458.90] , [140 ,  511.32] ]
+        self.posiciones_de_capturas_blancas_caballos = []
+        self.posiciones_de_capturas_blancas_caballos.append(Posicion.Posicion(140.00 , 458.90))
+        self.posiciones_de_capturas_blancas_caballos.append(Posicion.Posicion(140.00 , 511.32))
+
+        ##Alfiles
+        # [ [181 , 473.32] , [181 ,  496.32] ]
+        self.posiciones_de_capturas_blancas_alfiles = []
+        self.posiciones_de_capturas_blancas_alfiles.append(Posicion.Posicion(181 , 473.32))
+        self.posiciones_de_capturas_blancas_alfiles.append(Posicion.Posicion(181 , 496.32))
+
+        ##Torres
+        # [ [102.00 , 458.90] , [102.00 , 511.32] ]
+        self.posiciones_de_capturas_blancas_torres = []
+        self.posiciones_de_capturas_blancas_torres.append(Posicion.Posicion(102.00 , 458.90))
+        self.posiciones_de_capturas_blancas_torres.append(Posicion.Posicion(102.00 , 511.32))
+
+        ##Dama
+        # [ [140 , 485.32] ]
+        self.posiciones_de_capturas_blancas_dama = []
+        self.posiciones_de_capturas_blancas_dama.append(Posicion.Posicion(140 , 485.32))
+
+        ## Posiciones de Negras Capturadas
+
+        ##Peones
+        # [ [499.98 , 460.32] , [499.98 ,  485.32] , [499.98 , 510.32] , [529.38 , 460.32] , [529.38 , 485.32] , [529.38 , 510.32] , [559.02 , 475.32] , [559.02 , 495.32] ]
+        self.posiciones_de_capturas_negras_peones = []
+        self.posiciones_de_capturas_negras_peones.append(Posicion.Posicion(499.98 , 460.32))
+        self.posiciones_de_capturas_negras_peones.append(Posicion.Posicion(499.98 , 485.32))
+        self.posiciones_de_capturas_negras_peones.append(Posicion.Posicion(499.98 , 510.32))
+        self.posiciones_de_capturas_negras_peones.append(Posicion.Posicion(529.38 , 460.32))
+        self.posiciones_de_capturas_negras_peones.append(Posicion.Posicion(529.38 , 485.32))
+        self.posiciones_de_capturas_negras_peones.append(Posicion.Posicion(529.38 , 510.32))
+        self.posiciones_de_capturas_negras_peones.append(Posicion.Posicion(559.02 , 475.32))
+        self.posiciones_de_capturas_negras_peones.append(Posicion.Posicion(559.02 , 495.32))
+
+        ##Caballos
+        # [ [425.90 , 458.90] , [425.90 ,  511.32] ]
+        self.posiciones_de_capturas_negras_caballos = []
+        self.posiciones_de_capturas_negras_caballos.append(Posicion.Posicion(425.90 , 458.90))
+        self.posiciones_de_capturas_negras_caballos.append(Posicion.Posicion(425.90 , 511.32))
+
+        ##Alfiles
+        # [ [464.90 , 473.32] , [464.90 ,  496.32] ]
+        self.posiciones_de_capturas_negras_alfiles = []
+        self.posiciones_de_capturas_negras_alfiles.append(Posicion.Posicion(464.90 , 473.32))
+        self.posiciones_de_capturas_negras_alfiles.append(Posicion.Posicion(464.90 ,  496.32))
+
+        ##Torres
+        # [ [387.90 , 458.90] , [387.90 ,  511.32] ]
+        self.posiciones_de_capturas_negras_torres = []
+        self.posiciones_de_capturas_negras_torres.append(Posicion.Posicion(387.90 , 458.90))
+        self.posiciones_de_capturas_negras_torres.append(Posicion.Posicion(387.90 ,  511.32))
+
+        ##Dama
+        # [ [425.9 , 485.32] ]
+        self.posiciones_de_capturas_negras_dama = []
+        self.posiciones_de_capturas_negras_dama.append(Posicion.Posicion(425.90 , 485.32))
 
     # def mostrarAyuda(self):
     #     Ayuda.Ayuda()
