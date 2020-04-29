@@ -59,7 +59,6 @@ class Configuracion(tk.Frame):
         self.entry_archivo_de_juego = tk.Entry(self, textvariable=self.path_tablero,width=20,state="disabled")       
         self.entry_archivo_de_juego.place(x=155,y=285)
         self.scrollbar = tk.Scrollbar(self.entry_archivo_de_juego,orient="horizontal")
-        
         self.scrollbar = tk.Scrollbar(orient="horizontal")        
         self.scrollbar.config(command=self.entry_archivo_de_juego.xview,width=13)
         self.scrollbar.place(x=155,y=305)
@@ -100,6 +99,11 @@ class Configuracion(tk.Frame):
         self.equipo = tk.OptionMenu(self,self.turno,"Blancas","Negras")
         self.equipo.place(x=225,y=253)
     
+    def colocar_turno(self,turno):
+        if (turno == "Blancas"):
+            return 'B'
+        else:
+            return 'N'
     ###Métodos especializados###   
     def salir(self):
         """Finaliza el programa
@@ -124,7 +128,7 @@ class Configuracion(tk.Frame):
         """ Verificiamos que los paramtreos de inicio del juego esten completos y inicia 
         """
         self.obtener_piezas_iniciales()
-        self.master.juego = Juego.Juego(self.turno.get(),self.piezas_iniciales,self.tipo_de_juego.get())
+        self.master.juego = Juego.Juego(self.colocar_turno(self.turno.get()),self.piezas_iniciales,self.tipo_de_juego.get())
         self.destroy()
         Ajedrez.Ajedrez(self.master)
  

@@ -53,6 +53,9 @@ class Posicion:
     def equals(self,posicion):
         return (self.fila == posicion.fila and self.columna == posicion.columna )
     
+    def to_string(self):
+        return ("fila: %s, columna: %s" % (str(self.fila), str(self.columna)))
+        
     def imprimir(self):
         print("fila: %s, columna: %s" % (str(self.fila), str(self.columna)))
         

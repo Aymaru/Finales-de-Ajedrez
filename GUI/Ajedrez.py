@@ -22,6 +22,9 @@ class Ajedrez(tk.Frame):
         centrar(self.master)        
         
         self.pack()
+        self.canvas.pack()
+
+        self.master.juego.set_movimientos_legales()
         # self.tablero = tablero           # Cuadricula con cuadros[wight,height,]
         # self.piezasJug1 = piezasJug1  
         # self.piezasJug2 = piezasJug2
@@ -52,6 +55,8 @@ class Ajedrez(tk.Frame):
         self.generar_posiciones_de_capturas()
         self.colocar_piezas_capturadas()
         self.inicializar_dimensiones_de_tablero_en_pantalla()
+        self.entry_movimiento()
+        self.btn_mover_pieza()
 
     def dimensiones(self):
         """Define los aspectos de la ventana principal
@@ -60,7 +65,7 @@ class Ajedrez(tk.Frame):
         self.master.title("Instituto Tecnológico de Costa Rica")
         self.master.geometry("801x601") # Tamaño de la ventana de inicio.
         self.canvas = tk.Canvas(self, height=601, width=801, bg = "black")
-        self.canvas.pack()
+        
 
     def imagen(self):
         """Carga las imagenes a la ventana
@@ -124,14 +129,15 @@ class Ajedrez(tk.Frame):
     def entry_movimiento(self):        
         self.movimiento_casilla_inicial = tk.StringVar()
         self.movimiento_casilla_objetivo = tk.StringVar()
-        self.entry_movimiento_casilla_inicial = tk.Entry(self,textvariable=self.movimiento_casilla_inicial)
-        self.entry_movimiento_casilla_inicial.place(x=155,y=285)
-        self.entry_movimiento_casilla_objetivo = tk.Entry(self,textvariable=self.movimiento_casilla_objetivo)
-
+        self.entry_movimiento_casilla_inicial = tk.Entry(self,textvariable=self.movimiento_casilla_inicial,width=8)
+        self.entry_movimiento_casilla_objetivo = tk.Entry(self,textvariable=self.movimiento_casilla_objetivo,width=8)
+        self.canvas.create_window(195,543, anchor=tk.NW, window=self.entry_movimiento_casilla_inicial)
+        self.canvas.create_window(255,543, anchor=tk.NW, window=self.entry_movimiento_casilla_objetivo)
 
     def btn_mover_pieza(self):
-        self.btn_mover_pieza = tk.Button(self,text="Mover Pieza",command=self.regresar)
-        self.btn_mover_pieza.place(x=350,y=548)
+        self.btn_mover_pieza = tk.Button(self,text="Mover",command=self.regresar,width=8)
+        #self.btn_mover_pieza.place(x=320,y=545)
+        self.canvas.create_window(318,540,anchor=tk.NW,window=self.btn_mover_pieza)
 
     # ###Métodos especializados######Métodos especializados###
     def regresar(self):
@@ -391,18 +397,26 @@ class Ajedrez(tk.Frame):
     def callback(self,event):
         fila = event.y
         columna = event.x
+        #print(len(self.master.juego.movimientos_legales))
         if self.validar_posicion_de_tablero_en_pantalla(fila, columna):
             posicion_seleccionada = self.generar_posicion_de_tablero(fila, columna)
-            if self.juego.casilla_seleccionada == None:
-                if(self.juego.es_casilla_inicial_permitida(posicion_seleccionada)):
-                    return
-                # if self.juego.casilla_seleccionada.equals(posicion_seleccionada):
-                #     self.juego.l
+            print(self.master.juego.casilla_seleccionada)
+            if self.master.juego.casilla_seleccionada == None:
+                self.master.juego.set_casilla_selecionada(posicion_seleccionada)
+                if(self.master.juego.es_casilla_inicial_permitida()):
+                    self.movimiento_casilla_inicial.set(self.master.juego.casilla_seleccionada.to_string())
+                    print("??")
+                else:
+                    self.master.juego.limpiar_casilla_seleccionada()
+                # if self.master.juego.casilla_seleccionada.equals(posicion_seleccionada):
+                #     #self.master.juego.l
                 # return
             else:
+                self.master.juego.limpiar_casilla_seleccionada()
                 return
             posicion_seleccionada.imprimir()
         print ("clicked at", event.x, event.y)
+        return
 
     # def mostrarAyuda(self):
     #     Ayuda.Ayuda()
