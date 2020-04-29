@@ -56,8 +56,16 @@ class Configuracion(tk.Frame):
         self.btn_buscar_archivo_de_tablero = tk.Button(self,text = "Buscar",command= self.buscar_archivo)
         self.btn_buscar_archivo_de_tablero.place(x=290,y=284)
         self.path_tablero = tk.StringVar()
-        self.entradaArch = tk.Entry(self, textvariable=self.path_tablero,width=13)
-        self.entradaArch.place(x=155,y=280)
+        self.entry_archivo_de_juego = tk.Entry(self, textvariable=self.path_tablero,width=20,state="disabled")       
+        self.entry_archivo_de_juego.place(x=155,y=285)
+        self.scrollbar = tk.Scrollbar(self.entry_archivo_de_juego,orient="horizontal")
+        
+        self.scrollbar = tk.Scrollbar(orient="horizontal")        
+        self.scrollbar.config(command=self.entry_archivo_de_juego.xview,width=13)
+        self.scrollbar.place(x=155,y=305)
+        
+        
+        self.entry_archivo_de_juego['xscrollcommand'] = self.scrollbar.set
 
     def btn_comenzar(self):
         """Boton que acciona la busqueda de un archivo.
@@ -105,6 +113,7 @@ class Configuracion(tk.Frame):
             self.piezas_iniciales = leer_tablero(path_tablero)
         elif path.exists(path_tablero):
             #agregar validacion de archivo de partida
+            #No necesario??? se asume correcta la entrada
             self.piezas_iniciales = leer_tablero(path_tablero)
         else:
             #popup,diciendo que el archivo no existe
@@ -114,20 +123,11 @@ class Configuracion(tk.Frame):
     def comenzar(self):
         """ Verificiamos que los paramtreos de inicio del juego esten completos y inicia 
         """
-        # self.tipo_de_juego.get()
-        # #self.valor.get()
-        # #self.path_tablero.get()
-        # if self.tipo_de_juego.get() == 0:
-        #     #popup, diciendo que se debe seleccionar un tipo de juego
-        #     return
-                
         self.obtener_piezas_iniciales()
         self.master.juego = Juego.Juego(self.turno.get(),self.piezas_iniciales,self.tipo_de_juego.get())
         self.destroy()
         Ajedrez.Ajedrez(self.master)
-            #self.printearTablero()
-            #Ajedrez(self.componentes[0],self.componentes[1],self.componentes[2],self.valor.get(),self.movIniciales)
-
+ 
     # def popUp(self,tipo,mensaje):
     #     """Ventana que muestra un mensaje al usuario
     #     """
@@ -152,134 +152,3 @@ class Configuracion(tk.Frame):
     #     msg.place(x=110,y=32)
     #     centrar(self.pop)            # Centra la pantalla
     #     self.pop.wait_window()
-        
-    # def printearTablero(self):
-    #     tablero = self.componentes[2]
-    #     for cuadros in tablero.cuadros:
-    #         print(cuadros)
-
-    # def cagarArchivo(self):
-    #     """Obtiene las piezas del archivo escogido
-    #     """
-    #     #print((self.path_tablero.get(),type(self.path_tablero)))
-    #     # Verifica si el cuadro de texto no es vacio.
-    #     # Si escribió en el cuadro de texto.
-    #     # Usabamos un try para verificar si realmente existe el documento.
-    #     try:
-    #         archivo = open(self.path_tablero.get(), "r")  # Abre el archivo de inicio escrito o cargado por el jugador.
-    #         datos = archivo.readlines()
-    #         self.movIniciales = []
-    #         for x in datos:
-    #             for y in x.split():
-    #                 if(len(y) == 5 and y[0] in Configuracion.C and
-    #                    y[1] in Configuracion.P and y[2] in Configuracion.Fil and
-    #                    y[3] in Configuracion.Col and y[4] in Configuracion.Fil):
-    #                     self.movIniciales.append(y)
-    #         self.movIniciales = list(dict.fromkeys(self.movIniciales)) # Elimino duplicados obteniendo los values del diccionario.
-    #         if(self.movIniciales == []): # Verifica si el archivo no tenia movimientos en el formato correspondiente.
-    #             # No ten[ia movimeintos.
-    #             self.popUp(2,"[Error.B] ¡El archivo no posee movimientos iniciales!")
-    #             int("AutoError")
-    #         #print(self.movIniciales)
-    #         #print(len(self.movIniciales))
-    #         return True
-    #     except:
-    #         self.popUp(3,"Error, el archivo es incorrecto.")
-    #         return False
-
-    # def convertirLetra(self,letra):
-    #     """Conviertiendo la letra en el numero de columna
-    #     """
-    #     nueva = ''
-    #     if(letra == 'A'):
-    #         nueva = 1
-    #     elif(letra == 'B'):
-    #         nueva = 2
-    #     elif(letra == 'C'):
-    #         nueva = 3
-    #     elif(letra == 'D'):
-    #         nueva = 4
-    #     elif(letra == 'E'):
-    #         nueva = 5
-    #     elif(letra == 'F'):
-    #         nueva = 6
-    #     elif(letra == 'G'):
-    #         nueva = 7
-    #     else:
-    #         nueva = 8
-    #     return nueva
-        
-    # def cargarMovimientosTablero(self,mov):
-    #     """
-    #     """
-    #     self.temporalC   = mov[0]           # C   = "NB"
-    #     self.temporalP   = mov[1]           # P   = "RDTACP"
-    #     self.temporalId  = int(mov[2])      # Id  = "12345678"
-    #     self.temporalCol = mov[3]           # Col = "ABCDEFGH" -> "12345678"
-    #     self.temporalFil = int(mov[4])      # Fil = "87654321"
-    #     self.transformarInicalesAlTablero() # Procesa el movimiento
-
-    # def transformarInicalesAlTablero(self):
-    #     """ Método que transforma la C-P-Id-Col-Fil al Tablero
-    #     """
-    #     # Recorremos los movimientos inciales por cada componentes para verificar cual hace match.
-    #     if(self.temporalC == "N"):                 # Movimiento en las piezas Negras
-    #         if(self.equipoJug1 == "Negras"):
-    #             # Movimiento del Jugador 1
-    #             for pieza in self.componentes[0]:  # Primero estan las Negras
-    #                 self.agregarPieza(pieza)
-    #         else:
-    #             # Movimiento del Jugador 2
-    #             for pieza in self.componentes[1]:  # Segundo estan las Blancas
-    #                 self.agregarPieza(pieza)
-    #     else:                                      # Movimiento en las piezas Blancas
-    #         if(self.equipoJug1 == "Blancas"):
-    #             # Movimiento del Jugador 1  
-    #             for pieza in self.componentes[0]: # Primero estan las Blancas
-    #                 self.agregarPieza(pieza)
-    #         else:
-    #             # Movimiento del Jugador 2
-    #             for pieza in self.componentes[1]: # Segundo estan las Negras
-    #                 self.agregarPieza(pieza)
-
-    # def agregarPieza(self,pieza):
-    #     if(pieza.idChar == self.temporalP):  # Verifica la pieza
-    #         if(pieza.id == self.temporalId): # Verifica el ID
-    #             if(self.componentes[2].existePieza(self.temporalFil,self.convertirLetra(self.temporalCol)) == False):
-    #                 self.componentes[2].agregarPieza(self.temporalFil,self.convertirLetra(self.temporalCol),pieza)
-    #             else:                        # Existe una pieza previamente asignada
-    #                 self.componentes[2].eliminarPieza(self.temporalFil,self.convertirLetra(self.temporalCol))
-    #                 self.componentes[2].agregarPieza(self.temporalFil,self.convertirLetra(self.temporalCol),pieza)
-    #         else:
-    #             pass # Es la pieza, pero no con la identificación.
-    #     else:
-    #         pass # No es la pieza.
-        
-    # # def crearComponentes(self):
-    # #     """self.componentes = [fichasJug1 = [], fichasJug2 = [], tablero]
-    # #     """
-    # #     # Se crean/inicializan las piezas del juego de ambos jugadores.
-    # #     color = self.equipoJug1
-    # #     self.componentes = []
-    # #     fichas = []
-    # #     for jugador in [1,2]:
-    # #         fichas.append(Rey(jugador,color))
-    # #         fichas.append(Dama(jugador,color))
-    # #         for num in [1,2]:
-    # #             fichas.append(Caballo(num,jugador,color))
-    # #             fichas.append(Alfil(num,jugador,color))
-    # #             fichas.append(Torre(num,jugador,color))         
-    # #         for num in [1,2,3,4,5,6,7,8]:
-    # #             fichas.append(Peon(num,jugador,color))
-    # #         color = self.equipoJug2
-    # #         self.componentes.append(fichas)
-    # #         fichas = []  # Limpio la lista para cargar el conjunto de piezas del segundo jugador con su color respectivo
-    # #     # Se crea el tablero del juego
-    # #     self.componentes.append(Tablero(self.equipoJug1,self.equipoJug2))
-    # #     #self.printearComponentes()
-
-    # def printearComponentes(self):
-    #     """Muestra los valores de los componentes.
-    #     """
-    #     for comp in range(0,3):
-    #         print(self.componentes[comp])

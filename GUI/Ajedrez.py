@@ -7,20 +7,20 @@ from GUI import Configuracion
 from GUI import Pieza
 from Juego import Posicion
 
+    
 class Ajedrez(tk.Frame):
     """Crea la ventana de configuracion de juego.
-    """
-
+    """  
     ###Constructor de la clase###
     def __init__(self, master):
         """Crea una instancia de la clase Ajefrez
         """
-        self.master = master
+        self.master = master        
+        self.dimensiones()        
+        self.componentes()        
+        self.events()
+        centrar(self.master)        
         
-        self.dimensiones()
-        
-        self.componentes()
-        centrar(self.master)
         self.pack()
         # self.tablero = tablero           # Cuadricula con cuadros[wight,height,]
         # self.piezasJug1 = piezasJug1  
@@ -51,6 +51,7 @@ class Ajedrez(tk.Frame):
         self.colocar_piezas_en_tablero()
         self.generar_posiciones_de_capturas()
         self.colocar_piezas_capturadas()
+        self.inicializar_dimensiones_de_tablero_en_pantalla()
 
     def dimensiones(self):
         """Define los aspectos de la ventana principal
@@ -72,13 +73,6 @@ class Ajedrez(tk.Frame):
         self.result = tk.Listbox(self, height=13, width=38,borderwidth=2.5,relief="raised", highlightthickness=1.5)
         self.canvas.create_window(545, 100, anchor=tk.NW, window=self.result)
         self.result.insert(tk.END,"            Historial de Movimientos")
-        # if(self.movPreCargados != []):
-        #     self.result.insert(tk.END,"Movimientos iniciales...")
-        #     for i in self.movPreCargados:
-        #         self.result.insert(tk.END, "  "+i)
-        #     self.result.insert(tk.END,"Presione comenzar...")
-        # else:
-        #     self.result.insert(tk.END,"Sin movimientos inciales.")
 
     # def botonIniciarJuego(self):
     #     """Boton que acciona la busqueda de un archivo.
@@ -127,6 +121,17 @@ class Ajedrez(tk.Frame):
     #     self.entradaArch = Entry(self.principal, textvariable=self.movNuevo,width=12)
     #     self.entradaArch.place(x=200,y=541)
     #     self.canvas.create_window(325,533, anchor=NW, window=self.boton)
+    def entry_movimiento(self):        
+        self.movimiento_casilla_inicial = tk.StringVar()
+        self.movimiento_casilla_objetivo = tk.StringVar()
+        self.entry_movimiento_casilla_inicial = tk.Entry(self,textvariable=self.movimiento_casilla_inicial)
+        self.entry_movimiento_casilla_inicial.place(x=155,y=285)
+        self.entry_movimiento_casilla_objetivo = tk.Entry(self,textvariable=self.movimiento_casilla_objetivo)
+
+
+    def btn_mover_pieza(self):
+        self.btn_mover_pieza = tk.Button(self,text="Mover Pieza",command=self.regresar)
+        self.btn_mover_pieza.place(x=350,y=548)
 
     # ###Métodos especializados######Métodos especializados###
     def regresar(self):
@@ -350,55 +355,54 @@ class Ajedrez(tk.Frame):
         self.posiciones_de_capturas_negras_dama = []
         self.posiciones_de_capturas_negras_dama.append(Posicion.Posicion(425.90 , 485.32))
 
+    def inicializar_dimensiones_de_tablero_en_pantalla(self):
+        
+        ## tam de cuadro = 48 46.25
+        ## esquina superior izquierda = 26 103
+        ## esquina superior derecha = 410 103
+        ## esquina inferior izquierda = 26 473
+        ## esquina inferior derecha = 410 473
+        self.fila_inicial = 103
+        self.fila_final = 472.9999
+        self.columna_inicial = 26
+        self.columna_final = 409.9999
+        self.largo_fila = 46.25
+        self.largo_columna = 48
+
+    def generar_posicion_de_tablero(self,fila,columna):
+        largo_filas = self.fila_final - self.fila_inicial 
+        largo_columnas = self.columna_final - self.columna_inicial
+        posicion_seleccionada = Posicion.Posicion(int((fila-self.fila_inicial)//self.largo_fila),int((columna-self.columna_inicial)//self.largo_columna))
+        return posicion_seleccionada
+
+    def validar_posicion_de_tablero_en_pantalla(self,fila,columna):
+        return (self.number_between_range(fila,self.fila_inicial,self.fila_final) and self.number_between_range(columna,self.columna_inicial,self.columna_final))
+
+    def number_between_range(self,number,first,last):
+        #print("validar numero %d, inicio %d, final %d",(number,first,last))
+        return (number >= first and number <= last)
+
+    ##EVENTS
+
+    def events(self):
+        self.canvas.bind("<Button-1>", self.callback)
+        self.canvas.pack()
+
+    def callback(self,event):
+        fila = event.y
+        columna = event.x
+        if self.validar_posicion_de_tablero_en_pantalla(fila, columna):
+            posicion_seleccionada = self.generar_posicion_de_tablero(fila, columna)
+            if self.juego.casilla_seleccionada == None:
+                if(self.juego.es_casilla_inicial_permitida(posicion_seleccionada)):
+                    return
+                # if self.juego.casilla_seleccionada.equals(posicion_seleccionada):
+                #     self.juego.l
+                # return
+            else:
+                return
+            posicion_seleccionada.imprimir()
+        print ("clicked at", event.x, event.y)
+
     # def mostrarAyuda(self):
     #     Ayuda.Ayuda()
-
-    # def cargarPiezasPozo(self):
-    #     """ self.tablero = tablero 
-    #         self.piezasJug1 = piezasJug1
-    #         self.piezasJug2 = piezasJug2
-    #         self.tipo = tipoJuego
-    #     """
-    #     self.imagenJ1 = []
-    #     self.imagenJ2 = []
-    #     acum = 0
-    #     for pieza in self.piezasJug1:
-    #         self.imagenJ1.append(PhotoImage(file=pieza.imagen))
-    #         pieza.idCanvas = self.canvas.create_image(pieza.posiciones[0],pieza.posiciones[1],image=self.imagenJ1[acum])
-    #         acum = acum + 1
-    #     acum = 0
-    #     for pieza in self.piezasJug2:
-    #         self.imagenJ2.append(PhotoImage(file=pieza.imagen))
-    #         pieza.idCanvas = self.canvas.create_image(pieza.posiciones[0],pieza.posiciones[1],image=self.imagenJ2[acum])
-    #         acum = acum + 1
-            
-    # def cargarPiezasTablero(self):
-    #     for cuadro in self.tablero.cuadros:
-    #         if(cuadro[2] != None):
-    #             if(cuadro[2].jugador == 1):
-    #                 for pieza in self.piezasJug1:
-    #                     if(cuadro[2].id == pieza.id and cuadro[2].idChar == pieza.idChar):
-    #                         print(cuadro)
-    #                         fila = cuadro[4]
-    #                         col = cuadro[5]
-    #                         posXTablero = pieza.posiciones[2]
-    #                         posYTablero = pieza.posiciones[3]
-    #                         #print(col,posXTablero,fila,posYTablero)
-    #                         movX = posXTablero + (col-1) * 48
-    #                         movY = posYTablero + (fila-1) * 46
-    #                         #print(movX,movY)
-    #                         self.canvas.coords(pieza.idCanvas,(movX,movY))
-    #             if(cuadro[2].jugador == 2):
-    #                 for pieza in self.piezasJug2:
-    #                     if(cuadro[2].id == pieza.id and cuadro[2].idChar == pieza.idChar):
-    #                         print(cuadro)
-    #                         fila = cuadro[4]
-    #                         col = cuadro[5]
-    #                         posXTablero = pieza.posiciones[2]
-    #                         posYTablero = pieza.posiciones[3]
-    #                         #print(col,posXTablero,fila,posYTablero)
-    #                         movX = posXTablero + (col-1) * 48
-    #                         movY = posYTablero + (fila-1) * 46
-    #                         #print(movX,movY)
-    #                         self.canvas.coords(pieza.idCanvas,(movX,movY))
-    

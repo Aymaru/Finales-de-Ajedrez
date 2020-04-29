@@ -1,4 +1,5 @@
 from Juego import Tablero
+from Juego import Movimiento
 
 class Juego:
 
@@ -9,6 +10,8 @@ class Juego:
         self.tipo_de_juego = tipo_de_juego
         self.tablero = Tablero.Tablero()
         self.colocar_piezas_iniciales(piezas_iniciales)
+        self.casilla_seleccionada = None
+        self.casilla_objetivo = None
     
     def colocar_piezas_iniciales(self,piezas_iniciales):
         piezas = piezas_iniciales.split(",") ##Esto creo que se debe cambiar por espacios, a como lo pide el profe y cambiar las comas por espacios en los archivos de juego
@@ -16,6 +19,48 @@ class Juego:
         for pieza in piezas:
             piezas_iniciales.append(list(pieza))
         self.tablero.colocar_piezas_iniciales(piezas_iniciales)
+
+    def set_movimientos_legales(self):
+        self.movimientos_legales = self.tablero.obtener_movimientos_legales(self.tablero.generar_posibles_movimientos(),self.turno)
+
+    def set_casilla_selecionada(self,posicion):
+        self.casilla_seleccionada = posicion
+    
+    def set_casilla_objetivo(self,posicion):
+        self.casilla_objetivo = posicion
+
+    #def set_movimiento_a_realizar(self,posicion):
+    #    self.movimiento_a_realizar = Movimiento.Movimiento(self.casilla_seleccionada,posicion)
+
+    def limpiar_casilla_seleccionada(self):
+        self.casilla_seleccionada = None
+    
+    def limpiar_casilla_objetivo(self):
+        self.casilla_objetivo = None
+    
+    #def limpiar_movimiento_a_realizar(self):
+    #    self.movimiento_a_realizar = None
+
+    def mover_pieza(self):
+        
+        if self.turno == 'B':
+            pieza_de_coronamiento = 5
+        else:
+            pieza_de_coronamiento = -5
+        self.tablero.mover_pieza(self.movimiento_a_realizar,pieza_de_coronamiento)
+
+    def es_casilla_inicial_permitida(self,posicion):
+        for movimiento in self.movimientos_legales:
+            if(posicion.equals(movimiento.casilla_inicial)):
+                return True
+        return False
+
+    def es_movimiento_a_realizar_legal(self):
+        movimiento_a_realizar = Movimiento.Movimiento(self.casilla_seleccionada,self.casilla_objetivo)
+        for movimiento in self.movimientos_legales:
+            if (movimiento_a_realizar.equals(movimiento)):
+                return True
+        return False
 
     # def iniciar_juego(self):
 

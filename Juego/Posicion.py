@@ -50,6 +50,9 @@ class Posicion:
         self.fila += avanzar_fila
         self.columna += avanzar_columna
 
+    def equals(self,posicion):
+        return (self.fila == posicion.fila and self.columna == posicion.columna )
+    
     def imprimir(self):
         print("fila: %s, columna: %s" % (str(self.fila), str(self.columna)))
         
