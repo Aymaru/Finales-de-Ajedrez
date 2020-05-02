@@ -24,7 +24,8 @@ class Ajedrez(tk.Frame):
         self.pack()
         self.canvas.pack()
 
-        self.master.juego.set_movimientos_legales()
+        
+        #self.master.juego.print_movimientos_legales()
         # self.tablero = tablero           # Cuadricula con cuadros[wight,height,]
         # self.piezasJug1 = piezasJug1  
         # self.piezasJug2 = piezasJug2
@@ -57,6 +58,7 @@ class Ajedrez(tk.Frame):
         self.inicializar_dimensiones_de_tablero_en_pantalla()
         self.entry_movimiento()
         self.btn_mover_pieza()
+        self.entry_turno()
 
     def dimensiones(self):
         """Define los aspectos de la ventana principal
@@ -135,9 +137,15 @@ class Ajedrez(tk.Frame):
         self.canvas.create_window(255,543, anchor=tk.NW, window=self.entry_movimiento_casilla_objetivo)
 
     def btn_mover_pieza(self):
-        self.btn_mover_pieza = tk.Button(self,text="Mover",command=self.regresar,width=8)
+        self.btn_mover_pieza = tk.Button(self,text="Mover",command=self.mover_pieza,width=8)
         #self.btn_mover_pieza.place(x=320,y=545)
         self.canvas.create_window(318,540,anchor=tk.NW,window=self.btn_mover_pieza)
+
+    def entry_turno(self):
+        self.turno = tk.StringVar()
+        self.entry_turno = tk.Entry(self,textvariable=self.turno,width=8)
+        self.canvas.create_window(95,543, anchor=tk.NW, window=self.entry_turno)
+        self.turno.set(self.master.juego.turno_to_string())
 
     # ###Métodos especializados######Métodos especializados###
     def regresar(self):
@@ -388,6 +396,115 @@ class Ajedrez(tk.Frame):
         #print("validar numero %d, inicio %d, final %d",(number,first,last))
         return (number >= first and number <= last)
 
+    def mover_pieza(self):
+        casilla_inicial = self.master.juego.movimiento_a_realizar.casilla_inicial
+        casilla_objetivo = self.master.juego.movimiento_a_realizar.casilla_objetivo
+        pieza_a_mover = self.piezas[casilla_inicial.calcular_posicion_tablero()]
+        pieza_objetivo = self.piezas[casilla_objetivo.calcular_posicion_tablero()]
+        pieza_a_mover.calcular_posicion_en_tablero(casilla_objetivo)
+        pieza_a_mover.mover_pieza()
+        if pieza_objetivo != None:
+            self.mover_captura_a_pozo(casilla_objetivo)
+        self.piezas[casilla_objetivo.calcular_posicion_tablero()] = pieza_a_mover
+        self.master.juego.mover_pieza()
+        self.turno.set(self.master.juego.turno_to_string())
+        self.movimiento_casilla_inicial.set("")
+        self.movimiento_casilla_objetivo.set("")
+
+    def mover_captura_a_pozo(self,posicion):
+        pieza = self.piezas[posicion.calcular_posicion_tablero()]
+        
+        if pieza.pieza == 1:
+            for posicion_pozo in range(0,len(self.posiciones_de_capturas_blancas_peones)):
+                if type(self.posiciones_de_capturas_blancas_peones[posicion_pozo]) == type(posicion):
+                    pieza.colocar_posicion_en_tablero(self.posiciones_de_capturas_blancas_peones[posicion_pozo])
+                    pieza.mover_pieza()
+                    self.posiciones_de_capturas_blancas_peones[posicion_pozo] = pieza
+                    break
+                else:
+                    continue
+        elif pieza.pieza == 2:
+            for posicion_pozo in range(0,len(self.posiciones_de_capturas_blancas_caballos)):
+                if type(self.posiciones_de_capturas_blancas_caballos[posicion_pozo]) == type(posicion):
+                    pieza.colocar_posicion_en_tablero(self.posiciones_de_capturas_blancas_caballos[posicion_pozo])
+                    pieza.mover_pieza()
+                    self.posiciones_de_capturas_blancas_caballos[posicion_pozo] = pieza
+                    break
+                else:
+                    continue
+        elif pieza.pieza == 3:
+            for posicion_pozo in range(0,len(self.posiciones_de_capturas_blancas_alfiles)):
+                if type(self.posiciones_de_capturas_blancas_alfiles[posicion_pozo]) == type(posicion):
+                    pieza.colocar_posicion_en_tablero(self.posiciones_de_capturas_blancas_alfiles[posicion_pozo])
+                    pieza.mover_pieza()
+                    self.posiciones_de_capturas_blancas_alfiles[posicion_pozo] = pieza
+                    break
+                else:
+                    continue
+        elif pieza.pieza == 4:
+            for posicion_pozo in range(0,len(self.posiciones_de_capturas_blancas_torres)):
+                if type(self.posiciones_de_capturas_blancas_torres[posicion_pozo]) == type(posicion):
+                    pieza.colocar_posicion_en_tablero(self.posiciones_de_capturas_blancas_torres[posicion_pozo])
+                    pieza.mover_pieza()
+                    self.posiciones_de_capturas_blancas_torres[posicion_pozo] = pieza
+                    break
+                else:
+                    continue
+        elif pieza.pieza == 5:
+            for posicion_pozo in range(0,len(self.posiciones_de_capturas_blancas_dama)):
+                if type(self.posiciones_de_capturas_blancas_dama[posicion_pozo]) == type(posicion):
+                    pieza.colocar_posicion_en_tablero(self.posiciones_de_capturas_blancas_dama[posicion_pozo])
+                    self.pieza.mover_pieza()
+                    self.posiciones_de_capturas_blancas_dama[posicion_pozo] = pieza
+                    break
+                else:
+                    continue
+        elif pieza.pieza == -1:
+            for posicion_pozo in range(0,len(self.posiciones_de_capturas_negras_peones)):
+                if type(self.posiciones_de_capturas_negras_peones[posicion_pozo]) == type(posicion):
+                    pieza.colocar_posicion_en_tablero(self.posiciones_de_capturas_negras_peones[posicion_pozo])
+                    pieza.mover_pieza()
+                    self.posiciones_de_capturas_negras_peones[posicion_pozo] = pieza
+                    break
+                else:
+                    continue
+        elif pieza.pieza == -2:
+            for posicion_pozo in range(0,len(self.posiciones_de_capturas_negras_caballos)):
+                if type(self.posiciones_de_capturas_negras_caballos[posicion_pozo]) == type(posicion):
+                    pieza.colocar_posicion_en_tablero(self.posiciones_de_capturas_negras_caballos[posicion_pozo])
+                    pieza.mover_pieza()
+                    self.posiciones_de_capturas_negras_caballos[posicion_pozo] = pieza
+                    break
+                else:
+                    continue
+        elif pieza.pieza == -3:
+            for posicion_pozo in range(0,len(self.posiciones_de_capturas_negras_alfiles)):
+                if type(self.posiciones_de_capturas_negras_alfiles[posicion_pozo]) == type(posicion):
+                    pieza.colocar_posicion_en_tablero(self.posiciones_de_capturas_negras_alfiles[posicion_pozo])
+                    pieza.mover_pieza()
+                    self.posiciones_de_capturas_negras_alfiles[posicion_pozo] = pieza
+                    break
+                else:
+                    continue
+        elif pieza.pieza == -4:
+            for posicion_pozo in range(0,len(self.posiciones_de_capturas_negras_torres)):
+                if type(self.posiciones_de_capturas_negras_torres[posicion_pozo]) == type(posicion):
+                    pieza.colocar_posicion_en_tablero(self.posiciones_de_capturas_negras_torres[posicion_pozo])
+                    pieza.mover_pieza()
+                    self.posiciones_de_capturas_negras_torres[posicion_pozo] = pieza
+                    break
+                else:
+                    continue
+        elif pieza.pieza == -5:
+            for posicion_pozo in range(0,len(self.posiciones_de_capturas_negras_dama)):
+                if type(self.posiciones_de_capturas_negras_dama[posicion_pozo]) == type(posicion):
+                    pieza.colocar_posicion_en_tablero(self.posiciones_de_capturas_negras_dama[posicion_pozo])
+                    pieza.mover_pieza()
+                    self.posiciones_de_capturas_negras_dama[posicion_pozo] = pieza
+                    break
+                else:
+                    continue
+    
     ##EVENTS
 
     def events(self):
@@ -400,19 +517,41 @@ class Ajedrez(tk.Frame):
         #print(len(self.master.juego.movimientos_legales))
         if self.validar_posicion_de_tablero_en_pantalla(fila, columna):
             posicion_seleccionada = self.generar_posicion_de_tablero(fila, columna)
-            print(self.master.juego.casilla_seleccionada)
-            if self.master.juego.casilla_seleccionada == None:
-                self.master.juego.set_casilla_selecionada(posicion_seleccionada)
+            #print(self.master.juego.casilla_inicial)
+            
+            if self.master.juego.casilla_inicial == None:
+                self.master.juego.set_casilla_inicial(posicion_seleccionada)
                 if(self.master.juego.es_casilla_inicial_permitida()):
-                    self.movimiento_casilla_inicial.set(self.master.juego.casilla_seleccionada.to_string())
-                    print("??")
+                    self.movimiento_casilla_inicial.set(self.master.juego.casilla_inicial.to_string())
+                    print("set casilla inicial")
                 else:
-                    self.master.juego.limpiar_casilla_seleccionada()
-                # if self.master.juego.casilla_seleccionada.equals(posicion_seleccionada):
-                #     #self.master.juego.l
-                # return
+                    self.master.juego.limpiar_casilla_inicial()
+                    self.movimiento_casilla_inicial.set("")
+                
             else:
-                self.master.juego.limpiar_casilla_seleccionada()
+                
+                if self.master.juego.casilla_objetivo == None:
+                   
+                    if self.master.juego.casilla_inicial.equals(posicion_seleccionada):
+                        self.movimiento_casilla_inicial.set("")
+                        self.master.juego.limpiar_casilla_inicial()
+                        print("selecciona misma posicion inicial, entonces la quita")
+                    else:
+                        self.master.juego.set_casilla_objetivo(posicion_seleccionada)
+                        if self.master.juego.es_movimiento_a_realizar_legal():
+                            self.movimiento_casilla_objetivo.set(self.master.juego.casilla_objetivo.to_string())
+                            print("set casilla objetivo")
+                        else:
+                            self.master.juego.limpiar_casilla_objetivo()
+                            self.movimiento_casilla_objetivo.set("")
+                else:
+                    if self.master.juego.casilla_objetivo.equals(posicion_seleccionada):
+                        self.movimiento_casilla_objetivo.set("")
+                        self.master.juego.limpiar_casilla_objetivo()
+                        print("selecciona misma posicion objetivo, entonces la quita")
+
+                ##verificar si la posicion seleccionada es igual a la casilla seleccionada 
+                #self.master.juego.limpiar_casilla_seleccionada()
                 return
             posicion_seleccionada.imprimir()
         print ("clicked at", event.x, event.y)

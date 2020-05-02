@@ -10,6 +10,7 @@ class Juego:
         self.tipo_de_juego = tipo_de_juego
         self.tablero = Tablero.Tablero()
         self.colocar_piezas_iniciales(piezas_iniciales)
+        self.set_movimientos_legales()
         self.casilla_inicial = None
         self.casilla_objetivo = None
     
@@ -22,6 +23,10 @@ class Juego:
 
     def set_movimientos_legales(self):
         self.movimientos_legales = self.tablero.obtener_movimientos_legales(self.tablero.generar_posibles_movimientos(),self.turno)
+
+    def print_movimientos_legales(self):
+        for movimiento in self.movimientos_legales:
+            movimiento.imprimir()
 
     def set_casilla_inicial(self,posicion):
         self.casilla_inicial = posicion
@@ -37,17 +42,23 @@ class Juego:
     
     def limpiar_casilla_objetivo(self):
         self.casilla_objetivo = None
-    
-    #def limpiar_movimiento_a_realizar(self):
-    #    self.movimiento_a_realizar = None
+
+    def limpiar_movimiento_a_realizar(self):
+       self.movimiento_a_realizar = None
 
     def mover_pieza(self):
         
         if self.turno == 'B':
             pieza_de_coronamiento = 5
+            self.turno = 'N'
         else:
             pieza_de_coronamiento = -5
+            self.turno = 'B'
         self.tablero.mover_pieza(self.movimiento_a_realizar,pieza_de_coronamiento)
+        self.limpiar_casilla_inicial() 
+        self.limpiar_casilla_objetivo()
+        self.limpiar_movimiento_a_realizar()
+        self.set_movimientos_legales()
 
     def es_casilla_inicial_permitida(self):
         for movimiento in self.movimientos_legales:
@@ -56,12 +67,18 @@ class Juego:
         return False
 
     def es_movimiento_a_realizar_legal(self):
-        movimiento_a_realizar = Movimiento.Movimiento(self.casilla_inicial,self.casilla_objetivo)
+        self.movimiento_a_realizar = Movimiento.Movimiento(self.casilla_inicial,self.casilla_objetivo)
         for movimiento in self.movimientos_legales:
-            if (movimiento_a_realizar.equals(movimiento)):
+            if (self.movimiento_a_realizar.equals(movimiento)):
                 return True
+        self.limpiar_movimiento_a_realizar()
         return False
 
+    def turno_to_string(self):
+        if self.turno == "B":
+            return "Blancas"
+        else:
+            return "Negras"
     # def iniciar_juego(self):
 
     #     ##Pendiente el log en archivo log_partida = [log_de_tablero_inicial,log_de_movimientos]

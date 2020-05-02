@@ -170,16 +170,18 @@ class Tablero:
     ## Recibe una posicion (2,1)
     ## Devuelve los posibles movimientos para el peon en esa posicion.
     def posibles_movimientos_de_peon(self,casilla_inicial):
+        #print("Revisando peon en fila:%d,columna:%d",(casilla_inicial.fila,casilla_inicial.columna))
         posibles_movimientos = []
         
         color_de_pieza = self.obtener_color_de_pieza(casilla_inicial)
         if color_de_pieza == 'B':
             casilla_objetivo = Posicion.Posicion(casilla_inicial.fila-1,casilla_inicial.columna)
-        else:
+        else:            
             casilla_objetivo = Posicion.Posicion(casilla_inicial.fila+1,casilla_inicial.columna)
 
+        fila_actual = casilla_objetivo.fila
         for i in range(casilla_inicial.columna-1,casilla_inicial.columna+2):
-            casilla_objetivo = Posicion.Posicion(casilla_objetivo.fila,i)
+            casilla_objetivo = Posicion.Posicion(fila_actual,i)
             if not casilla_objetivo.validar_posicion():
                 continue
 
@@ -191,31 +193,34 @@ class Tablero:
                     
                     if color_de_pieza == 'B' and casilla_inicial.fila == 6:
                         fila_actual = casilla_objetivo.fila
-                        casilla_objetivo.fila -= 1
-
+                        #casilla_objetivo.fila -= 1
+                        casilla_objetivo = Posicion.Posicion(casilla_objetivo.fila-1,i)#
                         pieza_casilla_objetivo = self.obtener_pieza_de_casilla(casilla_objetivo)
                         
                         if pieza_casilla_objetivo == 0:
                             posible_movimiento = Movimiento.Movimiento(casilla_inicial,casilla_objetivo)
                             posibles_movimientos.append(posible_movimiento)
-                        casilla_objetivo.fila = fila_actual
+                            #print("movimiento 2 B")
+                        #casilla_objetivo.fila = fila_actual
 
-                    elif casilla_inicial.fila == 1:
+                    elif color_de_pieza == 'N' and casilla_inicial.fila == 1:
                         fila_actual = casilla_objetivo.fila
-                        casilla_objetivo.fila += 1
-                    
+                        #casilla_objetivo.fila += 1
+                        casilla_objetivo = Posicion.Posicion(casilla_objetivo.fila+1,i)#
                         pieza_casilla_objetivo = self.obtener_pieza_de_casilla(casilla_objetivo)
                         
                         if pieza_casilla_objetivo == 0:
                             posible_movimiento = Movimiento.Movimiento(casilla_inicial,casilla_objetivo)
                             posibles_movimientos.append(posible_movimiento)
-                        casilla_objetivo.fila = fila_actual
+                            #print("movimiento 2 N")
+                        #casilla_objetivo.fila = fila_actual
             else:
                 if pieza_casilla_objetivo != 0:
                     color_casilla_objetivo = self.obtener_color_de_pieza(casilla_objetivo)
                     if color_casilla_objetivo != color_de_pieza:
                         posible_movimiento = Movimiento.Movimiento(casilla_inicial,casilla_objetivo)
                         posibles_movimientos.append(posible_movimiento)
+                        #print("movimiento 1")
 
         return posibles_movimientos
                 

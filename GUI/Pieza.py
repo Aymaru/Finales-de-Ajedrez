@@ -49,6 +49,9 @@ class Pieza():
         self.id_canvas = self.canvas.create_image(self.posicion_en_tablero.columna,self.posicion_en_tablero.fila,image = self.imagen)
         self.canvas.pack()
 
+    def mover_pieza(self):
+        self.canvas.coords(self.id_canvas,(self.posicion_en_tablero.columna,self.posicion_en_tablero.fila))
+
     #movX = posXTablero + (col-1) * 48
     #movY = posYTablero + (fila-1) * 46        
 
