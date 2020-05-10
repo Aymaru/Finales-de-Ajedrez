@@ -183,6 +183,7 @@ class Ajedrez(tk.Frame):
 
     def colocar_lbl_img_turno(self):
         self.eliminar_lbl_img_turno()
+        print("lbl turno:%s",(self.master.juego.turno))
         if self.master.juego.turno == 'B':
             self.lbl_img_turno = self.lbl_img_turno_blancas
         elif self.master.juego.turno == 'N':
@@ -222,7 +223,7 @@ class Ajedrez(tk.Frame):
     def eliminar_lbl_img_jaque(self):
         if self.lbl_img_jaque != None:
             self.eliminar_lbl_img(self.lbl_img_jaque)
-            self.lbl_img_turno = None
+            self.lbl_img_jaque = None
      
 
     # ###Métodos especializados######Métodos especializados###
