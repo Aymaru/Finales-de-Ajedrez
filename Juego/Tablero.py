@@ -28,6 +28,7 @@ class Tablero:
     def __generar_tablero_inicial_vacio(self):
         self.tablero = []
         for i in range(0,64):
+            
             self.tablero.append(0)
 
     ####
@@ -113,19 +114,101 @@ class Tablero:
     ## es decir, si el jugador esta jugando con las blancas, la pieza debe ser un numero positivo entre 1 y 6.
     ## Y si el jugador esta jugando con las negras, la pieza debe ser un numero negativo entre 1 y 6
     ## Y recibe una pieza de coronamiento. Generalmente es una reina, -5 para las negras y 5 para las blancas  
-    def mover_pieza(self,movimiento,pieza_de_coronamiento):
+    def mover_pieza(self,movimiento):
         
         pieza_a_mover = self.obtener_pieza_de_casilla(movimiento.casilla_inicial)
         self.limpiar_casilla(movimiento.casilla_inicial)
 
-        casilla_objetivo = self.obtener_pieza_de_casilla(movimiento.casilla_objetivo)
-        if pieza_a_mover == 1 and movimiento.casilla_objetivo.fila == 0 and casilla_objetivo == 0:
-            self.colocar_pieza_en_casilla(5,movimiento.casilla_objetivo)
-        elif pieza_a_mover == -1 and movimiento.casilla_objetivo.fila == 7 and casilla_objetivo == 0:
-            self.colocar_pieza_en_casilla(-5,movimiento.casilla_objetivo)
-        else:
-            self.colocar_pieza_en_casilla(pieza_a_mover,movimiento.casilla_objetivo)
+        self.colocar_pieza_en_casilla(pieza_a_mover,movimiento.casilla_objetivo)
     
+    def es_movimiento_enrroque(self,movimiento):
+        filas = [0,7]
+        columnas = [2,6]
+        for fila in filas:
+            casilla_inicial = Posicion.Posicion(fila,4)
+            for columna in columnas:
+                casilla_objetivo = Posicion.Posicion(fila,columna)
+                mov_tmp = Movimiento.Movimiento(casilla_inicial,casilla_objetivo)
+                if mov_tmp.equals(movimiento):
+                    return True
+
+    def es_movimiento_coronacion(self,movimiento):
+        pieza_a_mover = self.obtener_pieza_de_casilla(movimiento.casilla_inicial)
+        
+        if pieza_a_mover == 1 and movimiento.casilla_objetivo.fila == 0:
+            return True
+        elif pieza_a_mover == -1 and movimiento.casilla_objetivo.fila == 7:
+            return True
+        else:
+            return False
+
+    def realizar_coronamiento(self,movimiento,pieza_de_coronamiento):
+        pieza_a_mover = self.obtener_pieza_de_casilla(movimiento.casilla_inicial)
+        self.limpiar_casilla(movimiento.casilla_inicial)
+
+        
+        if pieza_a_mover == 1:
+            self.colocar_pieza_en_casilla(5,movimiento.casilla_objetivo)
+        elif pieza_a_mover == -1:
+            self.colocar_pieza_en_casilla(-5,movimiento.casilla_objetivo)
+
+    def realizar_enrroque(self,movimiento):
+        pieza_a_mover = self.obtener_pieza_de_casilla(movimiento.casilla_inicial)
+        
+        self.limpiar_casilla(movimiento.casilla_inicial)
+        
+        self.colocar_pieza_en_casilla(pieza_a_mover,movimiento.casilla_objetivo)
+
+        if movimiento.casilla_objetivo.columna == 2:
+            posicion_torre = Posicion.Posicion(movimiento.casilla_inicial.fila,0)
+            pieza_torre = self.obtener_pieza_de_casilla(posicion_torre)
+            self.limpiar_casilla(posicion_torre)
+            posicion_torre.columna = 3
+            self.colocar_pieza_en_casilla(pieza_torre,posicion_torre)
+            ##enrroque largo
+
+        elif movimiento.casilla_objetivo.columna == 6:
+            posicion_torre = Posicion.Posicion(movimiento.casilla_inicial.fila,7)
+            pieza_torre = self.obtener_pieza_de_casilla(posicion_torre)
+            self.limpiar_casilla(posicion_torre)
+            posicion_torre.columna = 5
+            self.colocar_pieza_en_casilla(pieza_torre,posicion_torre)
+            ##enrroque largo
+
+
+    # def obtener_casillas_atacadas(self,posibles_movimientos,turno):
+    #     casillas_atacadas = []
+    #     self.obtener_color_de_pieza
+    #     return
+
+    # def obtener_casillas_defendidas(self,posibles_movimientos,turno):
+    #     casillas_atacadas = []
+    #     self.obtener_color_de_pieza
+    #     return
+    
+    def obtener_casillas_amenazadas(self,posibles_movimientos,turno):
+        casillas_amenazadas = []
+        
+        for movimiento in posibles_movimientos:
+            color_de_pieza = self.obtener_color_de_pieza(movimiento.casilla_inicial)
+        return
+
+    def posibles_movimientos_de_blancas(self,posibles_movimientos):
+        posibles_movimientos_blancas = []
+        for movimiento in posibles_movimientos:
+            if self.obtener_color_de_pieza(movimiento.casilla_inicial) == 'B':
+                posibles_movimientos_blancas.append(movimiento)
+
+        return posibles_movimientos_blancas
+
+    def posibles_movimientos_de_negras(self,posibles_movimientos):
+        posibles_movimientos_negras = []
+        for movimiento in posibles_movimientos:
+            if self.obtener_color_de_pieza(movimiento.casilla_inicial) == 'N':
+                posibles_movimientos_negras.append(movimiento)
+
+        return posibles_movimientos_negras
+        
     def limpiar_casilla(self,posicion):
         self.colocar_pieza_en_casilla(0,posicion)
 
@@ -350,7 +433,103 @@ class Tablero:
                 
         return posibles_movimientos
 
+    def generar_enrroque_blancas_corto(self,casillas_atacadas):
+        ##                  |    T   |   R   |  corto   |    T   |   R   | 
+        ##                      7,7     7,4       ->        7,5     7,6
+        posicion_rey = Posicion.Posicion(7,4)
+        posicion_torre = Posicion.Posicion(7,7)
+        posicion_rey_pieza = self.obtener_pieza_de_casilla(posicion_rey)
+        posicion_torre_pieza = self.obtener_pieza_de_casilla(posicion_torre)
+        print("EBC")
+        if posicion_rey_pieza == 6 and posicion_torre_pieza == 4:
+            print("EBC bien las piezas")
+            fila = 7
+            for columna in range(5,7):
+                posicion = Posicion.Posicion(fila,columna)
+                pieza_de_casilla = self.obtener_pieza_de_casilla(posicion)
+                if pieza_de_casilla != 0 or self.es_casilla_atacada(posicion,casillas_atacadas):
+                    print("EBC se sale pieza != 0:%d o casilla atacada",(pieza_de_casilla))
+                    return None
+            casilla_objetivo = Posicion.Posicion(7,6)
+            movimiento = Movimiento.Movimiento(posicion_rey,casilla_objetivo)
+            print("EBC devuelve movimiento")
+            return movimiento
+        else:
+            print("EBC mal las piezas")
+            return None
 
+    def generar_enrroque_blancas_largo(self,casillas_atacadas):
+        ##                  |    T   |   R   |  corto   |    T   |   R   | 
+        ##                      7,7     7,4       ->        7,5     7,6
+        posicion_rey = Posicion.Posicion(7,4)
+        posicion_torre = Posicion.Posicion(7,0)
+        posicion_rey_pieza = self.obtener_pieza_de_casilla(posicion_rey)
+        posicion_torre_pieza = self.obtener_pieza_de_casilla(posicion_torre)
+        if posicion_rey_pieza == 6 and posicion_torre_pieza == 4:
+            
+            fila = 7
+            for columna in range(2,4):
+                posicion = Posicion.Posicion(fila,columna)
+                pieza_de_casilla = self.obtener_pieza_de_casilla(posicion)
+                if pieza_de_casilla != 0 or self.es_casilla_atacada(posicion,casillas_atacadas):
+                    return None
+            casilla_objetivo = Posicion.Posicion(7,2)
+            movimiento = Movimiento.Movimiento(posicion_rey,casilla_objetivo)
+            return movimiento
+        else:
+            return None
+
+    
+    def generar_enrroque_negras_corto(self,casillas_atacadas):
+        ##                  |    T   |   R   |  corto   |    T   |   R   | 
+        ##                      7,7     7,4       ->        7,5     7,6
+        posicion_rey = Posicion.Posicion(0,4)
+        posicion_torre = Posicion.Posicion(0,7)
+        posicion_rey_pieza = self.obtener_pieza_de_casilla(posicion_rey)
+        posicion_torre_pieza = self.obtener_pieza_de_casilla(posicion_torre)
+        if posicion_rey_pieza == -6 and posicion_torre_pieza == -4:
+            
+            fila = 0
+            for columna in range(5,7):
+                posicion = Posicion.Posicion(fila,columna)
+                pieza_de_casilla = self.obtener_pieza_de_casilla(posicion)
+                if pieza_de_casilla != 0 or self.es_casilla_atacada(posicion,casillas_atacadas):
+                    return None
+            casilla_objetivo = Posicion.Posicion(0,6)
+            movimiento = Movimiento.Movimiento(posicion_rey,casilla_objetivo)
+            return movimiento
+        else:
+            return None
+
+    def generar_enrroque_negras_largo(self,casillas_atacadas):
+        ##                  |    T   |   R   |  corto   |    T   |   R   | 
+        ##                      7,7     7,4       ->        7,5     7,6
+        posicion_rey = Posicion.Posicion(0,4)
+        posicion_torre = Posicion.Posicion(0,0)
+        posicion_rey_pieza = self.obtener_pieza_de_casilla(posicion_rey)
+        posicion_torre_pieza = self.obtener_pieza_de_casilla(posicion_torre)
+        if posicion_rey_pieza == -6 and posicion_torre_pieza == -4:
+            
+            fila = 0
+            for columna in range(2,4):
+                posicion = Posicion.Posicion(fila,columna)
+                pieza_de_casilla = self.obtener_pieza_de_casilla(posicion)
+                if pieza_de_casilla != 0 or self.es_casilla_atacada(posicion,casillas_atacadas):
+                    return None
+            casilla_objetivo = Posicion.Posicion(0,2)
+            movimiento = Movimiento.Movimiento(posicion_rey,casilla_objetivo)
+            return movimiento
+        else:
+            return None
+
+    def es_casilla_atacada(self,casilla,casillas_atacadas):
+        
+        for casilla_atacada in casillas_atacadas:
+            if casilla.equals(casilla_atacada.casilla_objetivo):
+                return True
+            
+        return False
+    
     ## Verificar si un jugador se encuentra en jaque
     ## Recibe los posibles movimientos del tablero 'generar_posibles_movimientos(tablero)'
     ## y el turno del jugador 'B' o 'N', blanco o negro respectivamente
@@ -380,7 +559,16 @@ class Tablero:
         color_de_pieza = self.obtener_color_de_pieza(movimiento.casilla_inicial)
         if color_de_pieza == turno:
             tablero_despues_de_mover = copy.deepcopy(self)
-            tablero_despues_de_mover.mover_pieza(movimiento,pieza_de_coronamiento)
+            #tablero_despues_de_mover.mover_pieza(movimiento,pieza_de_coronamiento)
+            if tablero_despues_de_mover.es_movimiento_enrroque(movimiento):
+                tablero_despues_de_mover.realizar_enrroque(movimiento)
+                
+            elif tablero_despues_de_mover.es_movimiento_coronacion(movimiento):
+                tablero_despues_de_mover.realizar_coronamiento(movimiento,pieza_de_coronamiento)
+                
+            else:
+                tablero_despues_de_mover.mover_pieza(movimiento)
+
             posibles_movimientos_despues_de_mover = tablero_despues_de_mover.generar_posibles_movimientos()
             if tablero_despues_de_mover.hay_jaque(posibles_movimientos_despues_de_mover,turno):
                 return False

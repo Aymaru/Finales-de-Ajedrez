@@ -5,6 +5,7 @@ from Main import centrar
 from GUI import Ayuda
 from GUI import Configuracion
 from GUI import Pieza
+from GUI import Label_IMG
 from Juego import Posicion
 
     
@@ -15,36 +16,21 @@ class Ajedrez(tk.Frame):
     def __init__(self, master):
         """Crea una instancia de la clase Ajefrez
         """
-        self.master = master        
-        self.dimensiones()        
+        self.master = master  
+        self.dimensiones()
+
+        self.lbl_img_jaque = None
+        self.lbl_img_turno = None
+
         self.componentes()        
         self.events()
         centrar(self.master)        
         
+        
+        #self.eliminar_lbl_img(self.lbl_img_jugador1)
+        
         self.pack()
         self.canvas.pack()
-
-        
-        #self.master.juego.print_movimientos_legales()
-        # self.tablero = tablero           # Cuadricula con cuadros[wight,height,]
-        # self.piezasJug1 = piezasJug1  
-        # self.piezasJug2 = piezasJug2
-        # self.tipo = tipoJuego
-        # self.movPreCargados = movPreCargados
-        # self.principal = Toplevel()      # Crea una pantalla
-        # self.dimensiones()
-        # self.imagen()
-        # self.cajaResultados()
-        # self.botonIniciarJuego()
-        # self.botonRegresarCofiguracion()
-        # self.botonesRadio()
-        # self.botonAyuda()
-        # self.botonSiguienteJugador()
-        # self.entradaSiguienteMov()
-        # self.cargarPiezasPozo()
-        # self.cargarPiezasTablero()
-        # self.principal.mainloop()
-        
 
     ###Ajuste UI###
     def componentes(self):
@@ -58,7 +44,10 @@ class Ajedrez(tk.Frame):
         self.inicializar_dimensiones_de_tablero_en_pantalla()
         self.entry_movimiento()
         self.btn_mover_pieza()
-        self.entry_turno()
+        self.cargar_lbl_img_turno()
+        self.colocar_lbl_img_jugadores()
+        self.actualizar_estado_de_pantalla()
+        self.cargar_lbl_img_jaque()
 
     def dimensiones(self):
         """Define los aspectos de la ventana principal
@@ -128,6 +117,49 @@ class Ajedrez(tk.Frame):
     #     self.entradaArch = Entry(self.principal, textvariable=self.movNuevo,width=12)
     #     self.entradaArch.place(x=200,y=541)
     #     self.canvas.create_window(325,533, anchor=NW, window=self.boton)
+
+    def colocar_lbl_img_jugadores(self): ##35,450
+        posicion_lbl_img_blancas = Posicion.Posicion(50,485)
+        posicion_lbl_img_negras = Posicion.Posicion(340,485)
+        if self.master.juego.tipo_de_juego == 1:
+            self.lbl_img_jugador1 = Label_IMG.Label_IMG(self.canvas,"jugador1")
+            self.lbl_img_jugador2 = Label_IMG.Label_IMG(self.canvas,"jugador2")
+            if self.master.juego.J1 == "B":
+                self.lbl_img_jugador1.colocar_posicion_en_tablero(posicion_lbl_img_blancas)
+                self.lbl_img_jugador2.colocar_posicion_en_tablero(posicion_lbl_img_negras)
+            else:
+                self.lbl_img_jugador1.colocar_posicion_en_tablero(posicion_lbl_img_negras)
+                self.lbl_img_jugador2.colocar_posicion_en_tablero(posicion_lbl_img_blancas)    
+
+        elif self.master.juego.tipo_de_juego == 2:
+            self.lbl_img_jugador1 = Label_IMG.Label_IMG(self.canvas,"jugador")
+            self.lbl_img_jugador2 = Label_IMG.Label_IMG(self.canvas,"pc")
+            if self.master.juego.J1 == "B":
+                self.lbl_img_jugador1.colocar_posicion_en_tablero(posicion_lbl_img_blancas)
+                self.lbl_img_jugador2.colocar_posicion_en_tablero(posicion_lbl_img_negras)
+            else:
+                self.lbl_img_jugador1.colocar_posicion_en_tablero(posicion_lbl_img_negras)
+                self.lbl_img_jugador2.colocar_posicion_en_tablero(posicion_lbl_img_blancas)
+        elif self.master.juego.tipo_de_juego == 3:
+            self.lbl_img_jugador1 = Label_IMG.Label_IMG(self.canvas,"pc1")
+            self.lbl_img_jugador2 = Label_IMG.Label_IMG(self.canvas,"pc2")
+            if self.master.juego.J1 == "B":
+                self.lbl_img_jugador1.colocar_posicion_en_tablero(posicion_lbl_img_blancas)
+                self.lbl_img_jugador2.colocar_posicion_en_tablero(posicion_lbl_img_negras)
+            else:
+                self.lbl_img_jugador1.colocar_posicion_en_tablero(posicion_lbl_img_negras)
+                self.lbl_img_jugador2.colocar_posicion_en_tablero(posicion_lbl_img_blancas)
+ 
+        self.lbl_img_jugador1.colocar_imagen_en_tablero()
+        self.lbl_img_jugador2.colocar_imagen_en_tablero()
+
+    def eliminar_lbl_img(self,imagen):
+        imagen.delete_image()
+        
+
+    def colocar_lbl_img(self,imagen):
+        imagen.colocar_imagen_en_tablero()
+
     def entry_movimiento(self):        
         self.movimiento_casilla_inicial = tk.StringVar()
         self.movimiento_casilla_objetivo = tk.StringVar()
@@ -137,15 +169,61 @@ class Ajedrez(tk.Frame):
         self.canvas.create_window(255,543, anchor=tk.NW, window=self.entry_movimiento_casilla_objetivo)
 
     def btn_mover_pieza(self):
-        self.btn_mover_pieza = tk.Button(self,text="Mover",command=self.mover_pieza,width=8)
+        self.btn_mover_pieza = tk.Button(self,text="Mover",command=self.master.juego.mover_pieza,width=8,state=tk.DISABLED)
         #self.btn_mover_pieza.place(x=320,y=545)
         self.canvas.create_window(318,540,anchor=tk.NW,window=self.btn_mover_pieza)
 
-    def entry_turno(self):
-        self.turno = tk.StringVar()
-        self.entry_turno = tk.Entry(self,textvariable=self.turno,width=8)
-        self.canvas.create_window(95,543, anchor=tk.NW, window=self.entry_turno)
-        self.turno.set(self.master.juego.turno_to_string())
+    def cargar_lbl_img_turno(self):
+        posicion_lbl_img_turno = Posicion.Posicion(545,125)
+        self.lbl_img_turno_blancas = Label_IMG.Label_IMG(self.canvas,"turno_blancas")
+        self.lbl_img_turno_negras = Label_IMG.Label_IMG(self.canvas,"turno_negras")
+        self.lbl_img_turno_blancas.colocar_posicion_en_tablero(posicion_lbl_img_turno)
+        self.lbl_img_turno_negras.colocar_posicion_en_tablero(posicion_lbl_img_turno)
+        self.colocar_lbl_img_turno()
+
+    def colocar_lbl_img_turno(self):
+        self.eliminar_lbl_img_turno()
+        if self.master.juego.turno == 'B':
+            self.lbl_img_turno = self.lbl_img_turno_blancas
+        elif self.master.juego.turno == 'N':
+            self.lbl_img_turno = self.lbl_img_turno_negras
+        self.colocar_lbl_img(self.lbl_img_turno)
+
+    def eliminar_lbl_img_turno(self):
+        if self.lbl_img_turno != None:
+            self.eliminar_lbl_img(self.lbl_img_turno)
+            self.lbl_img_turno = None
+
+    def cargar_lbl_img_jaque(self):
+        posicion_lbl_img_jaque = Posicion.Posicion(565,125)
+        self.lbl_img_es_jaque = Label_IMG.Label_IMG(self.canvas,"jaque")
+        self.lbl_img_jaque_mate = Label_IMG.Label_IMG(self.canvas,"jaque_mate")
+        ##falta agregar tablas
+        self.lbl_img_es_jaque.colocar_posicion_en_tablero(posicion_lbl_img_jaque)
+        self.lbl_img_jaque_mate.colocar_posicion_en_tablero(posicion_lbl_img_jaque)
+        self.colocar_lbl_img_jaque()
+
+    def colocar_lbl_img_jaque(self):
+        ##falta agregar tablas
+        self.eliminar_lbl_img_jaque()
+        if self.master.juego.es_jaque == True:
+            
+            if self.master.juego.jaque_mate == True:
+                self.lbl_img_jaque = self.lbl_img_jaque_mate
+            else:
+                self.lbl_img_jaque = self.lbl_img_es_jaque
+
+            self.colocar_lbl_img(self.lbl_img_jaque)
+        elif self.master.juego.es_tablas == True:
+            ## self.lbl_img_jaque = self.lbl_img_tablas
+            self.colocar_lbl_img(self.lbl_img_jaque)
+        
+
+    def eliminar_lbl_img_jaque(self):
+        if self.lbl_img_jaque != None:
+            self.eliminar_lbl_img(self.lbl_img_jaque)
+            self.lbl_img_turno = None
+     
 
     # ###Métodos especializados######Métodos especializados###
     def regresar(self):
@@ -396,20 +474,122 @@ class Ajedrez(tk.Frame):
         #print("validar numero %d, inicio %d, final %d",(number,first,last))
         return (number >= first and number <= last)
 
-    def mover_pieza(self):
-        casilla_inicial = self.master.juego.movimiento_a_realizar.casilla_inicial
-        casilla_objetivo = self.master.juego.movimiento_a_realizar.casilla_objetivo
+    # def mover_pieza(self):
+    #     casilla_inicial = self.master.juego.movimiento_a_realizar.casilla_inicial
+    #     casilla_objetivo = self.master.juego.movimiento_a_realizar.casilla_objetivo
+    #     pieza_a_mover = self.piezas[casilla_inicial.calcular_posicion_tablero()]
+    #     self.piezas[casilla_inicial.calcular_posicion_tablero()] = None
+    #     pieza_objetivo = self.piezas[casilla_objetivo.calcular_posicion_tablero()]
+    #     pieza_a_mover.calcular_posicion_en_tablero(casilla_objetivo)
+    #     pieza_a_mover.mover_pieza()
+    #     print(pieza_objetivo)
+    #     if pieza_objetivo != None:
+    #         self.mover_captura_a_pozo(casilla_objetivo)
+    #     self.piezas[casilla_objetivo.calcular_posicion_tablero()] = pieza_a_mover
+    #     self.eliminar_lbl_img(self.lbl_img_turno)
+    #     self.master.juego.mover_pieza()
+    #     #self.turno.set(self.master.juego.turno_to_string())
+    #     self.colocar_lbl_img_turno()
+    #     self.movimiento_casilla_inicial.set("")
+    #     self.movimiento_casilla_objetivo.set("")
+    #     self.disable_btn_mover_pieza()
+
+    def mover_pieza(self,movimiento):
+        casilla_inicial = movimiento.casilla_inicial
+        casilla_objetivo = movimiento.casilla_objetivo
         pieza_a_mover = self.piezas[casilla_inicial.calcular_posicion_tablero()]
+        
         pieza_objetivo = self.piezas[casilla_objetivo.calcular_posicion_tablero()]
         pieza_a_mover.calcular_posicion_en_tablero(casilla_objetivo)
         pieza_a_mover.mover_pieza()
+        
+
         if pieza_objetivo != None:
             self.mover_captura_a_pozo(casilla_objetivo)
         self.piezas[casilla_objetivo.calcular_posicion_tablero()] = pieza_a_mover
-        self.master.juego.mover_pieza()
-        self.turno.set(self.master.juego.turno_to_string())
+        self.piezas[casilla_inicial.calcular_posicion_tablero()] = None
+        
+        #self.master.juego.mover_pieza()
+        #self.turno.set(self.master.juego.turno_to_string())
+        ## separar en otra funcion
+        # self.colocar_lbl_img_turno()
+        # self.movimiento_casilla_inicial.set("")
+        # self.movimiento_casilla_objetivo.set("")
+        # self.disable_btn_mover_pieza()
+
+    def actualizar_estado_de_pantalla(self):
+        self.colocar_lbl_img_turno()
+        self.colocar_lbl_img_jaque()
         self.movimiento_casilla_inicial.set("")
         self.movimiento_casilla_objetivo.set("")
+        self.disable_btn_mover_pieza()
+
+    def colocar_coronamiento(self,movimiento,pieza_de_coronamiento):
+        casilla_inicial = movimiento.casilla_inicial
+        casilla_objetivo = movimiento.casilla_objetivo
+        color_de_pieza = self.master.juego.tablero.obtener_color_de_pieza(casilla_inicial)
+        pieza_objetivo = self.piezas[casilla_objetivo.calcular_posicion_tablero()]
+        if pieza_objetivo != None:
+            self.mover_captura_a_pozo(casilla_objetivo)
+        self.mover_captura_a_pozo(casilla_inicial)
+        self.piezas[casilla_inicial.calcular_posicion_tablero()] = None
+        pieza_coronamiento = Pieza.Pieza(self.canvas,pieza_de_coronamiento)
+        pieza_coronamiento.calcular_posicion_en_tablero(casilla_objetivo)
+        pieza_coronamiento.colocar_imagen_en_tablero()
+        self.piezas[casilla_objetivo.calcular_posicion_tablero()] = pieza_coronamiento
+    
+    def colocar_enrroque(self,movimiento):
+        casilla_inicial = movimiento.casilla_inicial
+        casilla_objetivo = movimiento.casilla_objetivo
+        pieza_a_mover = self.piezas[casilla_inicial.calcular_posicion_tablero()]
+        pieza_a_mover.calcular_posicion_en_tablero(casilla_objetivo)
+        pieza_a_mover.mover_pieza()
+        
+        self.piezas[casilla_inicial.calcular_posicion_tablero()] = None
+        
+        if casilla_objetivo.columna == 2:
+            posicion_torre = Posicion.Posicion(casilla_inicial.fila,0)
+            torre = self.piezas[posicion_torre.calcular_posicion_tablero()]
+            
+            self.piezas[posicion_torre.calcular_posicion_tablero()] = None
+            posicion_torre.columna = 3
+            torre.calcular_posicion_en_tablero(posicion_torre)
+            torre.mover_pieza()
+            self.piezas[posicion_torre.calcular_posicion_tablero()] = torre
+           
+        elif casilla_objetivo.columna == 6:
+            posicion_torre = Posicion.Posicion(casilla_inicial.fila,7)
+            torre = self.piezas[posicion_torre.calcular_posicion_tablero()]
+
+            self.piezas[posicion_torre.calcular_posicion_tablero()] = None
+            posicion_torre.columna = 5
+            torre.calcular_posicion_en_tablero(posicion_torre)
+            torre.mover_pieza()
+            self.piezas[posicion_torre.calcular_posicion_tablero()] = torre
+            
+
+        self.piezas[casilla_objetivo.calcular_posicion_tablero()] = pieza_a_mover
+        # if movimiento.casilla_objetivo.columna == 2:
+        #     posicion_torre = Posicion.Posicion(movimiento.casilla_inicial.fila,0)
+        #     pieza_torre = self.obtener_pieza_de_casilla(posicion_torre)
+        #     self.limpiar_casilla(posicion_torre)
+        #     posicion_torre.columna = 3
+        #     self.colocar_pieza_en_casilla(pieza_torre,posicion_torre)
+        #     ##enrroque largo
+
+        # elif movimiento.casilla_objetivo.columna == 6:
+        #     posicion_torre = Posicion.Posicion(movimiento.casilla_inicial.fila,7)
+        #     pieza_torre = self.obtener_pieza_de_casilla(posicion_torre)
+        #     self.limpiar_casilla(posicion_torre)
+        #     posicion_torre.columna = 5
+        #     self.colocar_pieza_en_casilla(pieza_torre,posicion_torre)
+        #     ##enrroque largo
+
+    def enable_btn_mover_pieza(self):
+        self.btn_mover_pieza['state'] = tk.NORMAL
+
+    def disable_btn_mover_pieza(self):
+        self.btn_mover_pieza['state'] = tk.DISABLED
 
     def mover_captura_a_pozo(self,posicion):
         pieza = self.piezas[posicion.calcular_posicion_tablero()]
@@ -454,7 +634,7 @@ class Ajedrez(tk.Frame):
             for posicion_pozo in range(0,len(self.posiciones_de_capturas_blancas_dama)):
                 if type(self.posiciones_de_capturas_blancas_dama[posicion_pozo]) == type(posicion):
                     pieza.colocar_posicion_en_tablero(self.posiciones_de_capturas_blancas_dama[posicion_pozo])
-                    self.pieza.mover_pieza()
+                    pieza.mover_pieza()
                     self.posiciones_de_capturas_blancas_dama[posicion_pozo] = pieza
                     break
                 else:
@@ -512,49 +692,54 @@ class Ajedrez(tk.Frame):
         self.canvas.pack()
 
     def callback(self,event):
-        fila = event.y
-        columna = event.x
-        #print(len(self.master.juego.movimientos_legales))
-        if self.validar_posicion_de_tablero_en_pantalla(fila, columna):
-            posicion_seleccionada = self.generar_posicion_de_tablero(fila, columna)
-            #print(self.master.juego.casilla_inicial)
-            
-            if self.master.juego.casilla_inicial == None:
-                self.master.juego.set_casilla_inicial(posicion_seleccionada)
-                if(self.master.juego.es_casilla_inicial_permitida()):
-                    self.movimiento_casilla_inicial.set(self.master.juego.casilla_inicial.to_string())
-                    print("set casilla inicial")
-                else:
-                    self.master.juego.limpiar_casilla_inicial()
-                    self.movimiento_casilla_inicial.set("")
+        if self.master.juego.tipo_de_juego == 1 or (self.master.juego.tipo_de_juego == 2 and not self.master.juego.es_turno_pc):
+            fila = event.y
+            columna = event.x
+            #print(len(self.master.juego.movimientos_legales))
+            if self.validar_posicion_de_tablero_en_pantalla(fila, columna):
+                posicion_seleccionada = self.generar_posicion_de_tablero(fila, columna)
+                #print(self.master.juego.casilla_inicial)
                 
-            else:
-                
-                if self.master.juego.casilla_objetivo == None:
-                   
-                    if self.master.juego.casilla_inicial.equals(posicion_seleccionada):
-                        self.movimiento_casilla_inicial.set("")
-                        self.master.juego.limpiar_casilla_inicial()
-                        print("selecciona misma posicion inicial, entonces la quita")
+                if self.master.juego.casilla_inicial == None:
+                    self.master.juego.set_casilla_inicial(posicion_seleccionada)
+                    if(self.master.juego.es_casilla_inicial_permitida()):
+                        self.movimiento_casilla_inicial.set(self.master.juego.casilla_inicial.to_string())
+                        #print("set casilla inicial")
                     else:
-                        self.master.juego.set_casilla_objetivo(posicion_seleccionada)
-                        if self.master.juego.es_movimiento_a_realizar_legal():
-                            self.movimiento_casilla_objetivo.set(self.master.juego.casilla_objetivo.to_string())
-                            print("set casilla objetivo")
-                        else:
-                            self.master.juego.limpiar_casilla_objetivo()
-                            self.movimiento_casilla_objetivo.set("")
+                        self.master.juego.limpiar_casilla_inicial()
+                        self.movimiento_casilla_inicial.set("")
+                    
                 else:
-                    if self.master.juego.casilla_objetivo.equals(posicion_seleccionada):
-                        self.movimiento_casilla_objetivo.set("")
-                        self.master.juego.limpiar_casilla_objetivo()
-                        print("selecciona misma posicion objetivo, entonces la quita")
+                    
+                    if self.master.juego.casilla_objetivo == None:
+                    
+                        if self.master.juego.casilla_inicial.equals(posicion_seleccionada):
+                            self.movimiento_casilla_inicial.set("")
+                            self.master.juego.limpiar_casilla_inicial()
+                            #print("selecciona misma posicion inicial, entonces la quita")
+                        else:
+                            self.master.juego.set_casilla_objetivo(posicion_seleccionada)
+                            if self.master.juego.es_movimiento_a_realizar_legal():
+                                self.enable_btn_mover_pieza()
+                                self.movimiento_casilla_objetivo.set(self.master.juego.casilla_objetivo.to_string())
+                                #print("set casilla objetivo")
+                            else:
+                                self.master.juego.limpiar_casilla_objetivo()
+                                self.master.juego.limpiar_movimiento_a_realizar()
+                                self.movimiento_casilla_objetivo.set("")
+                    else:
+                        if self.master.juego.casilla_objetivo.equals(posicion_seleccionada):
+                            self.movimiento_casilla_objetivo.set("")
+                            self.master.juego.limpiar_casilla_objetivo()
+                            self.master.juego.limpiar_movimiento_a_realizar()
+                            self.disable_btn_mover_pieza()
+                            #print("selecciona misma posicion objetivo, entonces la quita")
 
-                ##verificar si la posicion seleccionada es igual a la casilla seleccionada 
-                #self.master.juego.limpiar_casilla_seleccionada()
-                return
-            posicion_seleccionada.imprimir()
-        print ("clicked at", event.x, event.y)
+                    ##verificar si la posicion seleccionada es igual a la casilla seleccionada 
+                    #self.master.juego.limpiar_casilla_seleccionada()
+                    
+                #posicion_seleccionada.imprimir()
+        #print ("clicked at", event.x, event.y)
         return
 
     # def mostrarAyuda(self):

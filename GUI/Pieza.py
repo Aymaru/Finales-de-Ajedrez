@@ -20,24 +20,25 @@ class Pieza():
 
         if abs(self.pieza) == 1:
             self.path += color_de_pieza+'P'+tipo
-            self.posicion_inicial = Posicion.Posicion(125,49.32)
+            #self.posicion_inicial = Posicion.Posicion(125,49.32)
         elif abs(self.pieza) == 2:
             self.path += color_de_pieza+'C'+tipo
-            self.posicion_inicial = Posicion.Posicion(126,50.4)
+            #self.posicion_inicial = Posicion.Posicion(126,50.4)
         elif abs(self.pieza) == 3:
             self.path += color_de_pieza+'A'+tipo
-            self.posicion_inicial = Posicion.Posicion(126,50.3)
+            #self.posicion_inicial = Posicion.Posicion(126,50.3)
         elif abs(self.pieza) == 4:
             self.path += color_de_pieza+'T'+tipo
-            self.posicion_inicial = Posicion.Posicion(126,50.3)
+            #self.posicion_inicial = Posicion.Posicion(126,50.3)
         elif abs(self.pieza) == 5:
             self.path += color_de_pieza+'D'+tipo
-            self.posicion_inicial = Posicion.Posicion(126,50.5)
+            #self.posicion_inicial = Posicion.Posicion(126,50.5)
         else:
             self.path += color_de_pieza+'R'+tipo
-            self.posicion_inicial = Posicion.Posicion(127,50.5)
-        
+            #self.posicion_inicial = Posicion.Posicion(127,50.5)
+        self.posicion_inicial = Posicion.Posicion(127,50.5)
         self.imagen = tk.PhotoImage(file=self.path)
+        self.imagen = self.imagen.subsample(2,2)
     
     def calcular_posicion_en_tablero(self,posicion):
         self.posicion_en_tablero = Posicion.Posicion(self.posicion_inicial.fila + (posicion.fila * 46),self.posicion_inicial.columna + (posicion.columna*48))

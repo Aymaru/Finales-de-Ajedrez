@@ -1,19 +1,148 @@
 from Juego import Tablero
 from Juego import Movimiento
 
+from GUI import Ajedrez
+
 class Juego:
 
-    def __init__(self,turno,piezas_iniciales,tipo_de_juego):
-        self.turno = turno
-        self.J1 = ''
-        self.J2 = ''
-        self.tipo_de_juego = tipo_de_juego
+    def __init__(self,master,turno,jug_1,piezas_iniciales,tipo_de_juego,es_juego_inicial):
+        self.master = master
         self.tablero = Tablero.Tablero()
-        self.colocar_piezas_iniciales(piezas_iniciales)
-        self.set_movimientos_legales()
+
+        
+        self.J1 = jug_1
+        self.J2 = ""
+        self.colocar_piezas_iniciales(piezas_iniciales)        
+        self.tipo_de_juego = tipo_de_juego
+        self.es_juego_inicial = es_juego_inicial
+        if self.es_juego_inicial:
+            self.turno = 'B'
+            self.enrroque_blancas_corto = True
+            self.enrroque_blancas_largo = True
+            self.enrroque_negras_corto = True
+            self.enrroque_negras_largo = True
+        else:
+            self.turno = turno
+            self.enrroque_blancas_corto = False
+            self.enrroque_blancas_largo = False
+            self.enrroque_negras_corto = False
+            self.enrroque_negras_largo = False
+
+        self.movimientos_legales = []
+        self.posibles_movimientos = []
+        self.posibles_movimientos_blancas = []
+        self.posibles_movimientos_negras = []
+        
+        self.es_jaque = False
+        self.jaque_mate = False
+        self.es_tablas = False
+        self.es_turno_pc = False
+        
+        
+        
         self.casilla_inicial = None
         self.casilla_objetivo = None
+        self.movimiento_a_realizar = None
+
+        self.actualizar_estado_de_tablero()
+        ##Se instancia la interfaz
+        #self.GUI_ajedrez = Ajedrez.Ajedrez(self.master)
+
+    def generar_movimientos_de_enrroque(self):
+        if self.turno == 'B':
+
+            if self.enrroque_blancas_corto:
+                print("A")
+                enrroque_bc = self.tablero.generar_enrroque_blancas_corto(self.posibles_movimientos_negras)
+                if enrroque_bc != None:
+                    print("A.1")
+                    self.movimientos_legales.append(enrroque_bc)
+            if self.enrroque_blancas_largo:
+                print("B")
+                enrroque_bl = self.tablero.generar_enrroque_blancas_largo(self.posibles_movimientos_negras)
+                if enrroque_bl != None:
+                    print("B.1")
+                    self.movimientos_legales.append(enrroque_bl)
+
+        else:
+
+            if self.enrroque_negras_corto:
+                print("C")
+                enrroque_nc = self.tablero.generar_enrroque_negras_corto(self.posibles_movimientos_blancas)
+                if enrroque_nc != None:
+                    print("C.1")
+                    self.movimientos_legales.append(enrroque_nc)
+            if self.enrroque_negras_largo:
+                print("D")
+                enrroque_nl = self.tablero.generar_enrroque_negras_largo(self.posibles_movimientos_blancas)
+                if enrroque_nl != None:
+                    print("D.1")
+                    self.movimientos_legales.append(enrroque_nl)
+
+    def actualizar_estado_de_tablero(self):
+        self.set_posibles_movimientos()
+        self.set_movimientos_legales()        
+        self.set_posibles_movimientos_blancas()
+        self.set_posibles_movimientos_negras()
+        self.generar_movimientos_de_enrroque()
+        self.actualizar_turno_pc()
+        self.set_es_jaque()
+        self.set_jaque_mate()
+        self.set_es_tablas()
+
+    def actualizar_turno_pc(self):
+        if self.tipo_de_juego == 1:
+            self.es_turno_pc = False
+        elif self.tipo_de_juego == 2:
+            if self.turno != self.j1:
+                self.es_turno_pc = True
+            else:
+                self.es_turno_pc = False
+        elif self.tipo_de_juego == 3:
+            self.es_turno_pc = True
+
+    def disable_enrroque_blancas_corto(self):
+        self.enrroque_blancas_corto = False
+
+    def disable_enrroque_blancas_largo(self):
+        self.enrroque_blancas_largo = False
+
+    def disable_enrroque_negras_corto(self):
+        self.enrroque_negras_corto = False
+
+    def disable_enrroque_negras_largo(self):
+        self.enrroque_negras_largo = False
+
+    def set_posibles_movimientos_blancas(self):
+        self.posibles_movimientos_blancas = []
+        self.posibles_movimientos_blancas = self.tablero.posibles_movimientos_de_blancas(self.posibles_movimientos)
+
+    def set_posibles_movimientos_negras(self):
+        self.posibles_movimientos_negras = []
+        self.posibles_movimientos_negras = self.tablero.posibles_movimientos_de_negras(self.posibles_movimientos)
+
+    def set_jugadores(self):
+        
+        if self.J1 == "B":
+            self.J2 = "N"
+        else:
+            self.J2 = "B"
     
+    def set_es_jaque(self):
+        self.es_jaque = self.tablero.hay_jaque(self.posibles_movimientos,self.turno)
+
+    def set_jaque_mate(self):
+        if self.es_jaque and len(self.movimientos_legales) == 0:
+            self.jaque_mate = True
+        else:
+            self.jaque_mate = False
+
+    def set_es_tablas(self):
+        if not self.es_jaque and len(self.movimientos_legales) == 0:
+            self.es_tablas = True
+        else:
+            self.es_tablas = False
+
     def colocar_piezas_iniciales(self,piezas_iniciales):
         piezas = piezas_iniciales.split(",") ##Esto creo que se debe cambiar por espacios, a como lo pide el profe y cambiar las comas por espacios en los archivos de juego
         piezas_iniciales = []
@@ -22,7 +151,13 @@ class Juego:
         self.tablero.colocar_piezas_iniciales(piezas_iniciales)
 
     def set_movimientos_legales(self):
-        self.movimientos_legales = self.tablero.obtener_movimientos_legales(self.tablero.generar_posibles_movimientos(),self.turno)
+        self.movimientos_legales = []
+        self.movimientos_legales = self.tablero.obtener_movimientos_legales(self.posibles_movimientos,self.turno)
+        
+
+    def set_posibles_movimientos(self):
+        self.posibles_movimientos = []
+        self.posibles_movimientos = self.tablero.generar_posibles_movimientos()
 
     def print_movimientos_legales(self):
         for movimiento in self.movimientos_legales:
@@ -54,11 +189,47 @@ class Juego:
         else:
             pieza_de_coronamiento = -5
             self.turno = 'B'
-        self.tablero.mover_pieza(self.movimiento_a_realizar,pieza_de_coronamiento)
+        
+        if self.tablero.es_movimiento_enrroque(self.movimiento_a_realizar):
+            self.tablero.realizar_enrroque(self.movimiento_a_realizar)
+            self.master.GUI_ajedrez.colocar_enrroque(self.movimiento_a_realizar)
+        elif self.tablero.es_movimiento_coronacion(self.movimiento_a_realizar):
+            self.tablero.realizar_coronamiento(self.movimiento_a_realizar,pieza_de_coronamiento)
+            self.master.GUI_ajedrez.colocar_coronamiento(self.movimiento_a_realizar,pieza_de_coronamiento)
+        else:
+            self.tablero.mover_pieza(self.movimiento_a_realizar)
+            self.master.GUI_ajedrez.mover_pieza(self.movimiento_a_realizar)
+        
+        self.actualizar_turno_pc()
+        self.actualizar_estado_de_tablero()
+        self.master.GUI_ajedrez.actualizar_estado_de_pantalla()
         self.limpiar_casilla_inicial() 
         self.limpiar_casilla_objetivo()
         self.limpiar_movimiento_a_realizar()
-        self.set_movimientos_legales()
+        self.ejecutar()
+
+        ##if tipo == 1 (todos los movimientos son del jug)
+
+        ##if tipo == 2 (calcula el siguiente movimiento de la pc)
+
+        ##if tipo == 3 (todos los mov de la pc)
+
+    def ejecutar(self):
+        if self.tipo_de_juego == 1:
+            return
+        elif self.tipo_de_juego == 2:
+            if self.es_turno_pc:
+                #self.movimiento_a_realizar = realizar_movimiento_de_pc
+                #self.mover_pieza()
+                print("no implementado")
+                return
+            else:
+                return
+        elif self.tipo_de_juego == 3:
+            #self.movimiento_a_realizar = realizar_movimiento_de_pc
+            #self.mover_pieza()  
+            print("no implementado")
+            return
 
     def es_casilla_inicial_permitida(self):
         for movimiento in self.movimientos_legales:
@@ -79,6 +250,7 @@ class Juego:
             return "Blancas"
         else:
             return "Negras"
+    
     # def iniciar_juego(self):
 
     #     ##Pendiente el log en archivo log_partida = [log_de_tablero_inicial,log_de_movimientos]

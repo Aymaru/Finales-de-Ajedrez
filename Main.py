@@ -33,3 +33,18 @@ def leer_tablero(file):
 
 if __name__ == '__main__':
     main()
+
+#"C:/Users/ayma-93/Documents/TEC/2020 - Semestre I/Inteligencia Artificial/Proyectos/Finales de ajedrez/Finales de Ajedrez/Tableros/finalesCaso2.txt"
+#"C:/Users/ayma-93/Documents/TEC/2020 - Semestre I/Inteligencia Artificial/Proyectos/Finales de ajedrez/Finales de Ajedrez/Tableros/tablero_inicial.txt"
+#"/Tableros/tablero_inicial.txt"
+
+##enrroque blancas  |    T   |   R   |  largo   |    T   |   R   | 
+##                      7,0     7,4       ->        7,3     7,2
+##                  |    T   |   R   |  corto   |    T   |   R   | 
+##                      7,7     7,4       ->        7,5     7,6
+
+##enrroque negras   |    T   |   R   |  largo   |    T   |   R   | 
+##                      0,0     0,4       ->        0,3     0,2
+##                  |    T   |   R   |  corto   |    T   |   R   | 
+##                      0,7     0,4       ->        0,5     0,6
+    
