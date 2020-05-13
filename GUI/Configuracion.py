@@ -150,9 +150,11 @@ class Configuracion(tk.Frame):
         tipo_de_juego = self.tipo_de_juego.get()
         self.obtener_piezas_iniciales()
         print("turno: %s, jug_1: %s", (turno,jug_1))
+        self.destroy()
         self.master.juego = Juego.Juego(self.master,turno,jug_1,self.piezas_iniciales,tipo_de_juego,self.es_juego_inicial)
         self.master.GUI_ajedrez = Ajedrez.Ajedrez(self.master)
-        self.destroy()
+        self.master.juego.ejecutar()
+        
         
  
     # def popUp(self,tipo,mensaje):

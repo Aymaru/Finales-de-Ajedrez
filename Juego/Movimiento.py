@@ -10,4 +10,4 @@ class Movimiento:
         return self.casilla_inicial.equals(movimiento.casilla_inicial) and self.casilla_objetivo.equals(movimiento.casilla_objetivo)
 
     def imprimir(self):
-        print("Casilla Inicial -> Fila: %s, Columna: %s\nCasilla Objetivo -> Fila: %s, Columna: %s" % (str(self.casilla_inicial.fila),str(self.casilla_inicial.columna),str(self.casilla_objetivo.fila),str(self.casilla_objetivo.columna)))
+        print("Casilla Inicial -> Fila: %s, Columna: %s | Casilla Objetivo -> Fila: %s, Columna: %s" % (str(self.casilla_inicial.fila),str(self.casilla_inicial.columna),str(self.casilla_objetivo.fila),str(self.casilla_objetivo.columna)))

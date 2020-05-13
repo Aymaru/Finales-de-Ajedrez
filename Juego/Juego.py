@@ -1,6 +1,18 @@
+import copy
+import time
+
+##clases de juego
 from Juego import Tablero
 from Juego import Movimiento
+from Juego import ArbolDecision
+from Juego import Nodo
+from Juego import Enrroque
 
+##enums
+from Juego import Estado
+from Juego import Turno
+
+## GUI
 from GUI import Ajedrez
 
 class Juego:
@@ -45,41 +57,39 @@ class Juego:
         self.movimiento_a_realizar = None
 
         self.actualizar_estado_de_tablero()
+        #self.ejecutar()
         ##Se instancia la interfaz
         #self.GUI_ajedrez = Ajedrez.Ajedrez(self.master)
 
+    def set_evaluacion_de_tablero(self):
+        self.evaluacion_de_tablero = self.tablero.evaluacion_del_juego()
+        print("Evaluacion: %d",(self.evaluacion_de_tablero))
+            
     def generar_movimientos_de_enrroque(self):
         if self.turno == 'B':
 
             if self.enrroque_blancas_corto:
-                print("A")
                 enrroque_bc = self.tablero.generar_enrroque_blancas_corto(self.posibles_movimientos_negras)
                 if enrroque_bc != None:
-                    print("A.1")
                     self.movimientos_legales.append(enrroque_bc)
             if self.enrroque_blancas_largo:
-                print("B")
                 enrroque_bl = self.tablero.generar_enrroque_blancas_largo(self.posibles_movimientos_negras)
                 if enrroque_bl != None:
-                    print("B.1")
                     self.movimientos_legales.append(enrroque_bl)
 
         else:
 
             if self.enrroque_negras_corto:
-                print("C")
                 enrroque_nc = self.tablero.generar_enrroque_negras_corto(self.posibles_movimientos_blancas)
                 if enrroque_nc != None:
-                    print("C.1")
                     self.movimientos_legales.append(enrroque_nc)
             if self.enrroque_negras_largo:
-                print("D")
                 enrroque_nl = self.tablero.generar_enrroque_negras_largo(self.posibles_movimientos_blancas)
                 if enrroque_nl != None:
-                    print("D.1")
                     self.movimientos_legales.append(enrroque_nl)
 
     def actualizar_estado_de_tablero(self):
+        self.set_evaluacion_de_tablero()
         self.set_posibles_movimientos()
         self.set_movimientos_legales()        
         self.set_posibles_movimientos_blancas()
@@ -94,7 +104,7 @@ class Juego:
         if self.tipo_de_juego == 1:
             self.es_turno_pc = False
         elif self.tipo_de_juego == 2:
-            if self.turno != self.j1:
+            if self.turno != self.J1:
                 self.es_turno_pc = True
             else:
                 self.es_turno_pc = False
@@ -206,7 +216,8 @@ class Juego:
         self.limpiar_casilla_inicial() 
         self.limpiar_casilla_objetivo()
         self.limpiar_movimiento_a_realizar()
-        self.ejecutar()
+        #time.sleep(1)
+        #self.ejecutar()
 
         ##if tipo == 1 (todos los movimientos son del jug)
 
@@ -215,14 +226,33 @@ class Juego:
         ##if tipo == 3 (todos los mov de la pc)
 
     def ejecutar(self):
+        print("tipo de juego: %d",(self.tipo_de_juego))
+        if self.jaque_mate or self.es_tablas:
+            return
+
         if self.tipo_de_juego == 1:
             return
         elif self.tipo_de_juego == 2:
             if self.es_turno_pc:
-                #self.movimiento_a_realizar = realizar_movimiento_de_pc
-                #self.mover_pieza()
-                print("no implementado")
-                return
+                ## valores para inicializar un nodo : id,tablero,turno,enrroque,nivel,estado,valor,MAX_NODE
+                id = [] ## Nodo inicial
+                tablero = copy.deepcopy(self.tablero) ## copia una instancia del tablero
+                if self.turno == 'B':
+                    turno = Turno.Turno.BLANCAS
+                elif self.turno == 'N':
+                    turno = Turno.Turno.NEGRAS
+                enrroque = Enrroque.Enrroque(self.enrroque_blancas_corto,self.enrroque_blancas_largo,self.enrroque_negras_corto,self.enrroque_negras_largo)
+                nivel = 0 ## nivel inicial 0
+                estado = Estado.Estado.VIVO ## Estado inicial vivo
+                valor = 100000 ## +infinito (numero suficientemente grande como para ser mayor a cualquier evaluacion de estado)
+                MAX_NODE = 4 ## Profundidad Maxima del arbol (aumentar de dos en dos)
+                nodo_inicial = Nodo.Nodo(id,tablero,turno,enrroque,nivel,estado,valor,MAX_NODE)
+                arbol_de_decision = ArbolDecision.ArbolDecision(nodo_inicial)
+
+                self.movimiento_a_realizar = arbol_de_decision.minimax_SSS_estrella()
+                print("movimiento a realiza")
+                self.movimiento_a_realizar.imprimir()
+                self.mover_pieza()
             else:
                 return
         elif self.tipo_de_juego == 3:

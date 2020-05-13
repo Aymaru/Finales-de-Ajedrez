@@ -48,3 +48,4 @@ if __name__ == '__main__':
 ##                  |    T   |   R   |  corto   |    T   |   R   | 
 ##                      0,7     0,4       ->        0,5     0,6
     
+#self.id[0:len(self.id-2)]

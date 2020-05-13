@@ -1,3 +1,5 @@
+import time
+
 import tkinter as tk
 from tkinter import ttk
 
@@ -31,6 +33,7 @@ class Ajedrez(tk.Frame):
         
         self.pack()
         self.canvas.pack()
+        #self.master.juego.ejecutar()
 
     ###Ajuste UI###
     def componentes(self):
@@ -140,6 +143,7 @@ class Ajedrez(tk.Frame):
             else:
                 self.lbl_img_jugador1.colocar_posicion_en_tablero(posicion_lbl_img_negras)
                 self.lbl_img_jugador2.colocar_posicion_en_tablero(posicion_lbl_img_blancas)
+        
         elif self.master.juego.tipo_de_juego == 3:
             self.lbl_img_jugador1 = Label_IMG.Label_IMG(self.canvas,"pc1")
             self.lbl_img_jugador2 = Label_IMG.Label_IMG(self.canvas,"pc2")
@@ -169,9 +173,15 @@ class Ajedrez(tk.Frame):
         self.canvas.create_window(255,543, anchor=tk.NW, window=self.entry_movimiento_casilla_objetivo)
 
     def btn_mover_pieza(self):
-        self.btn_mover_pieza = tk.Button(self,text="Mover",command=self.master.juego.mover_pieza,width=8,state=tk.DISABLED)
+        self.btn_mover_pieza = tk.Button(self,text="Mover",command=self.realizar_movimiento,width=8,state=tk.DISABLED)
         #self.btn_mover_pieza.place(x=320,y=545)
         self.canvas.create_window(318,540,anchor=tk.NW,window=self.btn_mover_pieza)
+    
+    def realizar_movimiento(self):
+        self.master.juego.mover_pieza()
+        time.sleep(1)
+        print("after sleep")
+        self.master.juego.ejecutar()
 
     def cargar_lbl_img_turno(self):
         posicion_lbl_img_turno = Posicion.Posicion(545,125)
