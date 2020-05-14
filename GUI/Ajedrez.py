@@ -178,10 +178,10 @@ class Ajedrez(tk.Frame):
         self.canvas.create_window(318,540,anchor=tk.NW,window=self.btn_mover_pieza)
     
     def realizar_movimiento(self):
-        self.master.juego.mover_pieza()
-        time.sleep(1)
-        print("after sleep")
-        self.master.juego.ejecutar()
+        self.master.juego.queue.put(self.master.juego.movimiento_a_realizar)
+        #time.sleep(1)
+        self.master.after(100, self.master.juego.process_queue)
+        #self.master.juego.ejecutar()
 
     def cargar_lbl_img_turno(self):
         posicion_lbl_img_turno = Posicion.Posicion(545,125)

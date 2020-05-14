@@ -1,5 +1,6 @@
 import copy
 import time
+import queue
 
 ##clases de juego
 from Juego import Tablero
@@ -7,6 +8,7 @@ from Juego import Movimiento
 from Juego import ArbolDecision
 from Juego import Nodo
 from Juego import Enrroque
+from Juego import ThreadedTask
 
 ##enums
 from Juego import Estado
@@ -50,7 +52,8 @@ class Juego:
         self.es_tablas = False
         self.es_turno_pc = False
         
-        
+        self.queue = queue.Queue()
+        self.calculando_movimiento = False
         
         self.casilla_inicial = None
         self.casilla_objetivo = None
@@ -191,7 +194,7 @@ class Juego:
     def limpiar_movimiento_a_realizar(self):
        self.movimiento_a_realizar = None
 
-    def mover_pieza(self):
+    def mover_pieza(self,movimiento_a_realizar):
         
         if self.turno == 'B':
             pieza_de_coronamiento = 5
@@ -200,15 +203,15 @@ class Juego:
             pieza_de_coronamiento = -5
             self.turno = 'B'
         
-        if self.tablero.es_movimiento_enrroque(self.movimiento_a_realizar):
-            self.tablero.realizar_enrroque(self.movimiento_a_realizar)
-            self.master.GUI_ajedrez.colocar_enrroque(self.movimiento_a_realizar)
-        elif self.tablero.es_movimiento_coronacion(self.movimiento_a_realizar):
-            self.tablero.realizar_coronamiento(self.movimiento_a_realizar,pieza_de_coronamiento)
-            self.master.GUI_ajedrez.colocar_coronamiento(self.movimiento_a_realizar,pieza_de_coronamiento)
+        if self.tablero.es_movimiento_enrroque(movimiento_a_realizar):
+            self.tablero.realizar_enrroque(movimiento_a_realizar)
+            self.master.GUI_ajedrez.colocar_enrroque(movimiento_a_realizar)
+        elif self.tablero.es_movimiento_coronacion(movimiento_a_realizar):
+            self.tablero.realizar_coronamiento(movimiento_a_realizar,pieza_de_coronamiento)
+            self.master.GUI_ajedrez.colocar_coronamiento(movimiento_a_realizar,pieza_de_coronamiento)
         else:
-            self.tablero.mover_pieza(self.movimiento_a_realizar)
-            self.master.GUI_ajedrez.mover_pieza(self.movimiento_a_realizar)
+            self.tablero.mover_pieza(movimiento_a_realizar)
+            self.master.GUI_ajedrez.mover_pieza(movimiento_a_realizar)
         
         self.actualizar_turno_pc()
         self.actualizar_estado_de_tablero()
@@ -225,8 +228,41 @@ class Juego:
 
         ##if tipo == 3 (todos los mov de la pc)
 
+
+        #ThreadedTask(self.master).start()
+    def queue_movimiento_a_realizar(self):
+        self.queue.put(self.movimiento_a_realizar)
+
+    # def process_queue(self):
+    #     try:
+            
+    #         # Show result of the task if needed
+    #         #self.mover_pieza(movimiento_a_realizar)
+    #         movimiento_a_realizar = self.queue.get(0)
+    #         self.mover_pieza(movimiento_a_realizar)
+    #     except queue.Empty:
+            
+    #         if self.jaque_mate or self.es_tablas: # ??mandar un mov none para indicar que se termina la partida or movimiento_a_realizar == None:
+    #             ##hacer todos los procesos de finalizacion
+    #             return
+
+    #         if self.tipo_de_juego == 1:
+    #             self.master.after(100, self.process_queue)
+    #         elif self.tipo_de_juego == 2:
+    #             if self.es_turno_pc:
+    #                 if self.calculando_movimiento == False:
+    #                     self.calculando_movimiento = True
+    #                     ThreadedTask(self.master).start()
+    #                 self.master.after(100, self.process_queue)               
+    #         elif self.tipo_de_juego == 3:
+                
+    #             print("no implementado")
+    #             return
+    #         self.master.after(100, self.process_queue)
+    
     def ejecutar(self):
         print("tipo de juego: %d",(self.tipo_de_juego))
+        #time.sleep(1)
         if self.jaque_mate or self.es_tablas:
             return
 
@@ -234,32 +270,54 @@ class Juego:
             return
         elif self.tipo_de_juego == 2:
             if self.es_turno_pc:
-                ## valores para inicializar un nodo : id,tablero,turno,enrroque,nivel,estado,valor,MAX_NODE
-                id = [] ## Nodo inicial
-                tablero = copy.deepcopy(self.tablero) ## copia una instancia del tablero
-                if self.turno == 'B':
-                    turno = Turno.Turno.BLANCAS
-                elif self.turno == 'N':
-                    turno = Turno.Turno.NEGRAS
-                enrroque = Enrroque.Enrroque(self.enrroque_blancas_corto,self.enrroque_blancas_largo,self.enrroque_negras_corto,self.enrroque_negras_largo)
-                nivel = 0 ## nivel inicial 0
-                estado = Estado.Estado.VIVO ## Estado inicial vivo
-                valor = 100000 ## +infinito (numero suficientemente grande como para ser mayor a cualquier evaluacion de estado)
-                MAX_NODE = 4 ## Profundidad Maxima del arbol (aumentar de dos en dos)
-                nodo_inicial = Nodo.Nodo(id,tablero,turno,enrroque,nivel,estado,valor,MAX_NODE)
-                arbol_de_decision = ArbolDecision.ArbolDecision(nodo_inicial)
+                if self.calculando_movimiento == False:
+                    self.calculando_movimiento = True
+                    ThreadedTask.ThreadedTask(self.master).start()
+                    self.master.after(100, self.process_queue) 
 
-                self.movimiento_a_realizar = arbol_de_decision.minimax_SSS_estrella()
-                print("movimiento a realiza")
-                self.movimiento_a_realizar.imprimir()
-                self.mover_pieza()
+                # ## valores para inicializar un nodo : id,tablero,turno,enrroque,nivel,estado,valor,MAX_NODE
+                # id = [] ## Nodo inicial
+                # tablero = copy.deepcopy(self.tablero) ## copia una instancia del tablero
+                # if self.turno == 'B':
+                #     turno = Turno.Turno.BLANCAS
+                # elif self.turno == 'N':
+                #     turno = Turno.Turno.NEGRAS
+                # enrroque = Enrroque.Enrroque(self.enrroque_blancas_corto,self.enrroque_blancas_largo,self.enrroque_negras_corto,self.enrroque_negras_largo)
+                # nivel = 0 ## nivel inicial 0
+                # estado = Estado.Estado.VIVO ## Estado inicial vivo
+                # valor = 100000 ## +infinito (numero suficientemente grande como para ser mayor a cualquier evaluacion de estado)
+                # MAX_NODE = 2 ## Profundidad Maxima del arbol (aumentar de dos en dos)
+                # nodo_inicial = Nodo.Nodo(id,tablero,turno,enrroque,nivel,estado,valor,MAX_NODE)
+                # arbol_de_decision = ArbolDecision.ArbolDecision(nodo_inicial)
+
+                # self.movimiento_a_realizar = arbol_de_decision.minimax_SSS_estrella()
+                
+                #self.movimiento_a_realizar.imprimir()
+                #self.mover_pieza()
             else:
                 return
         elif self.tipo_de_juego == 3:
-            #self.movimiento_a_realizar = realizar_movimiento_de_pc
-            #self.mover_pieza()  
-            print("no implementado")
+            if self.calculando_movimiento == False:
+                self.calculando_movimiento = True
+                ThreadedTask.ThreadedTask(self.master).start()
+                self.master.after(100, self.process_queue) 
             return
+
+        
+        #ThreadedTask(self.master).start()
+        
+
+    def process_queue(self):
+        try:
+            movimiento_a_realizar = self.queue.get(0)
+            # Show result of the task if needed
+            self.mover_pieza(movimiento_a_realizar)
+            self.ejecutar()
+            #self.prog_bar.stop()
+        except queue.Empty:
+            self.master.after(100, self.process_queue)
+
+
 
     def es_casilla_inicial_permitida(self):
         for movimiento in self.movimientos_legales:
