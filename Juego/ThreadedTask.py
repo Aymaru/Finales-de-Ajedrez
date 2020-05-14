@@ -2,6 +2,8 @@ import threading
 import copy
 import time
 
+from collections import deque
+
 from Juego import Turno
 from Juego import Nodo
 from Juego import Enrroque
@@ -16,9 +18,9 @@ class ThreadedTask(threading.Thread):
         
     
     def run(self):
-        time.sleep(1)  # Simulate long running process
+        #time.sleep(2)  # Simulate long running process
         ## valores para inicializar un nodo : id,tablero,turno,enrroque,nivel,estado,valor,MAX_NODE
-        id = [] ## Nodo inicial
+        id = deque() ## Nodo inicial
         tablero = copy.deepcopy(self.master.juego.tablero) ## copia una instancia del tablero
         if self.master.juego.turno == 'B':
             turno = Turno.Turno.BLANCAS
@@ -28,7 +30,7 @@ class ThreadedTask(threading.Thread):
         nivel = 0 ## nivel inicial 0
         estado = Estado.Estado.VIVO ## Estado inicial vivo
         valor = 100000 ## +infinito (numero suficientemente grande como para ser mayor a cualquier evaluacion de estado)
-        MAX_NODE = 2 ## Profundidad Maxima del arbol (aumentar de dos en dos)
+        MAX_NODE = 4 ## Profundidad Maxima del arbol (aumentar de dos en dos)
         nodo_inicial = Nodo.Nodo(id,tablero,turno,enrroque,nivel,estado,valor,MAX_NODE)
         arbol_de_decision = ArbolDecision.ArbolDecision(nodo_inicial)
 

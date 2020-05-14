@@ -149,7 +149,7 @@ class Configuracion(tk.Frame):
         jug_1 = self.colocar_turno(self.jugador_1.get())
         tipo_de_juego = self.tipo_de_juego.get()
         self.obtener_piezas_iniciales()
-        print("turno: %s, jug_1: %s", (turno,jug_1))
+        #print("turno: %s, jug_1: %s", (turno,jug_1))
         self.destroy()
         self.master.juego = Juego.Juego(self.master,turno,jug_1,self.piezas_iniciales,tipo_de_juego,self.es_juego_inicial)
         self.master.GUI_ajedrez = Ajedrez.Ajedrez(self.master)

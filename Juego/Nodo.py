@@ -1,5 +1,7 @@
 
 import copy
+from collections import deque
+
 from Juego import Tablero
 from Juego import Movimiento
 from Juego import Estado
@@ -16,23 +18,37 @@ class Nodo:
         self.turno = turno ## turno del movimiento, se usa para generar movimientos legales
         
         self.enrroque = enrroque
-        self.movimientos_legales = [] ## Posibles nodos hijos
+        self.movimientos_legales = deque() ## Posibles nodos hijos
         
-        self.hijos = [] ## Nodos hijos
+        self.hijos = deque() ## Nodos hijos
         
         self.nivel = nivel ## Nivel del nodo, se utiliza para saber si un nodo es max o min y para encontrar la profundidad maxima
         self.estado = estado #SOLUCIONADO, VIVO
         self.valor = valor
-        self.MAX_NODE = MAX_NODE
+        self.MAX_NODE = MAX_NODE ## Nivel maximo de profundidad del arbol
         self.iniciar_nodo()
 
     def iniciar_nodo(self):      
         #print(self.id)
-        if self.id != []:
+        if self.id:
             movimiento = self.get_id_nodo()
             self.mover_pieza(movimiento)
         self.generar_movimientos_legales()
         ##generar movimientos legales
+
+    def buscar_nodo(self,id):
+        if self.es_nodo(id):
+            return self
+        else:            
+            for nodo_tmp in self.hijos:
+                #nodo_tmp = self.hijos[index]
+                if nodo_tmp.es_nodo(id):
+                    return nodo_tmp
+                if nodo_tmp.es_predecesor(id):
+                    nodo_tmp = nodo_tmp.buscar_nodo(id)
+                    if nodo_tmp != None:
+                        return nodo_tmp
+            return None
 
     def mover_pieza(self,movimiento):
         self.actualizar_estado_enrroque(movimiento)
@@ -50,11 +66,13 @@ class Nodo:
             self.tablero.mover_pieza(movimiento)
     
     def eliminar_hijos(self):
-        cantidad_hijos = self.cantidad_de_hijos()
-        for index in range(cantidad_hijos-1,-1,-1):
-            self.hijos[index].eliminar_hijos()
-            self.hijos.pop(index)
-        return
+        #cantidad_hijos = self.cantidad_de_hijos()
+        # for index in range(cantidad_hijos-1,-1,-1):
+        #     self.hijos[index].eliminar_hijos()
+        #     self.hijos.pop(index)
+        while(self.hijos):
+            nodo_tmp = self.hijos.popleft()
+            nodo_tmp.eliminar_hijos
 
     def actualizar_estado_enrroque(self,movimiento):
         pieza_a_mover = abs(self.tablero.obtener_pieza_de_casilla(movimiento.casilla_inicial))
@@ -81,10 +99,10 @@ class Nodo:
 
         posibles_movimientos = self.tablero.generar_posibles_movimientos()
         turno = self.turno_to_string()
-        self.movimientos_legales = self.tablero.obtener_movimientos_legales(posibles_movimientos,turno)
+        self.movimientos_legales = deque(self.tablero.obtener_movimientos_legales(posibles_movimientos,turno)) #de momento transformo lista en deque, luego cambio tablero para que trabaje con deque
         self.generar_movimientos_de_enrroque(posibles_movimientos)
         
-        posibles_movimientos = self.tablero.generar_posibles_movimientos()
+        #posibles_movimientos = self.tablero.generar_posibles_movimientos()
         
         self.set_es_jaque(posibles_movimientos)
         self.set_jaque_mate()
@@ -99,22 +117,22 @@ class Nodo:
             if self.enrroque.blancas_corto:
                 enrroque_bc = self.tablero.generar_enrroque_blancas_corto(posibles_movimientos_negras)
                 if enrroque_bc != None:
-                    self.movimientos_legales.append(enrroque_bc)
+                    self.movimientos_legales.appendleft(enrroque_bc)
             if self.enrroque.blancas_largo:
                 enrroque_bl = self.tablero.generar_enrroque_blancas_largo(posibles_movimientos_negras)
                 if enrroque_bl != None:
-                    self.movimientos_legales.append(enrroque_bl)
+                    self.movimientos_legales.appendleft(enrroque_bl)
 
         elif self.turno == Turno.Turno.NEGRAS:
             posibles_movimientos_blancas = self.tablero.posibles_movimientos_de_blancas(posibles_movimientos)
             if self.enrroque.negras_corto:
                 enrroque_nc = self.tablero.generar_enrroque_negras_corto(posibles_movimientos_blancas)
                 if enrroque_nc != None:
-                    self.movimientos_legales.append(enrroque_nc)
+                    self.movimientos_legales.appendleft(enrroque_nc)
             if self.enrroque.negras_largo:
                 enrroque_nl = self.tablero.generar_enrroque_negras_largo(posibles_movimientos_blancas)
                 if enrroque_nl != None:
-                    self.movimientos_legales.append(enrroque_nl)
+                    self.movimientos_legales.appendleft(enrroque_nl)
 
     def turno_to_string(self):
         if self.turno == Turno.Turno.BLANCAS:
@@ -160,24 +178,28 @@ class Nodo:
         return len(self.hijos)
 
     def es_predecesor(self,id):
-        if len(self.id) == 0:
+        if not self.id:
             return True
         elif len(self.id) >= len(id):
             return False
         else:
-            for index in range(0,len(self.id)):
-                if not self.id[index].equals(id[index]):
+            for id_predecesor,id_actual in zip(self.id,id):
+                if not id_actual.equals(id_predecesor):
                     return False
             return True
+        #     for index in range(0,len(self.id)):
+        #         if not self.id[index].equals(id[index]):
+        #             return False
+        #     return True
     
     def es_sucesor(self,id):
-        if len(self.id) == 0:
+        if not self.id:
             return False
         elif len(self.id) <= len(id):
             return False
         else:
-            for index in range(0,len(id)):
-                if not self.id[index].equals(id[index]):
+            for id_sucesor,id_actual in zip(self.id,id):
+                if not id_actual.equals(id_sucesor):
                     return False
             return True
 
@@ -185,13 +207,15 @@ class Nodo:
     ## def generar el primer hijo
     ## def generar hijos (aqui decide cual de las dos anteriores utilizar)
     def get_id_padre(self):
-        if self.id == []:
-            return []
-        return self.id[0:len(self.id)-1]
-
+        if not self.id:
+            return self.id
+        id_padre = copy.deepcopy(self.id)
+        id_padre.pop()
+        return id_padre
+        
     def get_id_nodo(self):
-        if self.id == []:
-            return []
+        if not self.id:
+            return self.id
         else:
             return self.id[len(self.id)-1]
 
@@ -203,13 +227,13 @@ class Nodo:
                 return index
             else:
                 index += 1
-        return
+        return None
 
     def es_nodo(self,id):
         if len(self.id) != len(id):
             return False
-        for index in range(0,len(self.id)):
-            if not self.id[index].equals(id[index]):
+        for id_nodo,id_actual in zip(self.id,id):
+            if not id_actual.equals(id_nodo):
                 return False
         return True
     
@@ -239,6 +263,7 @@ class Nodo:
         self.estado = estado
 
     def generar_hijo(self,hijo,valor,estado): ##hijo es el indice en el que se encuentra el movimiento en movimientos legales
+        
         movimiento = self.movimientos_legales[hijo]
         id = copy.deepcopy(self.id)
         id.append(movimiento)
@@ -255,11 +280,3 @@ class Nodo:
         for index in range (0,total_de_hijos):
             self.generar_hijo(index,self.valor,self.estado)
 
-def print_id(id):
-    print("_id_init")
-    if len(id) == 0:
-        print("[]")
-    else:
-        for index in range(0,len(id)):
-            id[index].imprimir()
-    print("_id_end")

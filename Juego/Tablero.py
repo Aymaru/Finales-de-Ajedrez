@@ -1,4 +1,6 @@
 import copy
+from collections import deque 
+
 from Juego import Posicion
 from Juego import Pieza
 from Juego import Movimiento
@@ -48,6 +50,15 @@ class Tablero:
     ##                                  ['B','R','b',1] ]
     ## Devuelve el tablero con las piezas
     def colocar_piezas_iniciales(self,piezas_iniciales):
+        # for pieza in piezas_iniciales:
+        #     pieza_tmp = Pieza.Pieza(pieza[0],pieza[1],pieza[2],pieza[3])
+        #     pieza_tablero = pieza_tmp.convertir_pieza_real_a_pieza_tablero()
+        #     pieza_tablero = pieza_tmp.convertir_pieza_real_a_pieza_tablero()
+            
+        #     if pieza_tmp.posicion.validar_posicion_real():
+        #         pieza_tmp.posicion.convertir_posicion_real_a_representacion()
+            
+        #     self.colocar_pieza_en_casilla(pieza_tablero,pieza_tmp.posicion)
         for i in range(0,len(piezas_iniciales)):
             pieza = Pieza.Pieza(piezas_iniciales[i][0],piezas_iniciales[i][1],piezas_iniciales[i][2],piezas_iniciales[i][3])
             pieza_tablero = pieza.convertir_pieza_real_a_pieza_tablero()
@@ -146,7 +157,6 @@ class Tablero:
         pieza_a_mover = self.obtener_pieza_de_casilla(movimiento.casilla_inicial)
         self.limpiar_casilla(movimiento.casilla_inicial)
 
-        
         if pieza_a_mover == 1:
             self.colocar_pieza_en_casilla(5,movimiento.casilla_objetivo)
         elif pieza_a_mover == -1:
@@ -194,7 +204,7 @@ class Tablero:
     #     return
 
     def posibles_movimientos_de_blancas(self,posibles_movimientos):
-        posibles_movimientos_blancas = []
+        posibles_movimientos_blancas = deque()
         for movimiento in posibles_movimientos:
             if self.obtener_color_de_pieza(movimiento.casilla_inicial) == 'B':
                 posibles_movimientos_blancas.append(movimiento)
@@ -202,7 +212,7 @@ class Tablero:
         return posibles_movimientos_blancas
 
     def posibles_movimientos_de_negras(self,posibles_movimientos):
-        posibles_movimientos_negras = []
+        posibles_movimientos_negras = deque()
         for movimiento in posibles_movimientos:
             if self.obtener_color_de_pieza(movimiento.casilla_inicial) == 'N':
                 posibles_movimientos_negras.append(movimiento)
@@ -221,7 +231,7 @@ class Tablero:
     ## Si se encuentra una pieza enemiga, agrega el posible movimiento y termina
     ## Recibe una posicion fila,columna Ejm (2,1). y dos enteros para utilizar la funcion 'avanzar_casilla(posicion,avanzar_fila,avanzar_columna)'
     def posibles_movimientos_en_una_direccion(self,casilla_inicial,avanzar_fila,avanzar_columna):
-        posibles_movimientos = []
+        posibles_movimientos = deque()
 
         color_de_pieza = self.obtener_color_de_pieza(casilla_inicial)
 
@@ -234,10 +244,10 @@ class Tablero:
 
             if pieza_casilla_objetivo != 0:
                     color_casilla_objetivo = self.obtener_color_de_pieza(casilla_objetivo)
-                    if color_casilla_objetivo != color_de_pieza:
-                        posible_movimiento = Movimiento.Movimiento(casilla_inicial,casilla_objetivo)
-                        posibles_movimientos.append(posible_movimiento)
-                    break                    
+                    posible_movimiento = Movimiento.Movimiento(casilla_inicial,casilla_objetivo)
+                    posibles_movimientos.append(posible_movimiento)
+                    break
+                                      
             else:
                 posible_movimiento = Movimiento.Movimiento(casilla_inicial,casilla_objetivo)
                 posibles_movimientos.append(posible_movimiento)
@@ -254,7 +264,7 @@ class Tablero:
     ## Devuelve los posibles movimientos para el peon en esa posicion.
     def posibles_movimientos_de_peon(self,casilla_inicial):
         #print("Revisando peon en fila:%d,columna:%d",(casilla_inicial.fila,casilla_inicial.columna))
-        posibles_movimientos = []
+        posibles_movimientos = deque()
         
         color_de_pieza = self.obtener_color_de_pieza(casilla_inicial)
         if color_de_pieza == 'B':
@@ -276,34 +286,27 @@ class Tablero:
                     
                     if color_de_pieza == 'B' and casilla_inicial.fila == 6:
                         fila_actual = casilla_objetivo.fila
-                        #casilla_objetivo.fila -= 1
+                        
                         casilla_objetivo = Posicion.Posicion(casilla_objetivo.fila-1,i)#
                         pieza_casilla_objetivo = self.obtener_pieza_de_casilla(casilla_objetivo)
                         
                         if pieza_casilla_objetivo == 0:
                             posible_movimiento = Movimiento.Movimiento(casilla_inicial,casilla_objetivo)
                             posibles_movimientos.append(posible_movimiento)
-                            #print("movimiento 2 B")
-                        #casilla_objetivo.fila = fila_actual
-
+                         
                     elif color_de_pieza == 'N' and casilla_inicial.fila == 1:
                         fila_actual = casilla_objetivo.fila
-                        #casilla_objetivo.fila += 1
+                       
                         casilla_objetivo = Posicion.Posicion(casilla_objetivo.fila+1,i)#
                         pieza_casilla_objetivo = self.obtener_pieza_de_casilla(casilla_objetivo)
                         
                         if pieza_casilla_objetivo == 0:
                             posible_movimiento = Movimiento.Movimiento(casilla_inicial,casilla_objetivo)
                             posibles_movimientos.append(posible_movimiento)
-                            #print("movimiento 2 N")
-                        #casilla_objetivo.fila = fila_actual
+
             else:
-                if pieza_casilla_objetivo != 0:
-                    color_casilla_objetivo = self.obtener_color_de_pieza(casilla_objetivo)
-                    if color_casilla_objetivo != color_de_pieza:
-                        posible_movimiento = Movimiento.Movimiento(casilla_inicial,casilla_objetivo)
-                        posibles_movimientos.append(posible_movimiento)
-                        #print("movimiento 1")
+                posible_movimiento = Movimiento.Movimiento(casilla_inicial,casilla_objetivo)
+                posibles_movimientos.append(posible_movimiento)
 
         return posibles_movimientos
                 
@@ -313,7 +316,15 @@ class Tablero:
     ## Recibe una posicion (2,1)
     ## Devuelve los posibles movimientos para el alfil en esa posicion
     def posibles_movimientos_de_alfil(self,casilla_inicial):
-        posibles_movimientos = self.posibles_movimientos_en_una_direccion(casilla_inicial,-1,-1) + self.posibles_movimientos_en_una_direccion(casilla_inicial,-1,1) + self.posibles_movimientos_en_una_direccion(casilla_inicial,1,-1) + self.posibles_movimientos_en_una_direccion(casilla_inicial,1,1)
+        #posibles_movimientos = self.posibles_movimientos_en_una_direccion(casilla_inicial,-1,-1) + 
+        # self.posibles_movimientos_en_una_direccion(casilla_inicial,-1,1) + 
+        # self.posibles_movimientos_en_una_direccion(casilla_inicial,1,-1) + 
+        # self.posibles_movimientos_en_una_direccion(casilla_inicial,1,1)
+        posibles_movimientos = deque()
+        posibles_movimientos.extend(self.posibles_movimientos_en_una_direccion(casilla_inicial,-1,-1))
+        posibles_movimientos.extend(self.posibles_movimientos_en_una_direccion(casilla_inicial,-1,1))
+        posibles_movimientos.extend(self.posibles_movimientos_en_una_direccion(casilla_inicial,1,-1))
+        posibles_movimientos.extend(self.posibles_movimientos_en_una_direccion(casilla_inicial,1,1))
         return posibles_movimientos
 
     ## Funcion que obtiene los posibles movimientos que puede realizar una torre
@@ -321,7 +332,15 @@ class Tablero:
     ## Recibe una posicion (2,1)
     ## Devuelve los posibles movimientos para la torre en esa posicion   
     def posibles_movimientos_de_torre(self,casilla_inicial):
-        posibles_movimientos = self.posibles_movimientos_en_una_direccion(casilla_inicial,-1,0) + self.posibles_movimientos_en_una_direccion(casilla_inicial,1,0) + self.posibles_movimientos_en_una_direccion(casilla_inicial,0,-1) + self.posibles_movimientos_en_una_direccion(casilla_inicial,0,1)
+        #posibles_movimientos = self.posibles_movimientos_en_una_direccion(casilla_inicial,-1,0) +
+        #  self.posibles_movimientos_en_una_direccion(casilla_inicial,1,0) +
+        #  self.posibles_movimientos_en_una_direccion(casilla_inicial,0,-1) +
+        #  self.posibles_movimientos_en_una_direccion(casilla_inicial,0,1)
+        posibles_movimientos = deque()
+        posibles_movimientos.extend(self.posibles_movimientos_en_una_direccion(casilla_inicial,-1,0))
+        posibles_movimientos.extend(self.posibles_movimientos_en_una_direccion(casilla_inicial,1,0))
+        posibles_movimientos.extend(self.posibles_movimientos_en_una_direccion(casilla_inicial,0,-1))
+        posibles_movimientos.extend(self.posibles_movimientos_en_una_direccion(casilla_inicial,0,1))
         return posibles_movimientos
 
     ## Funcion que obtiene los posibles movimientos que puede realizar una Dama
@@ -329,7 +348,11 @@ class Tablero:
     ## Recibe una posicion (2,1)
     ## Devuelve los posibles movimientos para la dama en esa posicion  
     def posibles_movimientos_de_dama(self,casilla_inicial):
-        posibles_movimientos = self.posibles_movimientos_de_alfil(casilla_inicial) + self.posibles_movimientos_de_torre(casilla_inicial)
+        #posibles_movimientos = self.posibles_movimientos_de_alfil(casilla_inicial) +
+        #  self.posibles_movimientos_de_torre(casilla_inicial)
+        posibles_movimientos = deque()
+        posibles_movimientos.extend(self.posibles_movimientos_de_alfil(casilla_inicial))
+        posibles_movimientos.extend(self.posibles_movimientos_de_torre(casilla_inicial))
         return posibles_movimientos
 
     ## Funcion que obtiene los posibles movimientos que puede realizar el caballo
@@ -338,7 +361,7 @@ class Tablero:
     ## Devuelve los posibles movimientos para el caballo en esa posicion 
     
     def posibles_movimientos_de_caballo(self,casilla_inicial):
-        posibles_movimientos = []
+        posibles_movimientos = deque()
         
         color_de_pieza = self.obtener_color_de_pieza(casilla_inicial)
 
@@ -349,31 +372,15 @@ class Tablero:
             for j in dos:
                 casilla_objetivo = Posicion.Posicion(casilla_inicial.fila+i,casilla_inicial.columna+j)                
                 if casilla_objetivo.validar_posicion():
-                    pieza_casilla_objetivo = self.obtener_pieza_de_casilla(casilla_objetivo)
-            
-                    if pieza_casilla_objetivo != 0:
-                        color_casilla_objetivo = self.obtener_color_de_pieza(casilla_objetivo)
-                        if color_casilla_objetivo != color_de_pieza:
-                            posible_movimiento = Movimiento.Movimiento(casilla_inicial,casilla_objetivo)
-                            posibles_movimientos.append(posible_movimiento)
-                    else:
-                        posible_movimiento = Movimiento.Movimiento(casilla_inicial,casilla_objetivo)
-                        posibles_movimientos.append(posible_movimiento)
+                    posible_movimiento = Movimiento.Movimiento(casilla_inicial,casilla_objetivo)
+                    posibles_movimientos.append(posible_movimiento)
 
         for i in dos:
             for j in unos:
                 casilla_objetivo = Posicion.Posicion(casilla_inicial.fila+i,casilla_inicial.columna+j)
-                if casilla_objetivo.validar_posicion():
-                    pieza_casilla_objetivo = self.obtener_pieza_de_casilla(casilla_objetivo)
-            
-                    if pieza_casilla_objetivo != 0:
-                        color_casilla_objetivo = self.obtener_color_de_pieza(casilla_objetivo)
-                        if color_casilla_objetivo != color_de_pieza:
-                            posible_movimiento = Movimiento.Movimiento(casilla_inicial,casilla_objetivo)
-                            posibles_movimientos.append(posible_movimiento)
-                    else:
-                        posible_movimiento = Movimiento.Movimiento(casilla_inicial,casilla_objetivo)
-                        posibles_movimientos.append(posible_movimiento)
+                if casilla_objetivo.validar_posicion():                    
+                    posible_movimiento = Movimiento.Movimiento(casilla_inicial,casilla_objetivo)
+                    posibles_movimientos.append(posible_movimiento)
                         
         return posibles_movimientos
 
@@ -382,7 +389,7 @@ class Tablero:
     ## Recibe una posicion (2,1)
     ## Devuelve los posibles movimientos para el rey en esa posicion             
     def posibles_movimientos_de_rey(self,casilla_inicial):
-        posibles_movimientos = []
+        posibles_movimientos = deque()
         
         color_de_pieza = self.obtener_color_de_pieza(casilla_inicial)
 
@@ -394,22 +401,15 @@ class Tablero:
                     continue
                 
                 if casilla_objetivo.validar_posicion():
-                    pieza_casilla_objetivo = self.obtener_pieza_de_casilla(casilla_objetivo)
-                    if pieza_casilla_objetivo != 0:
-                            color_casilla_objetivo = self.obtener_color_de_pieza(casilla_objetivo)
-                            if color_casilla_objetivo != color_de_pieza:
-                                posible_movimiento = Movimiento.Movimiento(casilla_inicial,casilla_objetivo)
-                                posibles_movimientos.append(posible_movimiento)
-                    else:
-                        posible_movimiento = Movimiento.Movimiento(casilla_inicial,casilla_objetivo)
-                        posibles_movimientos.append(posible_movimiento)
+                    posible_movimiento = Movimiento.Movimiento(casilla_inicial,casilla_objetivo)
+                    posibles_movimientos.append(posible_movimiento)
 
         return posibles_movimientos
 
 
     ## Genera todos los posibles movimientos, de todas las piezas en un tablero
     def generar_posibles_movimientos(self):
-        posibles_movimientos = []
+        posibles_movimientos = deque()
         
         for fila in range(0,8):
             for columna in range(0,8):
@@ -417,17 +417,17 @@ class Tablero:
                 pieza_casilla_inicial = abs(self.obtener_pieza_de_casilla(casilla_inicial))
             
                 if pieza_casilla_inicial == 1:
-                    posibles_movimientos += self.posibles_movimientos_de_peon(casilla_inicial)
+                    posibles_movimientos.extend(self.posibles_movimientos_de_peon(casilla_inicial))
                 elif pieza_casilla_inicial == 2:
-                    posibles_movimientos += self.posibles_movimientos_de_caballo(casilla_inicial)
+                    posibles_movimientos.extend(self.posibles_movimientos_de_caballo(casilla_inicial))
                 elif pieza_casilla_inicial == 3:
-                    posibles_movimientos += self.posibles_movimientos_de_alfil(casilla_inicial)
+                    posibles_movimientos.extend(self.posibles_movimientos_de_alfil(casilla_inicial))
                 elif pieza_casilla_inicial == 4:
-                    posibles_movimientos += self.posibles_movimientos_de_torre(casilla_inicial)
+                    posibles_movimientos.extend(self.posibles_movimientos_de_torre(casilla_inicial))
                 elif pieza_casilla_inicial == 5:
-                    posibles_movimientos += self.posibles_movimientos_de_dama(casilla_inicial)
+                    posibles_movimientos.extend(self.posibles_movimientos_de_dama(casilla_inicial))
                 elif pieza_casilla_inicial == 6:
-                    posibles_movimientos += self.posibles_movimientos_de_rey(casilla_inicial)
+                    posibles_movimientos.extend(self.posibles_movimientos_de_rey(casilla_inicial))
                 else:
                     continue
                 
@@ -537,10 +537,16 @@ class Tablero:
     def hay_jaque(self,posibles_movimientos,turno):
         for movimiento in posibles_movimientos:
             color_de_pieza = self.obtener_color_de_pieza(movimiento.casilla_inicial)
+            
             if color_de_pieza != turno:
+                pieza_objetivo = self.obtener_pieza_de_casilla(movimiento.casilla_objetivo)
+                if pieza_objetivo != 0:
+                    color_de_pieza_objetivo = self.obtener_color_de_pieza(movimiento.casilla_objetivo)
+                    if color_de_pieza_objetivo == color_de_pieza:
+                        continue
                 casilla_objetivo = abs(self.obtener_pieza_de_casilla(movimiento.casilla_objetivo))
                 if casilla_objetivo == 6:
-                    return True            
+                    return True      
         return False
 
     ## Verifica si un movimiento es un movimiento legal
@@ -558,6 +564,13 @@ class Tablero:
             
         color_de_pieza = self.obtener_color_de_pieza(movimiento.casilla_inicial)
         if color_de_pieza == turno:
+            pieza_objetivo = self.obtener_pieza_de_casilla(movimiento.casilla_objetivo)
+
+            if pieza_objetivo != 0:
+                color_de_pieza_objetivo = self.obtener_color_de_pieza(movimiento.casilla_objetivo)
+                if color_de_pieza_objetivo == color_de_pieza:
+                    return False
+
             tablero_despues_de_mover = copy.deepcopy(self)
             #tablero_despues_de_mover.mover_pieza(movimiento,pieza_de_coronamiento)
             if tablero_despues_de_mover.es_movimiento_enrroque(movimiento):
@@ -572,16 +585,14 @@ class Tablero:
             posibles_movimientos_despues_de_mover = tablero_despues_de_mover.generar_posibles_movimientos()
             if tablero_despues_de_mover.hay_jaque(posibles_movimientos_despues_de_mover,turno):
                 return False
-            else:
-                return True
-
+            return True
         return False
 
     ## Funcion que obtiene todos los movimientos legales para un jugador 'B' o 'N', blanco o negro respectivamente
     ## Recibe todos los movimientos posibles y el turno del jugador
     ## Devuelve la lista de movimientos legales
     def obtener_movimientos_legales(self,posibles_movimientos,turno):
-        movimientos_legales = []
+        movimientos_legales = deque()
 
         for movimiento in posibles_movimientos:
             if self.es_movimiento_legal(movimiento,turno):

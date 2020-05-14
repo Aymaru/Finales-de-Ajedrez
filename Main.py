@@ -49,3 +49,19 @@ if __name__ == '__main__':
 ##                      0,7     0,4       ->        0,5     0,6
     
 #self.id[0:len(self.id-2)]
+def insertar_delante_de_menores(lista,nodo):
+    if not lista:
+        lista.appendleft(nodo)
+    else:
+        index = 0
+        for nodo_tmp in lista:
+            if nodo_tmp < nodo:
+                break
+            else:
+                index += 1
+        insertar_en_index(nodo,index)
+
+def insertar_en_index(lista,nodo,index):
+    lista.rotate(-index)
+    lista.appendleft(nodo)
+    lista.rotate(index)

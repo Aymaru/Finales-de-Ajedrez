@@ -2,6 +2,8 @@ import copy
 import time
 import queue
 
+from collections import deque
+
 ##clases de juego
 from Juego import Tablero
 from Juego import Movimiento
@@ -42,10 +44,10 @@ class Juego:
             self.enrroque_negras_corto = False
             self.enrroque_negras_largo = False
 
-        self.movimientos_legales = []
-        self.posibles_movimientos = []
-        self.posibles_movimientos_blancas = []
-        self.posibles_movimientos_negras = []
+        self.movimientos_legales = deque()
+        self.posibles_movimientos = deque()
+        self.posibles_movimientos_blancas = deque()
+        self.posibles_movimientos_negras = deque()
         
         self.es_jaque = False
         self.jaque_mate = False
@@ -66,7 +68,7 @@ class Juego:
 
     def set_evaluacion_de_tablero(self):
         self.evaluacion_de_tablero = self.tablero.evaluacion_del_juego()
-        print("Evaluacion: %d",(self.evaluacion_de_tablero))
+        #print("Evaluacion: %d",(self.evaluacion_de_tablero))
             
     def generar_movimientos_de_enrroque(self):
         if self.turno == 'B':
@@ -127,12 +129,12 @@ class Juego:
         self.enrroque_negras_largo = False
 
     def set_posibles_movimientos_blancas(self):
-        self.posibles_movimientos_blancas = []
-        self.posibles_movimientos_blancas = self.tablero.posibles_movimientos_de_blancas(self.posibles_movimientos)
+        self.posibles_movimientos_blancas.clear()
+        self.posibles_movimientos_blancas.extend(self.tablero.posibles_movimientos_de_blancas(self.posibles_movimientos))
 
     def set_posibles_movimientos_negras(self):
-        self.posibles_movimientos_negras = []
-        self.posibles_movimientos_negras = self.tablero.posibles_movimientos_de_negras(self.posibles_movimientos)
+        self.posibles_movimientos_negras.clear()
+        self.posibles_movimientos_negras.extend(self.tablero.posibles_movimientos_de_negras(self.posibles_movimientos))
 
     def set_jugadores(self):
         
@@ -143,6 +145,7 @@ class Juego:
     
     def set_es_jaque(self):
         self.es_jaque = self.tablero.hay_jaque(self.posibles_movimientos,self.turno)
+        print(self.es_jaque)
 
     def set_jaque_mate(self):
         if self.es_jaque and len(self.movimientos_legales) == 0:
@@ -164,13 +167,12 @@ class Juego:
         self.tablero.colocar_piezas_iniciales(piezas_iniciales)
 
     def set_movimientos_legales(self):
-        self.movimientos_legales = []
-        self.movimientos_legales = self.tablero.obtener_movimientos_legales(self.posibles_movimientos,self.turno)
-        
+        self.movimientos_legales.clear()
+        self.movimientos_legales.extend(self.tablero.obtener_movimientos_legales(self.posibles_movimientos,self.turno))        
 
     def set_posibles_movimientos(self):
-        self.posibles_movimientos = []
-        self.posibles_movimientos = self.tablero.generar_posibles_movimientos()
+        self.posibles_movimientos.clear()
+        self.posibles_movimientos.extend(self.tablero.generar_posibles_movimientos())
 
     def print_movimientos_legales(self):
         for movimiento in self.movimientos_legales:
@@ -184,7 +186,6 @@ class Juego:
 
     #def set_movimiento_a_realizar(self,posicion):
     #    self.movimiento_a_realizar = Movimiento.Movimiento(self.casilla_seleccionada,posicion)
-
     def limpiar_casilla_inicial(self):
         self.casilla_inicial = None
     
@@ -230,38 +231,12 @@ class Juego:
 
 
         #ThreadedTask(self.master).start()
+    
     def queue_movimiento_a_realizar(self):
         self.queue.put(self.movimiento_a_realizar)
 
-    # def process_queue(self):
-    #     try:
-            
-    #         # Show result of the task if needed
-    #         #self.mover_pieza(movimiento_a_realizar)
-    #         movimiento_a_realizar = self.queue.get(0)
-    #         self.mover_pieza(movimiento_a_realizar)
-    #     except queue.Empty:
-            
-    #         if self.jaque_mate or self.es_tablas: # ??mandar un mov none para indicar que se termina la partida or movimiento_a_realizar == None:
-    #             ##hacer todos los procesos de finalizacion
-    #             return
-
-    #         if self.tipo_de_juego == 1:
-    #             self.master.after(100, self.process_queue)
-    #         elif self.tipo_de_juego == 2:
-    #             if self.es_turno_pc:
-    #                 if self.calculando_movimiento == False:
-    #                     self.calculando_movimiento = True
-    #                     ThreadedTask(self.master).start()
-    #                 self.master.after(100, self.process_queue)               
-    #         elif self.tipo_de_juego == 3:
-                
-    #             print("no implementado")
-    #             return
-    #         self.master.after(100, self.process_queue)
-    
     def ejecutar(self):
-        print("tipo de juego: %d",(self.tipo_de_juego))
+        #print("tipo de juego: %d",(self.tipo_de_juego))
         #time.sleep(1)
         if self.jaque_mate or self.es_tablas:
             return
@@ -272,28 +247,9 @@ class Juego:
             if self.es_turno_pc:
                 if self.calculando_movimiento == False:
                     self.calculando_movimiento = True
-                    ThreadedTask.ThreadedTask(self.master).start()
+                    ## ejecuta el algoritmo  para seleccionar el siguiente movimiento minimax sss* 
+                    ThreadedTask.ThreadedTask(self.master).start() ## se hace en un thread para no bloquear la ejecucion de mainloop y que no se bloquee la GUI
                     self.master.after(100, self.process_queue) 
-
-                # ## valores para inicializar un nodo : id,tablero,turno,enrroque,nivel,estado,valor,MAX_NODE
-                # id = [] ## Nodo inicial
-                # tablero = copy.deepcopy(self.tablero) ## copia una instancia del tablero
-                # if self.turno == 'B':
-                #     turno = Turno.Turno.BLANCAS
-                # elif self.turno == 'N':
-                #     turno = Turno.Turno.NEGRAS
-                # enrroque = Enrroque.Enrroque(self.enrroque_blancas_corto,self.enrroque_blancas_largo,self.enrroque_negras_corto,self.enrroque_negras_largo)
-                # nivel = 0 ## nivel inicial 0
-                # estado = Estado.Estado.VIVO ## Estado inicial vivo
-                # valor = 100000 ## +infinito (numero suficientemente grande como para ser mayor a cualquier evaluacion de estado)
-                # MAX_NODE = 2 ## Profundidad Maxima del arbol (aumentar de dos en dos)
-                # nodo_inicial = Nodo.Nodo(id,tablero,turno,enrroque,nivel,estado,valor,MAX_NODE)
-                # arbol_de_decision = ArbolDecision.ArbolDecision(nodo_inicial)
-
-                # self.movimiento_a_realizar = arbol_de_decision.minimax_SSS_estrella()
-                
-                #self.movimiento_a_realizar.imprimir()
-                #self.mover_pieza()
             else:
                 return
         elif self.tipo_de_juego == 3:
@@ -302,11 +258,7 @@ class Juego:
                 ThreadedTask.ThreadedTask(self.master).start()
                 self.master.after(100, self.process_queue) 
             return
-
         
-        #ThreadedTask(self.master).start()
-        
-
     def process_queue(self):
         try:
             movimiento_a_realizar = self.queue.get(0)
@@ -316,8 +268,6 @@ class Juego:
             #self.prog_bar.stop()
         except queue.Empty:
             self.master.after(100, self.process_queue)
-
-
 
     def es_casilla_inicial_permitida(self):
         for movimiento in self.movimientos_legales:

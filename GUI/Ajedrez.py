@@ -48,9 +48,9 @@ class Ajedrez(tk.Frame):
         self.entry_movimiento()
         self.btn_mover_pieza()
         self.cargar_lbl_img_turno()
+        self.cargar_lbl_img_jaque()
         self.colocar_lbl_img_jugadores()
         self.actualizar_estado_de_pantalla()
-        self.cargar_lbl_img_jaque()
 
     def dimensiones(self):
         """Define los aspectos de la ventana principal
@@ -193,7 +193,7 @@ class Ajedrez(tk.Frame):
 
     def colocar_lbl_img_turno(self):
         self.eliminar_lbl_img_turno()
-        print("lbl turno:%s",(self.master.juego.turno))
+        #print("lbl turno:%s",(self.master.juego.turno))
         if self.master.juego.turno == 'B':
             self.lbl_img_turno = self.lbl_img_turno_blancas
         elif self.master.juego.turno == 'N':
@@ -229,7 +229,6 @@ class Ajedrez(tk.Frame):
             ## self.lbl_img_jaque = self.lbl_img_tablas
             self.colocar_lbl_img(self.lbl_img_jaque)
         
-
     def eliminar_lbl_img_jaque(self):
         if self.lbl_img_jaque != None:
             self.eliminar_lbl_img(self.lbl_img_jaque)
