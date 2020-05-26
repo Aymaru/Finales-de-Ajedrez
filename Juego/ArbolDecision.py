@@ -78,14 +78,8 @@ class ArbolDecision:
                     #nodo_actual.get_id_nodo().imprimir()
                     nodo_padre = self.padre(nodo_actual)
                     total_de_hijos = nodo_padre.cantidad_de_hijos_max()
+                    ##print(nodo_actual.get_id_nodo())
                     hijo_actual = nodo_padre.buscar_nodo_hijo(nodo_actual.get_id_nodo())
-                    if hijo_actual == None:
-                        print("No encontro el hijo")
-                        print("id padre: ")
-                        print(nodo_padre.id)
-                        print("id hijo: ")
-                        print(nodo_actual.id)
-                        return
                     if hijo_actual != total_de_hijos-1:  ## Si no es el ultimo hijo del padre, insertar el siguiente hermano en la cabeza de lista como VIVO con el valor del nodo
                         nodo_padre.generar_hijo(hijo_actual+1,nodo_actual.valor,Estado.Estado.VIVO)
                         nodo_tmp = nodo_padre.get_nodo_hijo(hijo_actual+1)

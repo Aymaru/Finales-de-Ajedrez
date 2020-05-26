@@ -7,8 +7,8 @@ from collections import deque
 from Juego import Turno
 from Juego import Nodo
 from Juego import Enrroque
-from Juego import Estado
 from Juego import ArbolDecision
+from Juego import Estado
 
 class ThreadedTask(threading.Thread):
     
@@ -30,7 +30,7 @@ class ThreadedTask(threading.Thread):
         nivel = 0 ## nivel inicial 0
         estado = Estado.Estado.VIVO ## Estado inicial vivo
         valor = 100000 ## +infinito (numero suficientemente grande como para ser mayor a cualquier evaluacion de estado)
-        MAX_NODE = 4 ## Profundidad Maxima del arbol (aumentar de dos en dos)
+        MAX_NODE = 8 ## Profundidad Maxima del arbol (aumentar de dos en dos)
         nodo_inicial = Nodo.Nodo(id,tablero,turno,enrroque,nivel,estado,valor,MAX_NODE)
         arbol_de_decision = ArbolDecision.ArbolDecision(nodo_inicial)
 

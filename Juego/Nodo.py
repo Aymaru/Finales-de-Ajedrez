@@ -2,6 +2,7 @@
 import copy
 from collections import deque
 
+from Juego.Evaluador import Evaluador
 from Juego import Tablero
 from Juego import Movimiento
 from Juego import Estado
@@ -27,6 +28,8 @@ class Nodo:
         self.valor = valor
         self.MAX_NODE = MAX_NODE ## Nivel maximo de profundidad del arbol
         self.iniciar_nodo()
+
+        self.evaluador = None
 
     def iniciar_nodo(self):      
         #print(self.id)
@@ -243,11 +246,12 @@ class Nodo:
     ## def actualizar valor
     def actualizar_valor(self):
         if self.es_jaque_mate:
-            valor = 40000
+            valor = 200000
         elif self.es_tablas:
             valor = 0
         else:
-            valor = self.tablero.evaluacion_del_juego()
+            self.evaluador = Evaluador(self.tablero.tablero)
+            valor = self.evaluador.evaluar_tablero(self.turno)
         if (self.es_min() and self.turno == Turno.Turno.BLANCAS) or (self.es_max() and self.turno == Turno.Turno.NEGRAS):
             valor = valor * -1
 
@@ -268,7 +272,10 @@ class Nodo:
         id = copy.deepcopy(self.id)
         id.append(movimiento)
         tablero = copy.deepcopy(self.tablero)
-        turno = copy.deepcopy(self.turno)
+        if self.turno == Turno.Turno.BLANCAS:
+            turno = Turno.Turno.NEGRAS
+        else:
+            turno = Turno.Turno.BLANCAS
         enrroque = copy.deepcopy(self.enrroque)
         nivel = 1 + self.nivel
         nodo_hijo = Nodo(id,tablero,turno,enrroque,nivel,estado,valor,self.MAX_NODE) #(self,id,tablero,turno,enrroque,nivel,estado,valor,MAX_NODE)
