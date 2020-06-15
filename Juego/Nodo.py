@@ -244,14 +244,8 @@ class Nodo:
         return self.hijos[hijo]
         
     ## def actualizar valor
-    def actualizar_valor(self):
-        if self.es_jaque_mate:
-            valor = 200000
-        elif self.es_tablas:
-            valor = 0
-        else:
-            self.evaluador = Evaluador(self.tablero.tablero)
-            valor = self.evaluador.evaluar_tablero(self.turno)
+    def actualizar_valor(self):  
+        valor = Evaluador(self.tablero.tablero).evaluar_tablero(self.turno)
         if (self.es_min() and self.turno == Turno.Turno.BLANCAS) or (self.es_max() and self.turno == Turno.Turno.NEGRAS):
             valor = valor * -1
 
@@ -286,4 +280,5 @@ class Nodo:
         total_de_hijos = self.cantidad_de_hijos_max()
         for index in range (0,total_de_hijos):
             self.generar_hijo(index,self.valor,self.estado)
+
 

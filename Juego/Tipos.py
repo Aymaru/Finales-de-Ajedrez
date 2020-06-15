@@ -9,7 +9,6 @@ class Turno(Enum):
     BLANCAS = 1,
     NEGRAS = 2
 
-
 class Estado(Enum):
     VIVO = 1,
     SOLUCIONADO = 2
@@ -35,14 +34,16 @@ class TipoEvaluacion(Enum):
     MATERIAL = 1,
     MOVILIDAD = 2,
     ESTRUCTURA_DE_PEONES = 3,
-    ATAQUE_AL_REY = 4
+    ATAQUE_AL_REY = 4,
+    POSICIONAMIENTO = 5,
+    CONTROL_DEL_CENTRO = 6
 
 class FaseDeJuego(Enum):
-    INICIO = 0,
+    APERTURA = 0,
     DESARROLLO = 1,
     FINAL = 2
 
-class EstructuraDePeon(enum):
+class EstructuraDePeon(Enum):
     ADELANTADO = 0,
     AISLADO = 1,
     ATRASADO = 2,
@@ -52,5 +53,8 @@ class EstructuraDePeon(enum):
     BLOQUEADO = 6,
     ENCADENADO = 7,
 
-    
+class EstadosLog(Enum):
+    JAQUE = 0,
+    JAQUEMATE = 1,
+    TABLAS = 2
 

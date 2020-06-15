@@ -160,7 +160,6 @@ class Ajedrez(tk.Frame):
     def eliminar_lbl_img(self,imagen):
         imagen.delete_image()
         
-
     def colocar_lbl_img(self,imagen):
         imagen.colocar_imagen_en_tablero()
 
@@ -234,7 +233,6 @@ class Ajedrez(tk.Frame):
             self.eliminar_lbl_img(self.lbl_img_jaque)
             self.lbl_img_jaque = None
      
-
     # ###Métodos especializados######Métodos especializados###
     def regresar(self):
         self.destroy()

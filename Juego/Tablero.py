@@ -6,6 +6,7 @@ from Juego import Pieza
 from Juego import Movimiento
 
 from Juego.Tipos import Turno
+from Juego.Tipos import Pieza as TPieza
 
 ## representacion del tablero
 
@@ -78,6 +79,22 @@ class Tablero:
     def obtener_pieza_de_casilla(self,posicion):
         return self.tablero[posicion.calcular_posicion_tablero()]
 
+    def get_pieza(self,posicion):
+        pieza = abs(self.obtener_pieza_de_casilla(posicion))
+        if pieza == 1:
+            return TPieza.PEON
+        elif pieza == 2:
+            return TPieza.CABALLO
+        elif pieza == 3:
+            return TPieza.ALFIL
+        elif pieza == 4:
+            return TPieza.TORRE
+        elif pieza == 5:
+            return TPieza.DAMA
+        elif pieza == 6:
+            return TPieza.REY
+        else:
+            return None
     ## Recibe el valor de una pieza (1,2,3,4,5,6) o negativos y una posicion fila,columna Ejm. (2,1)
     ## Devuelve el tablero con la pieza en esa casilla
     def colocar_pieza_en_casilla(self,pieza,posicion):
@@ -119,6 +136,11 @@ class Tablero:
             return 'B'
         return 'N'
 
+    def get_color_pieza(self,posicion):
+        pieza = self.obtener_pieza_de_casilla(posicion)
+        if pieza > 0:
+            return Turno.BLANCAS
+        return Turno.NEGRAS
     ####
     ##  Funcionalidades que describen el juego, mover una pieza del tablero, generar los posibles movimientos en un turno, determinar jaque y jaque mate
     ####
@@ -292,8 +314,11 @@ class Tablero:
                             posibles_movimientos.append(posible_movimiento)
 
             else:
-                posible_movimiento = Movimiento.Movimiento(casilla_inicial,casilla_objetivo)
-                posibles_movimientos.append(posible_movimiento)
+                if pieza_casilla_objetivo != 0:
+                    tmp_color_objetivo = self.obtener_color_de_pieza(casilla_objetivo)
+                    if tmp_color_objetivo != color_de_pieza:
+                        posible_movimiento = Movimiento.Movimiento(casilla_inicial,casilla_objetivo)
+                        posibles_movimientos.append(posible_movimiento)
 
         return posibles_movimientos
                 

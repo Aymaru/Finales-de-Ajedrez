@@ -8,7 +8,7 @@ class Label_IMG():
         self.canvas = canvas
         self.lbl_imagen = imagen
         self.cargar_imagen()
-        self.resize_img()
+        #self.resize_img()
 
 
 
@@ -25,7 +25,9 @@ class Label_IMG():
        
     def colocar_posicion_en_tablero(self,posicion):
         self.posicion_en_tablero = Posicion.Posicion(posicion.fila,posicion.columna)
-        
+    
+    def resize(self,escala_fila, escala_columna):
+        self.imagen = self.imagen.subsample(escala_fila,escala_columna)
       
     def colocar_imagen_en_tablero(self):
         self.id_canvas = self.canvas.create_image(self.posicion_en_tablero.columna,self.posicion_en_tablero.fila,image = self.imagen)

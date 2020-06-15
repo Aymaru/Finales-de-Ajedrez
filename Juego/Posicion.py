@@ -43,6 +43,9 @@ class Posicion:
     def calcular_posicion_tablero(self):
         return  8 * self.fila + self.columna    
 
+    def calcular_posicion_en_pantalla(self):
+        return Posicion(50 + (self.fila * 100),50 + (self.columna*100))
+    
     ## Funcion auxiliar, modifica fila,columna de una posicion a otra.
     ## Recibe una posicion (2,1), y dos enteros para aumentar cada uno respectivamente
     ## ejem avanzar_casilla((2,1),-1,+1) -> (1,2). El cual representa avanzar una casilla en la diagonal superior derecha
@@ -59,3 +62,7 @@ class Posicion:
     def imprimir(self):
         print("fila: %s, columna: %s" % (str(self.fila), str(self.columna)))
         
+    def get_posicion_tablero_str(self):
+        posible_y = {0:'a',1:'b',2:'c',3:'d',4:'e',5:'f',6:'g',7:'h'}
+        mov_str = posible_y[self.columna] + "" + str(8-self.fila)
+        return mov_str

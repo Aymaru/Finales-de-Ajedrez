@@ -7,7 +7,7 @@ from Main import leer_tablero
 import os.path as path
 
 from Juego import Juego
-from GUI import Ajedrez
+from GUI.TableroGUI import TableroGUI
 
 class Configuracion(tk.Frame):
     """Crea la ventana de configuracion de juego.
@@ -152,7 +152,7 @@ class Configuracion(tk.Frame):
         #print("turno: %s, jug_1: %s", (turno,jug_1))
         self.destroy()
         self.master.juego = Juego.Juego(self.master,turno,jug_1,self.piezas_iniciales,tipo_de_juego,self.es_juego_inicial)
-        self.master.GUI_ajedrez = Ajedrez.Ajedrez(self.master)
+        self.master.GUI_ajedrez = TableroGUI(self.master)
         self.master.juego.ejecutar()
         
         

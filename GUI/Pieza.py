@@ -1,6 +1,7 @@
 import tkinter as tk
 
-from Juego import Posicion
+from Juego.Posicion import Posicion
+from Juego.Movimiento import Movimiento
 
 class Pieza():
 
@@ -36,23 +37,37 @@ class Pieza():
         else:
             self.path += color_de_pieza+'R'+tipo
             #self.posicion_inicial = Posicion.Posicion(127,50.5)
-        self.posicion_inicial = Posicion.Posicion(127,50.5)
+        self.posicion_inicial = Posicion(100,100)
         self.imagen = tk.PhotoImage(file=self.path)
-        self.imagen = self.imagen.subsample(2,2)
+        #self.imagen = self.imagen.subsample(2,2)
     
     def calcular_posicion_en_tablero(self,posicion):
-        self.posicion_en_tablero = Posicion.Posicion(self.posicion_inicial.fila + (posicion.fila * 46),self.posicion_inicial.columna + (posicion.columna*48))
+        self.posicion_en_tablero = Posicion(self.posicion_inicial.fila + (posicion.fila * 100),self.posicion_inicial.columna + (posicion.columna*100))
 
     def colocar_posicion_en_tablero(self,posicion):
-        self.posicion_en_tablero = Posicion.Posicion(posicion.fila,posicion.columna)
+        self.posicion_en_tablero = Posicion(posicion.fila,posicion.columna)
         
     def colocar_imagen_en_tablero(self):
         self.id_canvas = self.canvas.create_image(self.posicion_en_tablero.columna,self.posicion_en_tablero.fila,image = self.imagen)
         self.canvas.pack()
+    
+    def resize(self,escala_fila, escala_columna):
+        self.imagen = self.imagen.subsample(escala_fila,escala_columna)
 
     def mover_pieza(self):
         self.canvas.coords(self.id_canvas,(self.posicion_en_tablero.columna,self.posicion_en_tablero.fila))
+  
+    def get_posicion_en_tablero(self):
+        return self.posicion_en_tablero
 
+    def mover_casilla_en_tablero(self,direccion_fila,direccion_columna):
+        self.posicion_en_tablero = Posicion(self.posicion_en_tablero.fila+100*direccion_fila,self.posicion_en_tablero.columna+100*direccion_columna)
+    
+    def eliminar_pieza(self):
+        self.canvas.delete(self.id_canvas)
+
+    def get_focus(self):
+        self.id_canvas.configure(takefocus=True)
     #movX = posXTablero + (col-1) * 48
     #movY = posYTablero + (fila-1) * 46        
 

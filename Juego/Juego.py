@@ -15,9 +15,12 @@ from Juego import ThreadedTask
 ##enums
 from Juego import Estado
 from Juego import Turno
+from Juego.Tipos import Turno
+from Juego.Log import Log
 
-## GUI
-from GUI import Ajedrez
+##Evaluador
+from Juego.Evaluador import Evaluador
+
 
 class Juego:
 
@@ -25,7 +28,6 @@ class Juego:
         self.master = master
         self.tablero = Tablero.Tablero()
 
-        
         self.J1 = jug_1
         self.J2 = ""
         self.colocar_piezas_iniciales(piezas_iniciales)        
@@ -60,15 +62,22 @@ class Juego:
         self.casilla_inicial = None
         self.casilla_objetivo = None
         self.movimiento_a_realizar = None
-
+        
+        self.__log = Log(self.tablero,piezas_iniciales,self.tipo_de_juego,self.J1,self.J2,self.turno)
         self.actualizar_estado_de_tablero()
-        #self.ejecutar()
-        ##Se instancia la interfaz
-        #self.GUI_ajedrez = Ajedrez.Ajedrez(self.master)
+
+    def guardar_log(self):
+        self.__log.registrar_log()
 
     def set_evaluacion_de_tablero(self):
-        self.evaluacion_de_tablero = self.tablero.evaluacion_del_juego()
-        #print("Evaluacion: %d",(self.evaluacion_de_tablero))
+        evaluador = Evaluador(self.tablero.tablero)
+        if self.turno == 'B':
+            turno = Turno.BLANCAS
+        else:
+            turno = Turno.NEGRAS
+        
+        self.evaluacion_de_tablero = evaluador.evaluar_tablero(turno)
+        print("Evaluacion: %d",(self.evaluacion_de_tablero))
             
     def generar_movimientos_de_enrroque(self):
         if self.turno == 'B':
@@ -94,7 +103,7 @@ class Juego:
                     self.movimientos_legales.append(enrroque_nl)
 
     def actualizar_estado_de_tablero(self):
-        self.set_evaluacion_de_tablero()
+        #self.set_evaluacion_de_tablero()
         self.set_posibles_movimientos()
         self.set_movimientos_legales()        
         self.set_posibles_movimientos_blancas()
@@ -150,17 +159,27 @@ class Juego:
     def set_jaque_mate(self):
         if self.es_jaque and len(self.movimientos_legales) == 0:
             self.jaque_mate = True
+            if self.turno == "B":
+                self.__log.resultado = Turno.NEGRAS
+            elif self.turno == "N":
+                self.__log.resultado = Turno.BLANCAS
+            self.__log.registrar_log()
         else:
             self.jaque_mate = False
 
     def set_es_tablas(self):
         if not self.es_jaque and len(self.movimientos_legales) == 0:
             self.es_tablas = True
+            if self.turno == "B":
+                self.__log.resultado = Turno.NEGRAS
+            elif self.turno == "N":
+                self.__log.resultado = Turno.BLANCAS
+            self.__log.registrar_log()
         else:
             self.es_tablas = False
 
     def colocar_piezas_iniciales(self,piezas_iniciales):
-        piezas = piezas_iniciales.split(",") ##Esto creo que se debe cambiar por espacios, a como lo pide el profe y cambiar las comas por espacios en los archivos de juego
+        piezas = piezas_iniciales.split(" ") ##Esto creo que se debe cambiar por espacios, a como lo pide el profe y cambiar las comas por espacios en los archivos de juego
         piezas_iniciales = []
         for pieza in piezas:
             piezas_iniciales.append(list(pieza))
@@ -205,18 +224,21 @@ class Juego:
             self.turno = 'B'
         
         if self.tablero.es_movimiento_enrroque(movimiento_a_realizar):
-            self.tablero.realizar_enrroque(movimiento_a_realizar)
             self.master.GUI_ajedrez.colocar_enrroque(movimiento_a_realizar)
+            self.tablero.realizar_enrroque(movimiento_a_realizar)
         elif self.tablero.es_movimiento_coronacion(movimiento_a_realizar):
-            self.tablero.realizar_coronamiento(movimiento_a_realizar,pieza_de_coronamiento)
             self.master.GUI_ajedrez.colocar_coronamiento(movimiento_a_realizar,pieza_de_coronamiento)
+            self.tablero.realizar_coronamiento(movimiento_a_realizar,pieza_de_coronamiento)
         else:
-            self.tablero.mover_pieza(movimiento_a_realizar)
             self.master.GUI_ajedrez.mover_pieza(movimiento_a_realizar)
-        
+            self.tablero.mover_pieza(movimiento_a_realizar)
+
+        self.master.GUI_ajedrez.limpiar_casillas_mov_anterior()
+        self.master.GUI_ajedrez.marcar_movimiento_anterior(movimiento_a_realizar)
         self.actualizar_turno_pc()
         self.actualizar_estado_de_tablero()
         self.master.GUI_ajedrez.actualizar_estado_de_pantalla()
+        self.__log.agregar_log(self.tablero,movimiento_a_realizar)
         self.limpiar_casilla_inicial() 
         self.limpiar_casilla_objetivo()
         self.limpiar_movimiento_a_realizar()
@@ -289,41 +311,3 @@ class Juego:
         else:
             return "Negras"
     
-    # def iniciar_juego(self):
-
-    #     ##Pendiente el log en archivo log_partida = [log_de_tablero_inicial,log_de_movimientos]
-    #     ##log_de_tablero_inicial = copy.deepcopy(tablero)
-    #     ##log_de_movimientos = []
-
-    #     while True:
-    #         posibles_movimientos = self.tablero.generar_posibles_movimientos()
-    #         movimientos_legales = self.tablero.obtener_movimientos_legales(posibles_movimientos,self.turno)
-    #         if self.hay_jaque_mate:
-    #             print("juego terminado")
-    #             break
-
-    #         jaque = self.tablero.hay_jaque(posibles_movimientos,self.turno)
-            
-    #         if self.turno == 'B':
-    #             pieza_de_coronamiento = 5
-    #         else:
-    #             pieza_de_coronamiento = -5
-
-    #         if self.turno == J1: ## Turno del jugador, espera que el jugador ingrese el movimiento
-    #             print("Ingrese la casilla a mover y la casilla donde se mueve, con formato: \ncolumna fila. Ejm (a7)")
-    #             posicion_inicial = input("Ingrese la casilla inicial: ")
-    #             posicion_destino = input("Ingrese la casilla destino: ")
-    #             if not(validar_posicion_real(posicion_inicial) and validar_posicion_real(posicion_destino)):
-    #                 print("Error en las posiciones ingresadas")
-    #                 continue
-                
-    #             posicion_inicial = convertir_posicion_real_a_representacion([posicion_inicial[0],posicion_inicial[1]])
-    #             posicion_destino = convertir_posicion_real_a_representacion([posicion_destino[0],posicion_destino[1]])
-    #             movimiento = [posicion_inicial,posicion_destino]
-
-    #             tablero = mover_pieza(tablero,movimiento,pieza_de_coronamiento)
-    #             turno = J2
-    #         else:
-    #             movimiento = [] ## Obtener movimiento usando minimax
-    #             tablero = mover_pieza(tablero,movimiento,pieza_de_coronamiento)
-    #             turno = J1          
