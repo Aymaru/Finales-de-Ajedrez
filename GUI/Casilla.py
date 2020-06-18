@@ -50,7 +50,6 @@ class Casilla():
             self.__circulo = self.__canvas.create_oval(columna_inicial,fila_inicial,columna_final,fila_final,width=2,fill=color)
     
     def eliminar_lineas(self):
-        print("elimina lineas?")
         if len(self.__lineas) > 0:
             for linea in self.__lineas:
                 self.__canvas.delete(linea)

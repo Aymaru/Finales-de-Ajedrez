@@ -251,9 +251,6 @@ class Configuracion(Frame):
             print(cuadros)
 
     def cagarArchivo(self):
-        """Obtiene las piezas del archivo escogido
-        """
-        #print((self.stringArchivo.get(),type(self.stringArchivo)))
         # Verifica si el cuadro de texto no es vacio.
         # Si escribió en el cuadro de texto.
         # Usabamos un try para verificar si realmente existe el documento.
@@ -272,8 +269,6 @@ class Configuracion(Frame):
                 # No ten[ia movimeintos.
                 self.popUp(2,"[Error.B] ¡El archivo no posee movimientos iniciales!")
                 int("AutoError")
-            #print(self.movIniciales)
-            #print(len(self.movIniciales))
             return True
         except:
             self.popUp(3,"Error, el archivo es incorrecto.")

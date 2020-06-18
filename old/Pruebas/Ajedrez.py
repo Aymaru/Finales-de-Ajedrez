@@ -192,7 +192,6 @@ class Ajedrez(tk.Frame):
 
     def colocar_lbl_img_turno(self):
         self.eliminar_lbl_img_turno()
-        #print("lbl turno:%s",(self.master.juego.turno))
         if self.master.juego.turno == 'B':
             self.lbl_img_turno = self.lbl_img_turno_blancas
         elif self.master.juego.turno == 'N':
@@ -482,26 +481,6 @@ class Ajedrez(tk.Frame):
         #print("validar numero %d, inicio %d, final %d",(number,first,last))
         return (number >= first and number <= last)
 
-    # def mover_pieza(self):
-    #     casilla_inicial = self.master.juego.movimiento_a_realizar.casilla_inicial
-    #     casilla_objetivo = self.master.juego.movimiento_a_realizar.casilla_objetivo
-    #     pieza_a_mover = self.piezas[casilla_inicial.calcular_posicion_tablero()]
-    #     self.piezas[casilla_inicial.calcular_posicion_tablero()] = None
-    #     pieza_objetivo = self.piezas[casilla_objetivo.calcular_posicion_tablero()]
-    #     pieza_a_mover.calcular_posicion_en_tablero(casilla_objetivo)
-    #     pieza_a_mover.mover_pieza()
-    #     print(pieza_objetivo)
-    #     if pieza_objetivo != None:
-    #         self.mover_captura_a_pozo(casilla_objetivo)
-    #     self.piezas[casilla_objetivo.calcular_posicion_tablero()] = pieza_a_mover
-    #     self.eliminar_lbl_img(self.lbl_img_turno)
-    #     self.master.juego.mover_pieza()
-    #     #self.turno.set(self.master.juego.turno_to_string())
-    #     self.colocar_lbl_img_turno()
-    #     self.movimiento_casilla_inicial.set("")
-    #     self.movimiento_casilla_objetivo.set("")
-    #     self.disable_btn_mover_pieza()
-
     def mover_pieza(self,movimiento):
         casilla_inicial = movimiento.casilla_inicial
         casilla_objetivo = movimiento.casilla_objetivo
@@ -517,13 +496,6 @@ class Ajedrez(tk.Frame):
         self.piezas[casilla_objetivo.calcular_posicion_tablero()] = pieza_a_mover
         self.piezas[casilla_inicial.calcular_posicion_tablero()] = None
         
-        #self.master.juego.mover_pieza()
-        #self.turno.set(self.master.juego.turno_to_string())
-        ## separar en otra funcion
-        # self.colocar_lbl_img_turno()
-        # self.movimiento_casilla_inicial.set("")
-        # self.movimiento_casilla_objetivo.set("")
-        # self.disable_btn_mover_pieza()
 
     def actualizar_estado_de_pantalla(self):
         self.colocar_lbl_img_turno()

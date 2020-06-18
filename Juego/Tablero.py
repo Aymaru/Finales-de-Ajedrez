@@ -81,6 +81,7 @@ class Tablero:
 
     def get_pieza(self,posicion):
         pieza = abs(self.obtener_pieza_de_casilla(posicion))
+        print("get pieza: %d" % (pieza))
         if pieza == 1:
             return TPieza.PEON
         elif pieza == 2:
@@ -272,7 +273,6 @@ class Tablero:
     ## Recibe una posicion (2,1)
     ## Devuelve los posibles movimientos para el peon en esa posicion.
     def posibles_movimientos_de_peon(self,casilla_inicial):
-        #print("Revisando peon en fila:%d,columna:%d",(casilla_inicial.fila,casilla_inicial.columna))
         posibles_movimientos = deque()
         
         color_de_pieza = self.obtener_color_de_pieza(casilla_inicial)
@@ -463,22 +463,17 @@ class Tablero:
         posicion_torre = Posicion.Posicion(7,7)
         posicion_rey_pieza = self.obtener_pieza_de_casilla(posicion_rey)
         posicion_torre_pieza = self.obtener_pieza_de_casilla(posicion_torre)
-        #print("EBC")
         if posicion_rey_pieza == 6 and posicion_torre_pieza == 4:
-            #print("EBC bien las piezas")
             fila = 7
             for columna in range(5,7):
                 posicion = Posicion.Posicion(fila,columna)
                 pieza_de_casilla = self.obtener_pieza_de_casilla(posicion)
                 if pieza_de_casilla != 0 or self.es_casilla_atacada(posicion,casillas_atacadas):
-                    #print("EBC se sale pieza != 0:%d o casilla atacada",(pieza_de_casilla))
                     return None
             casilla_objetivo = Posicion.Posicion(7,6)
             movimiento = Movimiento.Movimiento(posicion_rey,casilla_objetivo)
-            #print("EBC devuelve movimiento")
             return movimiento
         else:
-            #print("EBC mal las piezas")
             return None
 
     def generar_enrroque_blancas_largo(self,casillas_atacadas):

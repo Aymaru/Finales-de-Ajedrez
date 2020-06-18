@@ -138,7 +138,6 @@ class Configuracion(tk.Frame):
             self.piezas_iniciales = leer_tablero(path_tablero)
         else:
             #popup,diciendo que el archivo no existe
-            print("error de archivo")
             self.salir()
 
     def comenzar(self):
@@ -149,7 +148,6 @@ class Configuracion(tk.Frame):
         jug_1 = self.colocar_turno(self.jugador_1.get())
         tipo_de_juego = self.tipo_de_juego.get()
         self.obtener_piezas_iniciales()
-        #print("turno: %s, jug_1: %s", (turno,jug_1))
         self.destroy()
         self.master.juego = Juego.Juego(self.master,turno,jug_1,self.piezas_iniciales,tipo_de_juego,self.es_juego_inicial)
         self.master.GUI_ajedrez = TableroGUI(self.master)

@@ -53,18 +53,18 @@ class TableroGUI(tk.Frame):
         self.__posiciones_de_captura = {
             Turno.BLANCAS: {
                 TipoPieza.PEON : [
-                    Posicion(195 , 993),
-                    Posicion(195 , 1023),
-                    Posicion(195 , 1051),
-                    Posicion(230 , 1005),
-                    Posicion(230 , 1041),
-                    Posicion(265 , 993),
-                    Posicion(265 , 1023),
-                    Posicion(265 , 1051)
+                    Posicion(132 , 993),
+                    Posicion(132 , 1023),
+                    Posicion(132 , 1051),
+                    Posicion(168 , 1005),
+                    Posicion(168 , 1041),
+                    Posicion(203 , 993),
+                    Posicion(203 , 1023),
+                    Posicion(203 , 1051)
                 ],
                 TipoPieza.CABALLO : [
-                    Posicion(125 , 993),
-                    Posicion(125 , 1051)
+                    Posicion(63 , 993),
+                    Posicion(63 , 1051)
                 ],
                 TipoPieza.ALFIL : [
                     Posicion(160 , 1005),
@@ -132,7 +132,6 @@ class TableroGUI(tk.Frame):
         
 
         lbl_img_leyenda_turno = self.__turno_to_string()
-        print("turno leyenda %s" % lbl_img_leyenda_turno)
 
         posicion_lbl_img_leyenda_superior = Posicion(25,425)
         self.__lbl_img_leyenda_superior = Label_IMG(self.__main_canvas,lbl_img_leyenda_turno+"_leyenda_superior")
@@ -235,16 +234,15 @@ class TableroGUI(tk.Frame):
         elif turno == Turno.NEGRAS:
             return 'n'
         else:
-            print("error lblimg leyenda superior")
+            return None
 
     def __get_turno(self,turno):
-        print("get turno :", turno)
         if turno == "B":
             return Turno.BLANCAS
         elif turno == "N":
             return Turno.NEGRAS
         else:
-            print("error get turno")
+            return None
 
     def __cargar_lbl_img_jugadores(self):
         if self.master.juego.tipo_de_juego == 1:
@@ -259,7 +257,7 @@ class TableroGUI(tk.Frame):
             self.__lbl_img_jugador_1 = Label_IMG(self.__main_canvas,"pc1")
             self.__lbl_img_jugador_2 = Label_IMG(self.__main_canvas,"pc2")
         else:
-            print("error con cargar lbl img jugadores")  
+            return
 
     def __colocar_lbl_img_jugadores(self):
         self.__lbl_img_jugador_1.resize(4,4)
@@ -306,7 +304,7 @@ class TableroGUI(tk.Frame):
         elif self.master.juego.es_tablas == True:
             ## self.__lbl_img_estado = self.__lbl_img_tablas
             ## self.colocar_lbl_img(self.__lbl_img_estado)
-            print("Tablas no implementado")
+            return
 
     def __colocar_piezas(self):
         
@@ -360,11 +358,12 @@ class TableroGUI(tk.Frame):
                 if tmp_cantidad_de_capturas > 0:
                     for index in range(0,tmp_cantidad_de_capturas):
                         
-                        img_pieza = Pieza(self.canvas,self.__convertir_tipo_y_color_de_pieza_a_pieza(color,pieza))
+                        img_pieza = Pieza(self.__main_canvas,self.__convertir_tipo_y_color_de_pieza_a_pieza(color,pieza))
                         posicion_de_captura = self.__posiciones_de_captura[color][pieza][index]
                         img_pieza.colocar_posicion_en_tablero(posicion_de_captura)
+                        img_pieza.resize(3,3)
                         img_pieza.colocar_imagen_en_tablero()
-                        self.__posiciones_de_captura[color][pieza] = img_pieza
+                        self.__posiciones_de_captura[color][pieza][index] = img_pieza
     
     def __realizar_movimiento(self):
         self.master.juego.queue.put(self.master.juego.movimiento_a_realizar)
@@ -391,21 +390,17 @@ class TableroGUI(tk.Frame):
             columna = event.x
             if self.__validar_posicion_de_tablero_en_pantalla(fila, columna):
                 posicion_seleccionada = self.__generar_posicion_de_tablero(fila, columna)
-                print("Posicion valida del tablero")
-                posicion_seleccionada.imprimir()
+                #posicion_seleccionada.imprimir()
                 if self.master.juego.casilla_inicial == None:
-                    print("casilla inicial vacia, set casilla inicial")
                     self.master.juego.set_casilla_inicial(posicion_seleccionada)
                     self.__ultima_posicion = Posicion(fila,columna)
                     if not ( self.master.juego.es_casilla_inicial_permitida() ) :
                         self.master.juego.limpiar_casilla_inicial()
                         self.limpiar_casillas()
-                        print("casilla inicial no permitida, clear casilla inicial")
                         return
                     else:
                         self.marcar_movimientos_de_pieza(posicion_seleccionada)
                 else:
-                    print("casilla inicial seteada, set casilla objetivo")
                     self.master.juego.set_casilla_objetivo(posicion_seleccionada)
                     if self.master.juego.es_movimiento_a_realizar_legal():
                         self.__realizar_movimiento()
@@ -430,7 +425,6 @@ class TableroGUI(tk.Frame):
         
         if not self.__esperando_movimiento:
             return
-        print("on release")
         tmp_casilla_inicial = self.master.juego.casilla_inicial
         if  tmp_casilla_inicial == None:
             return
@@ -489,7 +483,6 @@ class TableroGUI(tk.Frame):
     def __generar_posicion_de_tablero(self,fila,columna):
         largo_filas = self.__posicion_final_tablero.fila - self.__posicion_inicial_tablero.fila
         largo_columnas = self.__posicion_final_tablero.columna - self.__posicion_inicial_tablero.columna
-        print("generar posicion largo fila: %d, largo columna: %d" % (largo_filas,largo_columnas))
         posicion_seleccionada = Posicion(int((fila-self.__posicion_inicial_tablero.fila)//self.__largo_casilla.fila),int((columna-self.__posicion_inicial_tablero.columna)//self.__largo_casilla.columna))
         return posicion_seleccionada
 
@@ -497,7 +490,6 @@ class TableroGUI(tk.Frame):
         return (self.__number_between_range(fila,self.__posicion_inicial_tablero.fila,self.__posicion_final_tablero.fila) and self.__number_between_range(columna,self.__posicion_inicial_tablero.columna,self.__posicion_final_tablero.columna))
 
     def __number_between_range(self,number,first,last):
-        #print("validar numero %d, inicio %d, final %d",(number,first,last))
         return (number >= first and number <= last)
 
     def __animacion_de_movimiento(self,movimiento):
@@ -521,10 +513,8 @@ class TableroGUI(tk.Frame):
                 casilla_inicial.avanzar_casilla(0,direccion_columna)
         else:
             while (not casilla_inicial.equals(casilla_objetivo) ):
-                print("casilla inicial")
-                casilla_inicial.imprimir()
-                print("casilla objetivo")
-                casilla_objetivo.imprimir()
+                #casilla_inicial.imprimir()
+                #casilla_objetivo.imprimir()
                 self.__animacion_mover_una_casilla(tmp_imagen,direccion_fila,direccion_columna)
                 casilla_inicial.avanzar_casilla(direccion_fila,direccion_columna)
                 
@@ -537,7 +527,7 @@ class TableroGUI(tk.Frame):
         iteraciones = 5
         wait = int((duracion_de_animacion / iteraciones)*1000)
         for desplazamiento in range (0,iteraciones):
-            print("mov")
+            continue
             # self.__mover_espacio(img_pieza,desplazamiento,iteraciones,direccion_columna,direccion_fila)
             # time.sleep(duracion_de_animacion / iteraciones)
             # self.__main_canvas.update()
@@ -571,12 +561,9 @@ class TableroGUI(tk.Frame):
         tmp_posicion_pantalla_actual = pieza_a_mover.get_posicion_en_tablero()
         tmp_posicion_pantalla_objetivo = Posicion(movimiento.casilla_objetivo.fila,movimiento.casilla_objetivo.columna)
         tmp_posicion_pantalla_objetivo.calcular_posicion_en_pantalla()
-        print("pieza posicion en tablero")
-        tmp_posicion_pantalla_actual.imprimir()
-        print(" posicion en tablero objetivo")
-        tmp_posicion_pantalla_objetivo.imprimir()
+        #tmp_posicion_pantalla_actual.imprimir()
+        #tmp_posicion_pantalla_objetivo.imprimir()
         if not tmp_posicion_pantalla_actual.equals(tmp_posicion_pantalla_objetivo):
-            print("lanza animacion")
             self.__animacion_de_movimiento(movimiento)
             pieza_a_mover.calcular_posicion_en_tablero(casilla_objetivo)
             pieza_a_mover.mover_pieza()

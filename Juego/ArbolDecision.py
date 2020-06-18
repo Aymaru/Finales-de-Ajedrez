@@ -12,23 +12,6 @@ class ArbolDecision:
         self.movimiento_seleccionado = None ## es el movimiento que devuelve la funcion minimax. Se selecciona cuando un nodo solucionado min, devuelve el nodo inicial
         self.deque_nodos = deque()        
     
-    # def buscar_nodo(self,nodo,id):
-    #     if nodo.es_nodo(id):
-    #         return nodo
-    #     else:
-    #         nodo_actual = nodo
-    #         cantidad_de_hijos = nodo_actual.cantidad_de_hijos()
-            
-    #         for index in range(0,cantidad_de_hijos):
-    #             nodo_tmp = nodo_actual.hijos[index]
-    #             if nodo_tmp.es_nodo(id):
-    #                 return nodo_tmp
-    #             if nodo_actual.hijos[index].es_predecesor(id):
-    #                 nodo_tmp = self.buscar_nodo(nodo_actual.hijos[index],id)
-    #                 if nodo_tmp != None:
-    #                     return nodo_tmp
-    #         return None
-
     ##def padre(nodo): -> nodo
     def padre(self,nodo):
         id_padre = nodo.get_id_padre()
@@ -44,7 +27,6 @@ class ArbolDecision:
         while(True):
             nodo_actual = self.lista.popleft() ## Obtiene y elimina el primer elemento de la lista
             if not nodo_actual.id and nodo_actual.estado == Estado.Estado.SOLUCIONADO:
-                #print("finaliza")
                 return            
             if nodo_actual.estado == Estado.Estado.VIVO: ##esta vivo
 
@@ -55,11 +37,6 @@ class ArbolDecision:
                         for nodo_tmp in nodo_actual.hijos:
                             nodo_tmp.set_estado(Estado.Estado.VIVO)
                             self.insertar_delante(nodo_tmp)
-                        #total_de_hijos = nodo_actual.cantidad_de_hijos_max()
-                        #for index in range(total_de_hijos-1,-1,-1):
-                            #nodo_tmp = nodo_actual.hijos[index]
-                            #nodo_tmp.set_estado(Estado.Estado.VIVO)
-                            #self.insertar_delante(nodo_tmp)
                         
                     elif nodo_actual.es_min(): ## es MIN
                         ## insertar el primer hijo del nodo en la cabeza de lista                         
@@ -73,12 +50,10 @@ class ArbolDecision:
                     self.insertar_delante_de_menores(nodo_actual)
 
             else: ##esta solucionado
-                #print("solucionado")
                 if nodo_actual.es_max(): ## es MAX
                     #nodo_actual.get_id_nodo().imprimir()
                     nodo_padre = self.padre(nodo_actual)
                     total_de_hijos = nodo_padre.cantidad_de_hijos_max()
-                    ##print(nodo_actual.get_id_nodo())
                     hijo_actual = nodo_padre.buscar_nodo_hijo(nodo_actual.get_id_nodo())
                     if hijo_actual != total_de_hijos-1:  ## Si no es el ultimo hijo del padre, insertar el siguiente hermano en la cabeza de lista como VIVO con el valor del nodo
                         nodo_padre.generar_hijo(hijo_actual+1,nodo_actual.valor,Estado.Estado.VIVO)
@@ -97,12 +72,11 @@ class ArbolDecision:
                         self.movimiento_seleccionado = nodo_actual.get_id_nodo()
                     nodo_padre.solucionar_nodo()
                     nodo_padre.set_valor(nodo_actual.valor)
-                    self.insertar_delante(nodo_padre)
                     self.eliminar_sucesores(nodo_padre.id)
-                    #nodo_padre.eliminar_hijos()
+                    self.insertar_delante(nodo_padre)
+                    nodo_padre.eliminar_hijos()
                     ## Eliminar todos los sucesores de la lista
                     ## Eliminar todos los sucesores del arbol?
-            #print(len(self.lista))
         
     def eliminar_sucesores(self,id):
         lista_index = self.get_indices_sucesores(id)

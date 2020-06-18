@@ -86,55 +86,55 @@ class Evaluador(Tablero):
                 ## Para cada pieza en cada fase del juego hay una lista del tamaño del tablero 8x8 (64)
                 ## Cada espacio de la lista representa la misma posicion del tablero 8*fila+columna
                 ## El valor de posicionamiento de una pieza se obtiene con self.__get_valor_de_evaluacion_de_posicionamiento_de_pieza(fase_de_juego,posicion)
-                FaseDeJuego.APERTURA: {
-                    Pieza.PEON: [0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0],
-                    Pieza.CABALLO: [0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0],
-                    Pieza.ALFIL: [0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0],
-                    Pieza.TORRE: [0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0],
-                    Pieza.DAMA: [0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0],
-                    Pieza.REY: [0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0]
+                FaseDeJuego.APERTURA: { ##Valores [50,25,10,0,-10,-25,-50]
+                    Pieza.PEON: [ 0,   0,   0,   0,   0,   0,   0,   0,
+                                 25,  10,  10,   0,   0,  10,  10,  25,
+                                -10, -10,   0,  25,  25,   0, -10, -10,
+                                -10, -10,  10,  25,  25,  10, -10, -10,
+                                 10,  10,  25,  50,  50,  25,  10,  10,
+                                 25,  25,  50,  50,  50,  50,  25,  25,
+                                 10,  10,  10,  10,  10,  10,  10,  50,
+                                 10,  10,  10,  10,  10,  10,  10,  50],
+                    Pieza.CABALLO: [ -50,   0,   0,  10,  10,   0,   0, -50,
+                                -50,  10,  10,   0,   0,  10,  10, -50,
+                                  0,  10,   0,  25,  25,   0,  10,   0,
+                                  0,  10,  50,  25,  25,  50,  10,   0,
+                                 10,  10,  25,  50,  50,  25,  25,  10,
+                                 25,  25,  50,  50,  50,  50,  25,  25,
+                                -50, -50,  25,   0,   0,  25, -50, -50,
+                                -50, -50,  25,   0,   0,  25, -50, -50],
+                    Pieza.ALFIL:[   -50, -50,   0, -50, -50,   0, -50, -50,
+                                    -25,   0, -10,   0,   0, -10,   0, -25,
+                                     10,  10,   0,  10,  10,  25, -10,  10,
+                                      0,  10,  50,  25,  25,  50, -10, -10,
+                                     10,  10,  25,  50,  50,  25,  25,  10,
+                                     25,  25,  50,  50,  50,  50,  25,  25,
+                                    -50, -50, -50, -50, -50, -50, -50, -50,
+                                    -50, -50, -50, -50, -50, -50, -50, -50],
+                    Pieza.TORRE: [  -50,   0,   0,  10,  10,   0,   0, -50,
+                                    -50,  10,  10,   0,   0,  10,  10, -50,
+                                      0,  10,   0,  25,  25,  25, -10,  10,
+                                      0,  10,  50,  25,  25,  50, -10, -10,
+                                     10,  10,  25,  50,  50,  25,  25,  10,
+                                     25,  25,  50,  50,  50,  50,  25,  25,
+                                    -50, -50,  25,   0,   0,  25, -50, -50,
+                                    -50, -50,  25,   0,   0,  25, -50, -50],
+                    Pieza.DAMA: [   -50,   0,   0,  10,  10,   0,   0, -50,
+                                    -50,  10,  10,   0,   0,  10,  10, -50,
+                                      0,  10,   0,  25,  25,  25, -10,  10,
+                                      0,  10,  50,  25,  25,  50, -10, -10,
+                                     10,  10,  25,  50,  50,  25,  25,  10,
+                                     25,  25,  50,  50,  50,  50,  25,  25,
+                                    -50, -50,  25,   0,   0,  25, -50, -50,
+                                    -50, -50,  25,   0,   0,  25, -50, -50],
+                    Pieza.REY: [    -50,   0,   0,  10,  10,   0,   0, -50,
+                                    -50,  10,  10,   0,   0,  10,  10, -50,
+                                      0,  10,   0,  25,  25,  25, -10,  10,
+                                      0,  10,  50,  25,  25,  50, -10, -10,
+                                     10,  10,  25,  50,  50,  25,  25,  10,
+                                     25,  25,  50,  50,  50,  50,  25,  25,
+                                    -50, -50,  25,   0,   0,  25, -50, -50,
+                                    -50, -50,  25,   0,   0,  25, -50, -50],
                 },
                 FaseDeJuego.DESARROLLO: {
                     Pieza.PEON: [0,0,0,0,0,0,0,0,
@@ -306,7 +306,7 @@ class Evaluador(Tablero):
             evaluacion += 0.5 * self.__valor_de_control_del_centro
             
         else:
-            print("fase del juego mal")
+            return None
         
         evaluacion += self.__valor_material 
         evaluacion += self.__valores_de_evaluacion[TipoEvaluacion.MOVILIDAD] * self.__valor_de_movilidad 
@@ -315,15 +315,15 @@ class Evaluador(Tablero):
         evaluacion += self.__valor_de_iniciativa
 
         #self.print_piezas()
-        print("fase :"+str(fase_del_juego))
-        print("mat: %f" % self.__valor_material)
-        print("mov: %f" % self.__valor_de_movilidad)
-        print("ar: %f" % self.__valor_de_ataque_al_rey)
-        print("ep: %f" % self.__valor_de_estructura_de_peones)
-        print("pos: %f" % self.__valor_de_posicionamiento)
-        print("ini: %f" % self.__valor_de_iniciativa)
-        print("cc: %f" % self.__valor_de_control_del_centro)
-        print("eval: %f" % evaluacion)
+        # print("fase :"+str(fase_del_juego))
+        # print("mat: %f" % self.__valor_material)
+        # print("mov: %f" % self.__valor_de_movilidad)
+        # print("ar: %f" % self.__valor_de_ataque_al_rey)
+        # print("ep: %f" % self.__valor_de_estructura_de_peones)
+        # print("pos: %f" % self.__valor_de_posicionamiento)
+        # print("ini: %f" % self.__valor_de_iniciativa)
+        # print("cc: %f" % self.__valor_de_control_del_centro)
+        # print("eval: %f" % evaluacion)
         return evaluacion
 
     def __es_jaque(self,posibles_movimientos,turno):
@@ -492,7 +492,7 @@ class Evaluador(Tablero):
 
         rey = self.__get_rey(color)
         if type(rey) == type(None):
-            print("se cae por el rey")
+            return None
         for fila in range(rey.fila-4,rey.fila+4):
             for columna in range(rey.columna-4,rey.columna+4):
 
@@ -573,24 +573,21 @@ class Evaluador(Tablero):
 
         cantidad_de_piezas_menores_blancas = contador_de_piezas[Turno.BLANCAS][Pieza.CABALLO] + contador_de_piezas[Turno.BLANCAS][Pieza.ALFIL] + contador_de_piezas[Turno.BLANCAS][Pieza.TORRE]
         cantidad_de_piezas_menores_negras = contador_de_piezas[Turno.NEGRAS][Pieza.CABALLO] + contador_de_piezas[Turno.NEGRAS][Pieza.ALFIL] + contador_de_piezas[Turno.NEGRAS][Pieza.TORRE]
-        print("cant p m B: %d" % cantidad_de_piezas_menores_blancas)
-        print("cant p m N: %d" % cantidad_de_piezas_menores_negras)
-        print("cant peones N: %d" % contador_de_piezas[Turno.BLANCAS][Pieza.PEON])
-        print("cant peones N: %d" % contador_de_piezas[Turno.NEGRAS][Pieza.PEON])
-        print("cant dama B: %d" % contador_de_piezas[Turno.BLANCAS][Pieza.DAMA])
-        print("cant dama N: %d" % contador_de_piezas[Turno.NEGRAS][Pieza.DAMA])
+        # print("cant p m B: %d" % cantidad_de_piezas_menores_blancas)
+        # print("cant p m N: %d" % cantidad_de_piezas_menores_negras)
+        # print("cant peones N: %d" % contador_de_piezas[Turno.BLANCAS][Pieza.PEON])
+        # print("cant peones N: %d" % contador_de_piezas[Turno.NEGRAS][Pieza.PEON])
+        # print("cant dama B: %d" % contador_de_piezas[Turno.BLANCAS][Pieza.DAMA])
+        # print("cant dama N: %d" % contador_de_piezas[Turno.NEGRAS][Pieza.DAMA])
         if (    self.__evaluar_fase_del_juego_es_apertura( contador_de_piezas[Turno.BLANCAS][Pieza.DAMA], cantidad_de_piezas_menores_blancas, contador_de_piezas[Turno.BLANCAS][Pieza.PEON] ) and 
                 self.__evaluar_fase_del_juego_es_apertura( contador_de_piezas[Turno.NEGRAS][Pieza.DAMA], cantidad_de_piezas_menores_negras, contador_de_piezas[Turno.NEGRAS][Pieza.PEON] ) ):
-            print("Es Apertura")
             return FaseDeJuego.APERTURA
         elif (  self.__evaluar_fase_del_juego_es_final( contador_de_piezas[Turno.BLANCAS][Pieza.DAMA], cantidad_de_piezas_menores_blancas ) or 
                 self.__evaluar_fase_del_juego_es_final( contador_de_piezas[Turno.NEGRAS][Pieza.DAMA], cantidad_de_piezas_menores_negras ) ):
         ##Si alguno de los esta en fase final, ambos estan en fase final (EXPERIMENTAR CON AMBOS EN FASE FINAL PARA PASAR A FASE FINAL) NOTA: A la inversa con apertura
-            print("Es Final")
             return FaseDeJuego.FINAL
         ## Si no se encuentran en apertura ni final, es el desarrollo
         else:
-            print("Es Desarrollo")
             return FaseDeJuego.DESARROLLO
     
     ## **************************************************************************************************************************************************************
@@ -1056,7 +1053,9 @@ class Evaluador(Tablero):
         if cantidad_de_atacantes == 0:
             print("FALLO AR")
             return 0
+        
         else:
+            print("Cantidad de atacantes %d" % cantidad_de_atacantes)
             return valor_del_ataque * self.__valores_de_evaluacion[TipoEvaluacion.ATAQUE_AL_REY][cantidad_de_atacantes] / 100
 
     ##Evalua si la fase del juego para un jugador es apertura

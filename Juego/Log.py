@@ -2,8 +2,9 @@ import datetime
 
 from Juego.LogMov import LogMov
 from Juego.Tipos import TipoDeJuego
-from Juego.Turno import Turno
+from Juego.Tipos import Turno
 from Juego.Tipos import Pieza
+from Juego.Tipos import EstadosLog
 
 class Log:
 
@@ -28,7 +29,15 @@ class Log:
         self.juego_finalizado = False
         self.resultado = ""       
         self.time_stamp = ""
-        
+
+    def set_estado_a_log(self,estado):
+        if estado != None:
+            tmp_log = self.historial_de_movimientos.pop()
+            tmp_log.escribir_estado(estado)
+            self.historial_de_movimientos.append(tmp_log)
+
+    def finalizar_juego(self):
+        self.juego_finalizado = True
 
     def generar_nombre_log(self):
         date = datetime.datetime.now().isoformat()
@@ -36,10 +45,13 @@ class Log:
         date = date.replace(":","%")
         print(date)
         self.file_name = self.path+date+self.ext
+    
 
     def agregar_log(self,tablero,movimiento):
+        print("agregar log:")
+        movimiento.imprimir()
         new_log_mov = LogMov(movimiento)
-        new_log_mov.escribir_movimiento(tablero,self.resultado)
+        new_log_mov.escribir_movimiento(tablero)
         self.historial_de_movimientos.append(new_log_mov)
 
     ##Ejemplo de log
@@ -91,7 +103,7 @@ class Log:
             return "PC vs PC"
     
     def jugador_blancas_toString(self):
-        if self.J1 == Turno.BLANCAS:
+        if self.J1 == "B":
             if self.tipo_de_juego == 1:
                 return "Jugador1"
             elif self.tipo_de_juego == 2:
@@ -107,7 +119,7 @@ class Log:
                 return "PC2"
             
     def jugador_negras_toString(self):
-        if self.J1 == Turno.NEGRAS:
+        if self.J1 == "N":
             if self.tipo_de_juego == 1:
                 return "Jugador1"
             elif self.tipo_de_juego == 2:
@@ -123,28 +135,33 @@ class Log:
                 return "PC2"
 
     def turno_inicial_toString(self):
-        if self.turno_inicial == Turno.BLANCAS:
+        if self.turno_inicial == "B":
             return "Blancas"
         else:
             return "Negras"
 
     def resultado_toString(self):
+        resultado_str = ""
         if self.juego_finalizado:
             if self.resultado == None:
-                return "Tablas"
-            elif self.resultado == Turno.Blancas:
-                return "Ganan las Blancas"
-            elif self.resultado == Turno.Negras:
-                return "Ganan las Negras"
+                resultado_str = "Tablas"
+                return resultado_str 
+            elif self.resultado == Turno.BLANCAS:
+                resultado_str = "Ganan las Blancas"
+                return resultado_str
+            elif self.resultado == Turno.NEGRAS:
+                resultado_str = "Ganan las Negras"
+                return resultado_str
         else:
-            return "Juego Incompleto"
+            resultado_str = "Juego Incompleto"
+            return resultado_str
 
     def piezas_iniciales_toString(self):
         ## Ejm. ['B','D','a',5]
         piezas_iniciales_str = ""
         for tmp_pieza in self.piezas_iniciales:
             for index in range(0,len(tmp_pieza)):
-                piezas_iniciales_str+=tmp_pieza[index]
-            piezas_iniciales_str+=" "
+                piezas_iniciales_str = piezas_iniciales_str + tmp_pieza[index]
+            piezas_iniciales_str = piezas_iniciales_str + " "
         return piezas_iniciales_str
 

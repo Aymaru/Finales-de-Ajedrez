@@ -1,0 +1,32 @@
+Falta para completar la el juego de ajedrez.
+
+En Logs, corregir errores que cargan el string del movimiento del log vacio
+En Evaluador, corregir valor de control del centro, ataque al rey y posicion.
+En Nodo del Algoritmo SSS*, tratar de reducir al maximo el consumo de memoria para mejorar el rendimiento del algoritmo
+En Interfaz, tratar de arreglar la funcion que permite visualizar una animacion de un movimiento en pantalla.
+En Interfaz, arreglar posicion de piezas capturadas.
+En Interfaz, funcion de voltear tablero para mostrar las piezas del tablero inverso para negras.
+En Interfaz, boton para darle la vuelta al tablero.
+En Interfaz, crear LBLIMG de Tablas
+
+
+Funciones que imprimen un objeto, para comentarlas o quitarlas
+printearTablero
+printearComponentes
+print_piezas
+print_estados_de_piezas
+
+Corregir paths del directorio
+
+
+/app
+    main
+    /scr
+        /gui
+        /game
+    /logs
+    /resources
+        /images
+        /boards
+
+    

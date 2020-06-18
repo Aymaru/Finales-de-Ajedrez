@@ -31,13 +31,12 @@ class Nodo:
 
         self.evaluador = None
 
-    def iniciar_nodo(self):      
-        #print(self.id)
+    def iniciar_nodo(self):     
         if self.id:
             movimiento = self.get_id_nodo()
             self.mover_pieza(movimiento)
-        self.generar_movimientos_legales()
         ##generar movimientos legales
+        self.generar_movimientos_legales()
 
     def buscar_nodo(self,id):
         if self.es_nodo(id):
@@ -75,7 +74,7 @@ class Nodo:
         #     self.hijos.pop(index)
         while(self.hijos):
             nodo_tmp = self.hijos.popleft()
-            nodo_tmp.eliminar_hijos
+            nodo_tmp.eliminar_hijos()
 
     def actualizar_estado_enrroque(self,movimiento):
         pieza_a_mover = abs(self.tablero.obtener_pieza_de_casilla(movimiento.casilla_inicial))
@@ -102,7 +101,7 @@ class Nodo:
 
         posibles_movimientos = self.tablero.generar_posibles_movimientos()
         turno = self.turno_to_string()
-        self.movimientos_legales = deque(self.tablero.obtener_movimientos_legales(posibles_movimientos,turno)) #de momento transformo lista en deque, luego cambio tablero para que trabaje con deque
+        self.movimientos_legales = self.tablero.obtener_movimientos_legales(posibles_movimientos,turno)
         self.generar_movimientos_de_enrroque(posibles_movimientos)
         
         #posibles_movimientos = self.tablero.generar_posibles_movimientos()
@@ -144,8 +143,6 @@ class Nodo:
             return "N"
 
     def es_terminal(self):
-        #print("nivel: ",self.nivel)
-        #print("max node: ",self.MAX_NODE)
         if self.nivel == self.MAX_NODE or self.es_jaque_mate or self.es_tablas:
             return True
         else:    
@@ -167,11 +164,9 @@ class Nodo:
             self.es_tablas = False
     
     def es_min(self):
-        #print("es min" ,self.nivel)
         return (self.nivel % 2) != 0
 
     def es_max(self):
-        #print("es max" ,self.nivel)
         return (self.nivel % 2) == 0
 
     def cantidad_de_hijos_max(self):

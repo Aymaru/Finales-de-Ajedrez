@@ -17,6 +17,7 @@ from Juego import Estado
 from Juego import Turno
 from Juego.Tipos import Turno
 from Juego.Log import Log
+from Juego.Tipos import EstadosLog
 
 ##Evaluador
 from Juego.Evaluador import Evaluador
@@ -66,9 +67,6 @@ class Juego:
         self.__log = Log(self.tablero,piezas_iniciales,self.tipo_de_juego,self.J1,self.J2,self.turno)
         self.actualizar_estado_de_tablero()
 
-    def guardar_log(self):
-        self.__log.registrar_log()
-
     def set_evaluacion_de_tablero(self):
         evaluador = Evaluador(self.tablero.tablero)
         if self.turno == 'B':
@@ -77,7 +75,6 @@ class Juego:
             turno = Turno.NEGRAS
         
         self.evaluacion_de_tablero = evaluador.evaluar_tablero(turno)
-        print("Evaluacion: %d",(self.evaluacion_de_tablero))
             
     def generar_movimientos_de_enrroque(self):
         if self.turno == 'B':
@@ -154,7 +151,6 @@ class Juego:
     
     def set_es_jaque(self):
         self.es_jaque = self.tablero.hay_jaque(self.posibles_movimientos,self.turno)
-        print(self.es_jaque)
 
     def set_jaque_mate(self):
         if self.es_jaque and len(self.movimientos_legales) == 0:
@@ -163,6 +159,9 @@ class Juego:
                 self.__log.resultado = Turno.NEGRAS
             elif self.turno == "N":
                 self.__log.resultado = Turno.BLANCAS
+            estado = self.get_estado_log()
+            self.__log.set_estado_a_log(estado)
+            self.__log.finalizar_juego()
             self.__log.registrar_log()
         else:
             self.jaque_mate = False
@@ -174,6 +173,9 @@ class Juego:
                 self.__log.resultado = Turno.NEGRAS
             elif self.turno == "N":
                 self.__log.resultado = Turno.BLANCAS
+            estado = self.get_estado_log()
+            self.__log.set_estado_a_log(estado)
+            self.__log.finalizar_juego()
             self.__log.registrar_log()
         else:
             self.es_tablas = False
@@ -214,8 +216,18 @@ class Juego:
     def limpiar_movimiento_a_realizar(self):
        self.movimiento_a_realizar = None
 
-    def mover_pieza(self,movimiento_a_realizar):
-        
+    def get_estado_log(self):
+        if self.jaque_mate:
+            return EstadosLog.JAQUEMATE
+        elif self.es_tablas:
+            return EstadosLog.TABLAS
+        elif self.es_jaque:
+            return EstadosLog.JAQUE
+        else:
+            return None
+
+    def mover_pieza(self,movimiento_a_realizar): 
+        self.__log.agregar_log(self.tablero,movimiento_a_realizar)    
         if self.turno == 'B':
             pieza_de_coronamiento = 5
             self.turno = 'N'
@@ -232,13 +244,14 @@ class Juego:
         else:
             self.master.GUI_ajedrez.mover_pieza(movimiento_a_realizar)
             self.tablero.mover_pieza(movimiento_a_realizar)
-
-        self.master.GUI_ajedrez.limpiar_casillas_mov_anterior()
-        self.master.GUI_ajedrez.marcar_movimiento_anterior(movimiento_a_realizar)
+        
         self.actualizar_turno_pc()
         self.actualizar_estado_de_tablero()
+        estado = self.get_estado_log()
+        self.__log.set_estado_a_log(estado)
+        self.master.GUI_ajedrez.limpiar_casillas_mov_anterior()
+        self.master.GUI_ajedrez.marcar_movimiento_anterior(movimiento_a_realizar)
         self.master.GUI_ajedrez.actualizar_estado_de_pantalla()
-        self.__log.agregar_log(self.tablero,movimiento_a_realizar)
         self.limpiar_casilla_inicial() 
         self.limpiar_casilla_objetivo()
         self.limpiar_movimiento_a_realizar()
@@ -258,8 +271,6 @@ class Juego:
         self.queue.put(self.movimiento_a_realizar)
 
     def ejecutar(self):
-        #print("tipo de juego: %d",(self.tipo_de_juego))
-        #time.sleep(1)
         if self.jaque_mate or self.es_tablas:
             return
 
