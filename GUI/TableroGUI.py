@@ -53,53 +53,53 @@ class TableroGUI(tk.Frame):
         self.__posiciones_de_captura = {
             Turno.BLANCAS: {
                 TipoPieza.PEON : [
-                    Posicion(132 , 993),
-                    Posicion(132 , 1023),
-                    Posicion(132 , 1051),
-                    Posicion(168 , 1005),
-                    Posicion(168 , 1041),
-                    Posicion(203 , 993),
-                    Posicion(203 , 1023),
-                    Posicion(203 , 1051)
+                    Posicion(132 , 928),
+                    Posicion(132 , 958),
+                    Posicion(132 , 988),
+                    Posicion(168 , 943),
+                    Posicion(168 , 973),
+                    Posicion(203 , 928),
+                    Posicion(203 , 958),
+                    Posicion(203 , 988)
                 ],
                 TipoPieza.CABALLO : [
-                    Posicion(63 , 993),
-                    Posicion(63 , 1051)
+                    Posicion(63 , 928),
+                    Posicion(63 , 988)
                 ],
                 TipoPieza.ALFIL : [
-                    Posicion(160 , 1005),
-                    Posicion(160 , 1041)
+                    Posicion(97 , 943),
+                    Posicion(97 , 973)
                 ],
                 TipoPieza.TORRE : [
-                    Posicion(90 , 1005),
-                    Posicion(90 , 1041)
+                    Posicion(27 , 943),
+                    Posicion(27 , 973)
                 ],
-                TipoPieza.DAMA : [ Posicion(125 , 1020) ]
+                TipoPieza.DAMA : [ Posicion(63 , 958) ]
             },
             Turno.NEGRAS: {
                 TipoPieza.PEON : [
-                    Posicion(865 , 993),
-                    Posicion(865 , 1023),
-                    Posicion(865 , 1051),
-                    Posicion(900 , 1005),
-                    Posicion(900 , 1041),
-                    Posicion(935 , 993),
-                    Posicion(935 , 1023),
-                    Posicion(935 , 1051),
+                    Posicion(802 , 928),
+                    Posicion(802 , 958),
+                    Posicion(802 , 988),
+                    Posicion(832 , 943),
+                    Posicion(832 , 973),
+                    Posicion(862 , 928),
+                    Posicion(862 , 958),
+                    Posicion(862 , 988),
                 ],
                 TipoPieza.CABALLO : [
-                    Posicion(795 , 993),
-                    Posicion(795 , 1051)
+                    Posicion(732 , 928),
+                    Posicion(732 , 988)
                 ],
                 TipoPieza.ALFIL : [
-                    Posicion(830 , 1005),
-                    Posicion(830 ,  1041)
+                    Posicion(767 , 943),
+                    Posicion(767 , 973)
                 ],
                 TipoPieza.TORRE : [
-                    Posicion(760 , 1005),
-                    Posicion(760 ,  1041)
+                    Posicion(697 , 943),
+                    Posicion(697 , 973)
                 ],
-                TipoPieza.DAMA : [ Posicion(795 , 1020) ]
+                TipoPieza.DAMA : [ Posicion(732 , 958) ]
             } 
         }
 
@@ -204,6 +204,7 @@ class TableroGUI(tk.Frame):
 
         self.btn_finalizar = tk.Button(self,text = "REGRESAR",command= self.__regresar,bd=0,bg="grey60",width=20,height=5)
         self.btn_finalizar.place(x=1025,y=800)
+
         ##Events
         self.__main_canvas.bind("<Button-1>",self.__on_click_callback)
         self.__main_canvas.bind("<B1-Motion>",self.__on_motion_callback)

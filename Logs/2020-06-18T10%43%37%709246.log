@@ -1,0 +1,13 @@
+timestamp: 2020-06-18T10:44:46.478772
+tipo de juego: Jugador vs Jugador
+blancas: Jugador1
+negras: Jugador2
+mueven: Blancas
+resultado: Ganan las Blancas
+tablero inicial: N R a 8   B C c 8   B P a 7   N T g 6   B A a 4   N P g 4   N A g 3   B T b 2   B R b 1   B D f 8 
+historial de movimientos: 
+1. Caballo de c8 a d6 JAQUE!
+2. Rey de a8 captura peon en a7
+3. Dama de f8 a b8 JAQUE!
+4. Rey de a7 a a6
+5. Dama de b8 a b6 JAQUE MATE!

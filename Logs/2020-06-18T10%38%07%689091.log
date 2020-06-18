@@ -1,0 +1,75 @@
+timestamp: 2020-06-18T10:41:45.146798
+tipo de juego: Jugador vs Jugador
+blancas: Jugador1
+negras: Jugador2
+mueven: Blancas
+resultado: Juego Incompleto
+tablero inicial: N T a 8   N C b 8   N A c 8   N D d 8   N R e 8   N A f 8   N C g 8   N T h 8   N P a 7   N P b 7   N P c 7   N P d 7   N P e 7   N P f 7   N P g 7   N P h 7   B T a 1   B C b 1   B A c 1   B D d 1   B R e 1   B A f 1   B C g 1   B T h 1   B P a 2   B P b 2   B P c 2   B P d 2   B P e 2   B P f 2   B P g 2   B P h 2 
+historial de movimientos: 
+1. Peon a d4
+2. Peon a d5
+3. Peon a c4
+4. Peon a e5
+5. Peon a e4
+6. Peon a f5
+7. Peon a f4
+8. Peon a c5
+9. Peon a b4
+10. Peon a b5
+11. Peon a g3
+12. Peon a h6
+13. Peon a h4
+14. Peon a g5
+15. Peon a a3
+16. Peon a a6
+17. Peon captura peon en b5
+18. Peon captura peon en b5
+19. Peon captura peon en c5
+20. Peon a b4
+21. Peon captura peon en g5
+22. Peon captura peon en g5
+23. Peon captura peon en g5
+24. Peon a f4
+25. Peon captura peon en f4
+26. Peon captura peon en f4
+27. Peon a e5
+28. Peon captura peon en a3
+29. Torre de a1 captura peon en a3
+30. Dama de d8 captura peon en g5
+31. Alfil de c1 captura peon en f4
+32. Dama de g5 captura alfil de f4
+33. Dama de d1 a h5 JAQUE!
+34. Dama de f4 a f7
+35. Dama de h5 captura torre de h8
+36. Dama de f7 captura alfil de f1 JAQUE!
+37. Rey de e1 a d2
+38. Dama de f1 captura caballo en b1
+39. Rey de d2 a e3
+40. Dama de b1 captura caballo en g1 JAQUE!
+41. Rey de e3 a f3
+42. Caballo de g8 a f6
+43. Torre de a3 captura torre de a8
+44. Alfil de c8 a a6
+45. Torre de a8 captura alfil de a6
+46. Caballo de b8 captura torre de a6
+47. Torre de h1 captura dama de g1
+48. Caballo de f6 a e4
+49. Torre de g1 a g6
+50. Caballo de a6 captura peon en c5
+51. Peon captura caballo en c5
+52. Caballo de e4 a f6
+53. Torre de g6 a g7
+54. Caballo de f6 a g8
+55. Peon a e6
+56. Alfil de f8 captura peon en c5
+57. Peon a e7
+58. Alfil de c5 captura peon en e7
+59. Torre de g7 captura alfil de e7 JAQUE!
+60. Rey de e8 captura torre de e7
+61. Dama de h8 a d4
+62. Caballo de g8 a f6
+63. Dama de d4 captura peon en d5
+64. Caballo de f6 captura dama de d5
+65. Rey de f3 a e4
+66. Caballo de d5 a f4
+67. Rey de e4 captura caballo en f4

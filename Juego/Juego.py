@@ -66,6 +66,9 @@ class Juego:
         
         self.__log = Log(self.tablero,piezas_iniciales,self.tipo_de_juego,self.J1,self.J2,self.turno)
         self.actualizar_estado_de_tablero()
+    
+    def guardar_log(self):
+        self.__log.registrar_log()
 
     def set_evaluacion_de_tablero(self):
         evaluador = Evaluador(self.tablero.tablero)
