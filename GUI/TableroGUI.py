@@ -133,19 +133,19 @@ class TableroGUI(tk.Frame):
 
         lbl_img_leyenda_turno = self.__turno_to_string()
 
-        posicion_lbl_img_leyenda_superior = Posicion(25,425)
+        posicion_lbl_img_leyenda_superior = Posicion(27,450)
         self.__lbl_img_leyenda_superior = Label_IMG(self.__main_canvas,lbl_img_leyenda_turno+"_leyenda_superior")
         self.__lbl_img_leyenda_superior.colocar_posicion_en_tablero(posicion_lbl_img_leyenda_superior)
         
-        posicion_lbl_img_leyenda_inferior = Posicion(875,425)
+        posicion_lbl_img_leyenda_inferior = Posicion(875,450)
         self.__lbl_img_leyenda_inferior = Label_IMG(self.__main_canvas,lbl_img_leyenda_turno+"_leyenda_inferior")
         self.__lbl_img_leyenda_inferior.colocar_posicion_en_tablero(posicion_lbl_img_leyenda_inferior)
 
-        posicion_lbl_img_leyenda_izquierda = Posicion(425,25)
+        posicion_lbl_img_leyenda_izquierda = Posicion(450,25)
         self.__lbl_img_leyenda_izquierda = Label_IMG(self.__main_canvas,lbl_img_leyenda_turno+"_leyenda_lateral_izq")
         self.__lbl_img_leyenda_izquierda.colocar_posicion_en_tablero(posicion_lbl_img_leyenda_izquierda)
 
-        posicion_lbl_img_leyenda_derecha = Posicion(425,875)
+        posicion_lbl_img_leyenda_derecha = Posicion(450,875)
         self.__lbl_img_leyenda_derecha = Label_IMG(self.__main_canvas,lbl_img_leyenda_turno+"_leyenda_lateral_der")
         self.__lbl_img_leyenda_derecha.colocar_posicion_en_tablero(posicion_lbl_img_leyenda_derecha)
         
@@ -307,6 +307,14 @@ class TableroGUI(tk.Frame):
             ## self.colocar_lbl_img(self.__lbl_img_estado)
             return
 
+    def __invertir_piezas(self):
+        tmp_piezas = []
+
+        while (self.__piezas != []):
+            tmp_pieza = self.__piezas.pop()
+            tmp_piezas.append(tmp_pieza)
+        self.__piezas = tmp_piezas
+
     def __colocar_piezas(self):
         
         for fila in range(0,8):
@@ -320,11 +328,14 @@ class TableroGUI(tk.Frame):
                     tmp_color = self.__obtener_color_de_pieza(pieza_actual)
                     if tmp_pieza != TipoPieza.REY:
                         self.__cantidad_de_capturas[tmp_color][tmp_pieza] -= 1
-
+                    if self.master.juego.J1 == "N":
+                        tmp_posicion.invertir()
                     pieza = Pieza(self.__main_canvas,pieza_actual)
                     pieza.calcular_posicion_en_tablero(tmp_posicion)
                     pieza.colocar_imagen_en_tablero()
                     self.__piezas.append(pieza)
+        if self.master.juego.J1 == "N":
+            self.__invertir_piezas()                    
     
     def __obtener_tipo_de_pieza(self,pieza):
         pieza = abs(pieza)
@@ -391,7 +402,8 @@ class TableroGUI(tk.Frame):
             columna = event.x
             if self.__validar_posicion_de_tablero_en_pantalla(fila, columna):
                 posicion_seleccionada = self.__generar_posicion_de_tablero(fila, columna)
-                #posicion_seleccionada.imprimir()
+                if self.master.juego.J1 == "N":
+                    posicion_seleccionada.invertir()
                 if self.master.juego.casilla_inicial == None:
                     self.master.juego.set_casilla_inicial(posicion_seleccionada)
                     self.__ultima_posicion = Posicion(fila,columna)
@@ -403,7 +415,7 @@ class TableroGUI(tk.Frame):
                         self.marcar_movimientos_de_pieza(posicion_seleccionada)
                 else:
                     self.master.juego.set_casilla_objetivo(posicion_seleccionada)
-                    if self.master.juego.es_movimiento_a_realizar_legal():
+                    if self.master.juego.es_movimiento_a_realizar_legal():                        
                         self.__realizar_movimiento()
                     self.limpiar_casillas()
                     self.master.juego.limpiar_casilla_inicial()
@@ -435,10 +447,17 @@ class TableroGUI(tk.Frame):
         movimiento_invalido = False
         if self.__validar_posicion_de_tablero_en_pantalla(fila, columna):
             posicion_seleccionada = self.__generar_posicion_de_tablero(fila, columna)
+            if self.master.juego.J1 == "N":
+                posicion_seleccionada.invertir()
             self.master.juego.set_casilla_objetivo(posicion_seleccionada)
             if self.master.juego.es_movimiento_a_realizar_legal():
-                tmp_img = self.__piezas[ self.master.juego.casilla_inicial.calcular_posicion_tablero() ]
-                tmp_img.calcular_posicion_en_tablero(self.master.juego.casilla_objetivo)
+                casilla_inicial = Posicion(self.master.juego.casilla_inicial.fila, self.master.juego.casilla_inicial.columna)
+                casilla_objetivo = Posicion(self.master.juego.casilla_objetivo.fila, self.master.juego.casilla_objetivo.columna)
+                if self.master.juego.J1 == "N":
+                    casilla_inicial.invertir()
+                    casilla_objetivo.invertir()
+                tmp_img = self.__piezas[ casilla_inicial.calcular_posicion_tablero() ]
+                tmp_img.calcular_posicion_en_tablero(casilla_objetivo)
                 self.__realizar_movimiento()                
             else:
                 movimiento_invalido = True
@@ -446,8 +465,11 @@ class TableroGUI(tk.Frame):
             movimiento_invalido = True
         
         if movimiento_invalido:
-            tmp_img = self.__piezas[self.master.juego.casilla_inicial.calcular_posicion_tablero()]
-            tmp_img.calcular_posicion_en_tablero(self.master.juego.casilla_inicial)
+            tmp_posicion = Posicion(self.master.juego.casilla_inicial.fila,self.master.juego.casilla_inicial.columna)
+            if self.master.juego.J1 == "N":
+                tmp_posicion.invertir()
+            tmp_img = self.__piezas[tmp_posicion.calcular_posicion_tablero()]            
+            tmp_img.calcular_posicion_en_tablero(tmp_posicion)
             tmp_img.mover_pieza()
             self.master.update()
         
@@ -557,15 +579,21 @@ class TableroGUI(tk.Frame):
     def mover_pieza(self,movimiento):
         casilla_inicial = movimiento.casilla_inicial
         casilla_objetivo = movimiento.casilla_objetivo
+        
         pieza_a_mover = self.__piezas[casilla_inicial.calcular_posicion_tablero()]
 
         tmp_posicion_pantalla_actual = pieza_a_mover.get_posicion_en_tablero()
-        tmp_posicion_pantalla_objetivo = Posicion(movimiento.casilla_objetivo.fila,movimiento.casilla_objetivo.columna)
+        tmp_posicion_pantalla_objetivo = Posicion(casilla_objetivo.fila,casilla_objetivo.columna)
+        # if self.master.juego.J1 == "N":
+        #     tmp_posicion_pantalla_objetivo.invertir()
         tmp_posicion_pantalla_objetivo.calcular_posicion_en_pantalla()
-        #tmp_posicion_pantalla_actual.imprimir()
-        #tmp_posicion_pantalla_objetivo.imprimir()
         if not tmp_posicion_pantalla_actual.equals(tmp_posicion_pantalla_objetivo):
-            self.__animacion_de_movimiento(movimiento)
+            ##self.__animacion_de_movimiento(movimiento)
+            
+            # if self.master.juego.J1 == "N":
+            #     tmp_posicion_pantalla_objetivo = Posicion(casilla_objetivo.fila,casilla_objetivo.columna)
+            #     tmp_posicion_pantalla_objetivo.invertir()
+
             pieza_a_mover.calcular_posicion_en_tablero(casilla_objetivo)
             pieza_a_mover.mover_pieza()
         
@@ -579,13 +607,23 @@ class TableroGUI(tk.Frame):
         casilla_inicial = movimiento.casilla_inicial
         casilla_objetivo = movimiento.casilla_objetivo
         color_de_pieza = self.master.juego.tablero.obtener_color_de_pieza(casilla_inicial)
+        # if self.master.juego.J1 == "N":
+        #     casilla_inicial.invertir()
+        #     casilla_objetivo.invertir()
         pieza_a_mover = self.__piezas[casilla_inicial.calcular_posicion_tablero()]
 
         tmp_posicion_pantalla_actual = pieza_a_mover.get_posicion_en_tablero()
-        tmp_posicion_pantalla_objetivo = Posicion(movimiento.casilla_objetivo.fila,movimiento.casilla_objetivo.columna)
-        tmp_posicion_pantalla_objetivo.calcular_posicion_en_pantalla()
+        tmp_posicion_pantalla_objetivo = Posicion(casilla_objetivo.fila,casilla_objetivo.columna)
+        # if self.master.juego.J1 == "N":
+        #     tmp_posicion_pantalla_objetivo.invertir()
+        # tmp_posicion_pantalla_objetivo.calcular_posicion_en_pantalla()
         if not tmp_posicion_pantalla_actual.equals(tmp_posicion_pantalla_objetivo):
-            self.__animacion_de_movimiento(movimiento)
+            ##self.__animacion_de_movimiento(movimiento)
+            
+            # if self.master.juego.J1 == "N":
+            #     tmp_posicion_pantalla_objetivo = Posicion(casilla_objetivo.fila,casilla_objetivo.columna)
+            #     tmp_posicion_pantalla_objetivo.invertir()
+
             pieza_a_mover.calcular_posicion_en_tablero(casilla_objetivo)
             pieza_a_mover.mover_pieza()
 
@@ -602,13 +640,16 @@ class TableroGUI(tk.Frame):
     def colocar_enrroque(self,movimiento):
         casilla_inicial = movimiento.casilla_inicial
         casilla_objetivo = movimiento.casilla_objetivo
+        # if self.master.juego.J1 == "N":
+        #     casilla_inicial.invertir()
+        #     casilla_objetivo.invertir()
         pieza_a_mover = self.__piezas[casilla_inicial.calcular_posicion_tablero()]
 
         tmp_posicion_pantalla_actual = pieza_a_mover.get_posicion_en_tablero()
-        tmp_posicion_pantalla_objetivo = Posicion(movimiento.casilla_objetivo.fila,movimiento.casilla_objetivo.columna)
+        tmp_posicion_pantalla_objetivo = Posicion(casilla_objetivo.fila,casilla_objetivo.columna)
         tmp_posicion_pantalla_objetivo.calcular_posicion_en_pantalla()
         if not tmp_posicion_pantalla_actual.equals(tmp_posicion_pantalla_objetivo):
-            self.__animacion_de_movimiento(movimiento)
+            ##self.__animacion_de_movimiento(movimiento)
             pieza_a_mover.calcular_posicion_en_tablero(casilla_objetivo)
             pieza_a_mover.mover_pieza()
         
@@ -624,7 +665,7 @@ class TableroGUI(tk.Frame):
             posicion_torre.columna = 3
 
             movimiento_torre = Movimiento(Posicion(posicion_torre.fila,0),Posicion(posicion_torre.fila,posicion_torre.columna))
-            self.__animacion_de_movimiento(movimiento_torre)
+            ##self.__animacion_de_movimiento(movimiento_torre)
             torre.calcular_posicion_en_tablero(posicion_torre)
             torre.mover_pieza()
             self.__piezas[posicion_torre.calcular_posicion_tablero()] = torre
@@ -637,7 +678,7 @@ class TableroGUI(tk.Frame):
             posicion_torre.columna = 5
 
             movimiento_torre = Movimiento(Posicion(posicion_torre.fila,7),Posicion(posicion_torre.fila,posicion_torre.columna))
-            self.__animacion_de_movimiento(movimiento_torre)
+            ##self.__animacion_de_movimiento(movimiento_torre)
             torre.calcular_posicion_en_tablero(posicion_torre)
             torre.mover_pieza()
             self.__piezas[posicion_torre.calcular_posicion_tablero()] = torre
@@ -672,22 +713,36 @@ class TableroGUI(tk.Frame):
 
     # para crear cuadrados 
     def marcar_movimiento_anterior(self,movimiento):
-        tmp_casilla = Casilla(self.__main_canvas,movimiento.casilla_inicial,None)
+        casilla_inicial = Posicion(movimiento.casilla_inicial.fila, movimiento.casilla_inicial.columna)
+        casilla_objetivo = Posicion(movimiento.casilla_objetivo.fila, movimiento.casilla_objetivo.columna)
+        if self.master.juego.J1 == "N":
+            casilla_inicial.invertir()
+            casilla_objetivo.invertir()
+
+        tmp_casilla = Casilla(self.__main_canvas,casilla_inicial,None)
         self.__casillas_mov_anterior.append(tmp_casilla)
-        tmp_casilla = Casilla(self.__main_canvas,movimiento.casilla_objetivo,None)
+        tmp_casilla = Casilla(self.__main_canvas,casilla_objetivo,None)
         self.__casillas_mov_anterior.append(tmp_casilla)
 
     def marcar_movimientos_de_pieza(self,posicion):
-        tmp_casilla = Casilla(self.__main_canvas,posicion,TCasilla.DEFENDIDA)
+        tmp_posicion = Posicion(posicion.fila,posicion.columna)
+        if self.master.juego.J1 == "N":
+            tmp_posicion.invertir()
+        tmp_casilla = Casilla(self.__main_canvas,tmp_posicion,TCasilla.DEFENDIDA)
         self.__casillas.append(tmp_casilla)
         for tmp_movimiento in self.master.juego.movimientos_legales:
             if (posicion.equals(tmp_movimiento.casilla_inicial)):
-                pieza = self.master.juego.tablero.get_pieza(tmp_movimiento.casilla_objetivo)
+                tmp_objetivo = Posicion(tmp_movimiento.casilla_objetivo.fila,tmp_movimiento.casilla_objetivo.columna)
+                          
+                pieza = self.master.juego.tablero.get_pieza(tmp_objetivo)
                 if pieza == None:
                     tipo = TCasilla.AMENAZADA
                 else:
                     tipo = TCasilla.ATACADA
-                tmp_casilla = Casilla(self.__main_canvas,tmp_movimiento.casilla_objetivo,tipo)
+                
+                if self.master.juego.J1 == "N":
+                    tmp_objetivo.invertir()  
+                tmp_casilla = Casilla(self.__main_canvas,tmp_objetivo,tipo)
                 self.__casillas.append(tmp_casilla)
 
     def limpiar_casillas_mov_anterior(self):

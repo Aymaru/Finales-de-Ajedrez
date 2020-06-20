@@ -11,6 +11,7 @@ from Juego import ArbolDecision
 from Juego import Nodo
 from Juego import Enrroque
 from Juego import ThreadedTask
+from Juego.Posicion import Posicion
 
 ##enums
 from Juego import Estado
@@ -78,6 +79,7 @@ class Juego:
             turno = Turno.NEGRAS
         
         self.evaluacion_de_tablero = evaluador.evaluar_tablero(turno)
+        print(self.evaluacion_de_tablero)
             
     def generar_movimientos_de_enrroque(self):
         if self.turno == 'B':
@@ -103,7 +105,7 @@ class Juego:
                     self.movimientos_legales.append(enrroque_nl)
 
     def actualizar_estado_de_tablero(self):
-        #self.set_evaluacion_de_tablero()
+        self.set_evaluacion_de_tablero()
         self.set_posibles_movimientos()
         self.set_movimientos_legales()        
         self.set_posibles_movimientos_blancas()
@@ -238,14 +240,22 @@ class Juego:
             pieza_de_coronamiento = -5
             self.turno = 'B'
         
+        
+        casilla_inicial = Posicion(movimiento_a_realizar.casilla_inicial.fila,movimiento_a_realizar.casilla_inicial.columna)
+        casilla_objetivo = Posicion(movimiento_a_realizar.casilla_objetivo.fila,movimiento_a_realizar.casilla_objetivo.columna)
+        movimiento_GUI = Movimiento.Movimiento(casilla_inicial,casilla_objetivo)
+        if self.J1 == "N":
+            movimiento_GUI.casilla_inicial.invertir()
+            movimiento_GUI.casilla_objetivo.invertir()
+
         if self.tablero.es_movimiento_enrroque(movimiento_a_realizar):
-            self.master.GUI_ajedrez.colocar_enrroque(movimiento_a_realizar)
+            self.master.GUI_ajedrez.colocar_enrroque(movimiento_GUI)
             self.tablero.realizar_enrroque(movimiento_a_realizar)
         elif self.tablero.es_movimiento_coronacion(movimiento_a_realizar):
-            self.master.GUI_ajedrez.colocar_coronamiento(movimiento_a_realizar,pieza_de_coronamiento)
+            self.master.GUI_ajedrez.colocar_coronamiento(movimiento_GUI,pieza_de_coronamiento)
             self.tablero.realizar_coronamiento(movimiento_a_realizar,pieza_de_coronamiento)
         else:
-            self.master.GUI_ajedrez.mover_pieza(movimiento_a_realizar)
+            self.master.GUI_ajedrez.mover_pieza(movimiento_GUI)
             self.tablero.mover_pieza(movimiento_a_realizar)
         
         self.actualizar_turno_pc()

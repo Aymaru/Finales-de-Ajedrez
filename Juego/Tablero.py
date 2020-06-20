@@ -81,7 +81,6 @@ class Tablero:
 
     def get_pieza(self,posicion):
         pieza = abs(self.obtener_pieza_de_casilla(posicion))
-        print("get pieza: %d" % (pieza))
         if pieza == 1:
             return TPieza.PEON
         elif pieza == 2:

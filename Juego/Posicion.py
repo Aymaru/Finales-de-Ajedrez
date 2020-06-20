@@ -66,3 +66,9 @@ class Posicion:
         posible_y = {0:'a',1:'b',2:'c',3:'d',4:'e',5:'f',6:'g',7:'h'}
         mov_str = posible_y[self.columna] + "" + str(8-self.fila)
         return mov_str
+
+    ##Invierte la posicion de tablero
+    ##Utilizada para darle la vuelta a las piezas en la guia
+    def invertir(self):
+        self.fila = 7 - self.fila
+        self.columna = 7 - self.columna

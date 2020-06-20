@@ -48,8 +48,6 @@ class Log:
     
 
     def agregar_log(self,tablero,movimiento):
-        print("agregar log:")
-        movimiento.imprimir()
         new_log_mov = LogMov(movimiento)
         new_log_mov.escribir_movimiento(tablero)
         self.historial_de_movimientos.append(new_log_mov)

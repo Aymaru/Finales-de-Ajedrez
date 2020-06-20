@@ -53,16 +53,16 @@ class Evaluador(Tablero):
                 Pieza.DAMA: 900,
                 Pieza.REY: 20000
             },
-            TipoEvaluacion.MOVILIDAD: 0.1,
+            TipoEvaluacion.MOVILIDAD: 10,
             TipoEvaluacion.ESTRUCTURA_DE_PEONES: {
-                EstructuraDePeon.AVANZADO: 1,
-                EstructuraDePeon.ADELANTADO: 0.5,
-                EstructuraDePeon.ATRASADO: -1,
-                EstructuraDePeon.AISLADO: -1,
-                EstructuraDePeon.DOBLADO: -0.5,
-                EstructuraDePeon.PASADO: 1,
-                EstructuraDePeon.ENCADENADO: 1,
-                EstructuraDePeon.BLOQUEADO: -1,
+                EstructuraDePeon.AVANZADO: 10,
+                EstructuraDePeon.ADELANTADO: 5,
+                EstructuraDePeon.ATRASADO: -10,
+                EstructuraDePeon.AISLADO: -10,
+                EstructuraDePeon.DOBLADO: -5,
+                EstructuraDePeon.PASADO: 10,
+                EstructuraDePeon.ENCADENADO: 10,
+                EstructuraDePeon.BLOQUEADO: -10,
             },
             TipoEvaluacion.CONTROL_DEL_CENTRO: {
                 Pieza.PEON: 100,
@@ -73,13 +73,13 @@ class Evaluador(Tablero):
                 Pieza.REY: 50
             },
             TipoEvaluacion.ATAQUE_AL_REY: {
-                1: 0.1,
-                2: 5,
-                3: 7.5,
-                4: 8.8,
-                5: 9.4,
-                6: 9.7,
-                7: 9.9
+                1: 0.01,
+                2: 0.5,
+                3: 0.75,
+                4: 0.88,
+                5: 0.94,
+                6: 0.97,
+                7: 0.99
             },
             TipoEvaluacion.POSICIONAMIENTO: {
                 ## Guarda la evaluacion de la posicion de una pieza en el tablero
@@ -291,19 +291,21 @@ class Evaluador(Tablero):
 
         if fase_del_juego == FaseDeJuego.APERTURA:
             self.__evaluacion_de_posicionamiento(fase_del_juego)
-            evaluacion += 0.1 * self.__valor_de_ataque_al_rey
-            evaluacion += 0.1 * self.__valor_de_control_del_centro
-            
+            self.__valor_de_ataque_al_rey = 0
+            self.__valor_de_ataque_al_rey = 0.1 * self.__valor_de_control_del_centro            
+            self.__valor_de_iniciativa = 0
 
         elif fase_del_juego == FaseDeJuego.DESARROLLO:
             self.__evaluacion_de_posicionamiento(fase_del_juego)
-            evaluacion += 0.3 * self.__valor_de_ataque_al_rey
-            evaluacion += self.__valor_de_control_del_centro
+            self.__valor_de_ataque_al_rey = 0.3 * self.__valor_de_ataque_al_rey
+            self.__valor_de_ataque_al_rey = 0.7 * self.__valor_de_control_del_centro
+            self.__valor_de_iniciativa = self.__valor_de_iniciativa
             
         elif fase_del_juego == FaseDeJuego.FINAL:
             self.__evaluacion_de_posicionamiento(fase_del_juego)
-            evaluacion += 0.7 * self.__valor_de_ataque_al_rey
-            evaluacion += 0.5 * self.__valor_de_control_del_centro
+            self.__valor_de_ataque_al_rey = 0.7 * self.__valor_de_ataque_al_rey
+            self.__valor_de_ataque_al_rey = 0.5 * self.__valor_de_control_del_centro
+            self.__valor_de_iniciativa = self.__valor_de_iniciativa
             
         else:
             return None
@@ -311,7 +313,7 @@ class Evaluador(Tablero):
         evaluacion += self.__valor_material 
         evaluacion += self.__valores_de_evaluacion[TipoEvaluacion.MOVILIDAD] * self.__valor_de_movilidad 
         evaluacion += self.__valor_de_estructura_de_peones
-        evaluacion += self.__valor_de_posicionamiento
+        #evaluacion += self.__valor_de_posicionamiento
         evaluacion += self.__valor_de_iniciativa
 
         #self.print_piezas()
@@ -320,7 +322,7 @@ class Evaluador(Tablero):
         # print("mov: %f" % self.__valor_de_movilidad)
         # print("ar: %f" % self.__valor_de_ataque_al_rey)
         # print("ep: %f" % self.__valor_de_estructura_de_peones)
-        # print("pos: %f" % self.__valor_de_posicionamiento)
+        # #print("pos: %f" % self.__valor_de_posicionamiento)
         # print("ini: %f" % self.__valor_de_iniciativa)
         # print("cc: %f" % self.__valor_de_control_del_centro)
         # print("eval: %f" % evaluacion)
@@ -353,6 +355,7 @@ class Evaluador(Tablero):
     ## USADA PARA DEBUGGEAR
     ## **************************************************************************************************************************************************************
     def print_piezas(self):
+        total_piezas = 0
         for color in self.__piezas.keys():
             print("Color: ", color)
             for pieza in self.__piezas[color].keys():
@@ -363,7 +366,9 @@ class Evaluador(Tablero):
                         obj_pieza = self.__get_pieza_t(color,pieza,tmp_pieza)
                         print("posicion: " , obj_pieza)
                         obj_pieza.imprimir()
-                        self.print_estados_de_piezas(color,pieza,tmp_pieza)
+                        total_piezas += 1
+                        #self.print_estados_de_piezas(color,pieza,tmp_pieza)
+        print("Total de piezas: %d" % total_piezas)
            
         
         return
@@ -493,8 +498,8 @@ class Evaluador(Tablero):
         rey = self.__get_rey(color)
         if type(rey) == type(None):
             return None
-        for fila in range(rey.fila-4,rey.fila+4):
-            for columna in range(rey.columna-4,rey.columna+4):
+        for fila in range(rey.fila-3,rey.fila+3):
+            for columna in range(rey.columna-3,rey.columna+3):
 
                 tmp_posicion = Posicion(fila,columna)
                 if tmp_posicion.validar_posicion():
@@ -511,13 +516,6 @@ class Evaluador(Tablero):
         else:
             contador_movimientos_legales = len(self.obtener_movimientos_legales(self.__posibles_movimientos,'N'))
 
-        # for movimiento in self.__posibles_movimientos:
-        #     casilla_inicial_color = self.__get_color_de_pieza(movimiento.casilla_inicial)
-        #     if casilla_inicial_color == color:
-        #         casilla_objetivo_color = self.__get_color_de_pieza(movimiento.casilla_objetivo)
-        #         if casilla_objetivo_color != color:
-        #             contador_movimientos_legales += 1
-        
         return contador_movimientos_legales
     
     ##Devuelve el valor de posicionamiento de una pieza en self.__valores_de_evaluacion[TipoDeEvaluacion.POSICIONAMIENTO][FaseDeJuego.?][Pieza.?][posicion]
@@ -548,24 +546,7 @@ class Evaluador(Tablero):
         contador_de_piezas = {}
         cantidad_de_piezas_menores_blancas = 0
         cantidad_de_piezas_menores_negras = 0
-        # contador_de_piezas = {
-        #     Turno.BLANCAS: {
-        #         Pieza.PEON:0,
-        #         Pieza.CABALLO:0,
-        #         Pieza.ALFIL:0,
-        #         Pieza.TORRE:0,
-        #         Pieza.DAMA:0,
-        #         Pieza.REY:0
-        #     },
-        #     Turno.NEGRAS: {
-        #         Pieza.PEON:0,
-        #         Pieza.CABALLO:0,
-        #         Pieza.ALFIL:0,
-        #         Pieza.TORRE:0,
-        #         Pieza.DAMA:0,
-        #         Pieza.REY:0
-        #     }
-        # }
+
         for color in self.__piezas.keys():
             contador_de_piezas[color] = {}
             for pieza in self.__piezas[color].keys():
@@ -573,11 +554,7 @@ class Evaluador(Tablero):
 
         cantidad_de_piezas_menores_blancas = contador_de_piezas[Turno.BLANCAS][Pieza.CABALLO] + contador_de_piezas[Turno.BLANCAS][Pieza.ALFIL] + contador_de_piezas[Turno.BLANCAS][Pieza.TORRE]
         cantidad_de_piezas_menores_negras = contador_de_piezas[Turno.NEGRAS][Pieza.CABALLO] + contador_de_piezas[Turno.NEGRAS][Pieza.ALFIL] + contador_de_piezas[Turno.NEGRAS][Pieza.TORRE]
-        # print("cant p m B: %d" % cantidad_de_piezas_menores_blancas)
-        # print("cant p m N: %d" % cantidad_de_piezas_menores_negras)
-        # print("cant peones N: %d" % contador_de_piezas[Turno.BLANCAS][Pieza.PEON])
-        # print("cant peones N: %d" % contador_de_piezas[Turno.NEGRAS][Pieza.PEON])
-        # print("cant dama B: %d" % contador_de_piezas[Turno.BLANCAS][Pieza.DAMA])
+
         # print("cant dama N: %d" % contador_de_piezas[Turno.NEGRAS][Pieza.DAMA])
         if (    self.__evaluar_fase_del_juego_es_apertura( contador_de_piezas[Turno.BLANCAS][Pieza.DAMA], cantidad_de_piezas_menores_blancas, contador_de_piezas[Turno.BLANCAS][Pieza.PEON] ) and 
                 self.__evaluar_fase_del_juego_es_apertura( contador_de_piezas[Turno.NEGRAS][Pieza.DAMA], cantidad_de_piezas_menores_negras, contador_de_piezas[Turno.NEGRAS][Pieza.PEON] ) ):
@@ -634,8 +611,6 @@ class Evaluador(Tablero):
         self.__get_zona_del_rey(Turno.NEGRAS)
         valor_de_ataque_blancas = self.__evaluar_ataque_al_rey(Turno.NEGRAS)
         valor_de_ataque_negras = self.__evaluar_ataque_al_rey(Turno.BLANCAS)
-        print ("valor ataque al rey B: %f" % valor_de_ataque_blancas)
-        print ("valor ataque al rey N: %f" % valor_de_ataque_negras)
         self.__valor_de_ataque_al_rey = valor_de_ataque_blancas - valor_de_ataque_negras
 
     ##Evaluacion de estructura de peones
@@ -694,31 +669,27 @@ class Evaluador(Tablero):
         for color in self.__piezas.keys():
             for pieza in self.__piezas[color].keys():
                 for tmp_pieza in self.__piezas[color][pieza].keys():
-                    print("tmp pieza?: ", tmp_pieza)
-                    print("type tmp pieza:",type(tmp_pieza))
                     if type(tmp_pieza) != type(Posicion(0,0)):
-                        print("se sale con la casilla.ZonaRey")
                         continue
-                    print("suma pieza?")
                     total_de_piezas[color] += 1
 
                     valor_de_iniciativa[color][Casilla.AMENAZADA] += len( self.__piezas[color][pieza][tmp_pieza][Casilla.AMENAZADA] )
                     valor_de_iniciativa[color][Casilla.ATACA] += len( self.__piezas[color][pieza][tmp_pieza][Casilla.ATACA] )
                     valor_de_iniciativa[color][Casilla.DEFIENDE] += len( self.__piezas[color][pieza][tmp_pieza][Casilla.DEFIENDE] )
-                    valor_de_iniciativa[color][Casilla.ATACADA] -= len( self.__piezas[color][pieza][tmp_pieza][Casilla.ATACADA]) * self.__valores_de_evaluacion[TipoEvaluacion.MATERIAL][pieza]
-                    valor_de_iniciativa[color][Casilla.DEFENDIDA] += len( self.__piezas[color][pieza][tmp_pieza][Casilla.DEFENDIDA]) * self.__valores_de_evaluacion[TipoEvaluacion.MATERIAL][pieza]
+                    valor_de_iniciativa[color][Casilla.ATACADA] -= len( self.__piezas[color][pieza][tmp_pieza][Casilla.ATACADA]) * (self.__valores_de_evaluacion[TipoEvaluacion.MATERIAL][pieza] / 100)
+                    valor_de_iniciativa[color][Casilla.DEFENDIDA] += len( self.__piezas[color][pieza][tmp_pieza][Casilla.DEFENDIDA]) * (self.__valores_de_evaluacion[TipoEvaluacion.MATERIAL][pieza] / 100)
         
         for color in valor_de_iniciativa.keys():
             for tipo in valor_de_iniciativa[color].keys():
                 if valor_de_iniciativa[color][tipo] == 0:
                     continue
-                valor[color] += (valor_de_iniciativa[color][tipo] / total_de_piezas[color])
+                valor[color] += valor_de_iniciativa[color][tipo] #/ total_de_piezas[color]
 
-        print("\n*** Evaluacion de iniciativa debug ***\n")
-        print("Total de piezas blancas: %d, total de piezas negras: %d" % ( total_de_piezas[Turno.BLANCAS], total_de_piezas[Turno.NEGRAS] ) )
-        print("Valores blancas\nAMENAZADA: %d, ATACA: %d, DEFIENDE: %d, DEFENDIDA: %d, ATACADA: %d" % ( valor_de_iniciativa[Turno.BLANCAS][Casilla.AMENAZADA], valor_de_iniciativa[Turno.BLANCAS][Casilla.ATACA], valor_de_iniciativa[Turno.BLANCAS][Casilla.DEFIENDE], valor_de_iniciativa[Turno.BLANCAS][Casilla.DEFENDIDA], valor_de_iniciativa[Turno.BLANCAS][Casilla.ATACADA]))
-        print("Valores negras\nAMENAZADA: %d, ATACA: %d, DEFIENDE: %d, DEFENDIDA: %d, ATACADA: %d" % ( valor_de_iniciativa[Turno.NEGRAS][Casilla.AMENAZADA], valor_de_iniciativa[Turno.NEGRAS][Casilla.ATACA], valor_de_iniciativa[Turno.NEGRAS][Casilla.DEFIENDE], valor_de_iniciativa[Turno.NEGRAS][Casilla.DEFENDIDA], valor_de_iniciativa[Turno.NEGRAS][Casilla.ATACADA]))
-        print("Valor de piezas blancas: %f, valor de piezas negras: %f" % ( valor[Turno.BLANCAS], valor[Turno.NEGRAS] ) )
+        # print("\n*** Evaluacion de iniciativa debug ***\n")
+        # print("Total de piezas blancas: %d, total de piezas negras: %d" % ( total_de_piezas[Turno.BLANCAS], total_de_piezas[Turno.NEGRAS] ) )
+        # print("Valores blancas\nAMENAZADA: %d, ATACA: %d, DEFIENDE: %d, DEFENDIDA: %d, ATACADA: %d" % ( valor_de_iniciativa[Turno.BLANCAS][Casilla.AMENAZADA], valor_de_iniciativa[Turno.BLANCAS][Casilla.ATACA], valor_de_iniciativa[Turno.BLANCAS][Casilla.DEFIENDE], valor_de_iniciativa[Turno.BLANCAS][Casilla.DEFENDIDA], valor_de_iniciativa[Turno.BLANCAS][Casilla.ATACADA]))
+        # print("Valores negras\nAMENAZADA: %d, ATACA: %d, DEFIENDE: %d, DEFENDIDA: %d, ATACADA: %d" % ( valor_de_iniciativa[Turno.NEGRAS][Casilla.AMENAZADA], valor_de_iniciativa[Turno.NEGRAS][Casilla.ATACA], valor_de_iniciativa[Turno.NEGRAS][Casilla.DEFIENDE], valor_de_iniciativa[Turno.NEGRAS][Casilla.DEFENDIDA], valor_de_iniciativa[Turno.NEGRAS][Casilla.ATACADA]))
+        # print("Valor de piezas blancas: %f, valor de piezas negras: %f" % ( valor[Turno.BLANCAS], valor[Turno.NEGRAS] ) )
         self.__valor_de_iniciativa = valor[Turno.BLANCAS] - valor[Turno.NEGRAS]
     
     ##Evaluacion del control del centro
@@ -1005,7 +976,6 @@ class Evaluador(Tablero):
             return False     
         
     def __evaluar_ataque_al_rey(self,color):
-        
         cantidad_de_atacantes = 0
         valor_del_ataque = 0
 
@@ -1015,11 +985,11 @@ class Evaluador(Tablero):
             color_atacante = Turno.BLANCAS
         
         for pieza in self.__piezas[color_atacante].keys():
-            if pieza == Pieza.REY:
-                continue
             
             for tmp_pieza in self.__piezas[color_atacante][pieza].keys():
-                
+                if type(tmp_pieza) != type(Posicion(0,0)):
+                    continue
+
                 cantidad_de_objetivos = 0
                 ataca = False
                 for tmp_objetivo in self.__piezas[color_atacante][pieza][tmp_pieza][Casilla.AMENAZADA]:
@@ -1031,13 +1001,8 @@ class Evaluador(Tablero):
                     if tmp_objetivo in self.__piezas[color][Pieza.REY][Casilla.ZONA_DEL_REY]:
                         cantidad_de_objetivos += 1
                         ataca = True
-
-                for tmp_objetivo in self.__piezas[color_atacante][pieza][tmp_pieza][Casilla.DEFIENDE]:
-                    if tmp_objetivo in self.__piezas[color][Pieza.REY][Casilla.ZONA_DEL_REY]:
-                        cantidad_de_objetivos += 1
-                        ataca = True
-
-                if pieza == Pieza.PEON:
+                
+                if pieza == Pieza.PEON or pieza == Pieza.REY:
                     potencia_de_ataque = 5
                 elif pieza == Pieza.CABALLO or pieza == Pieza.ALFIL:
                     potencia_de_ataque = 20
@@ -1048,14 +1013,12 @@ class Evaluador(Tablero):
 
                 valor_del_ataque += cantidad_de_objetivos * potencia_de_ataque
 
-                if ataca:
+                if ataca or (tmp_pieza in self.__piezas[color][Pieza.REY][Casilla.ZONA_DEL_REY]):
                     cantidad_de_atacantes += 1
         if cantidad_de_atacantes == 0:
-            print("FALLO AR")
             return 0
         
         else:
-            print("Cantidad de atacantes %d" % cantidad_de_atacantes)
             return valor_del_ataque * self.__valores_de_evaluacion[TipoEvaluacion.ATAQUE_AL_REY][cantidad_de_atacantes] / 100
 
     ##Evalua si la fase del juego para un jugador es apertura
