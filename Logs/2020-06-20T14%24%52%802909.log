@@ -1,0 +1,26 @@
+timestamp: 2020-06-20T14:26:21.196030
+tipo de juego: Jugador vs Jugador
+blancas: Jugador2
+negras: Jugador1
+mueven: Blancas
+resultado: Juego Incompleto
+tablero inicial: N T a 8   N C b 8   N A c 8   N D d 8   N R e 8   N A f 8   N C g 8   N T h 8   N P a 7   N P b 7   N P c 7   N P d 7   N P e 7   N P f 7   N P g 7   N P h 7   B T a 1   B C b 1   B A c 1   B D d 1   B R e 1   B A f 1   B C g 1   B T h 1   B P a 2   B P b 2   B P c 2   B P d 2   B P e 2   B P f 2   B P g 2   B P h 2 
+historial de movimientos: 
+1. Peon a e4
+2. Peon a e5
+3. Dama de d1 a g4
+4. Dama de d8 a g5
+5. Dama de g4 captura dama de g5
+6. Peon a h6
+7. Dama de g5 captura peon en g7
+8. Alfil de f8 captura dama de g7
+9. Caballo de b1 a c3
+10. Peon a d5
+11. Peon a d3
+12. Alfil de c8 a g4
+13. Alfil de c1 captura peon en h6
+14. Alfil de g7 captura alfil de h6
+15. Alfil de f1 a e2
+16. Alfil de h6 a c1
+17. Alfil de e2 captura alfil de g4
+18. Torre de h8 captura peon en h2

@@ -29,4 +29,6 @@ Corregir paths del directorio
         /images
         /boards
 
-    
+paths
+src.gui/..
+src.game/..
