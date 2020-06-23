@@ -255,7 +255,7 @@ class Evaluador(Tablero):
     ## DEVUELVE EL VALOR DE LA EVALUACION DEL ESTADO DEL TABLERO PARA LAS PIEZAS DADAS.
     ## **************************************************************************************************************************************************************
 
-    def evaluar_tablero(self,turno):
+    def evaluar_tablero(self,piezas,turno):
         self.__posibles_movimientos = self.generar_posibles_movimientos()
         self.__get_piezas()
         #self.print_piezas()
@@ -269,23 +269,38 @@ class Evaluador(Tablero):
         self.__evaluacion_de_iniciativa()
 
         fase_del_juego = self.__get_fase_del_juego()
-        jaque = self.__es_jaque(self.__posibles_movimientos,turno)
-        jaque_mate = self.__es_jaque_mate(jaque,turno)
-        tablas = self.__es_tablas(jaque,turno)
         evaluacion = 0
 
-        if jaque:
-            evaluacion = 5000
-            if turno == Turno.BLANCAS:
-                evaluacion *= -1
+        if piezas == {}:
+            self.cargar_piezas()
+        else:
+            self.piezas = piezas
+
+        # jaque = self.__es_jaque(self.__posibles_movimientos,turno)
+        # jaque_mate = self.__es_jaque_mate(jaque,turno)
+        # tablas = self.__es_tablas(jaque,turno)
         
-        if jaque_mate:
+        # if jaque:
+        #     evaluacion = 5000
+        #     if turno == Turno.BLANCAS:
+        #         evaluacion *= -1
+        
+        # if jaque_mate:
+        #     evaluacion = 20000
+        #     if turno == Turno.BLANCAS:
+        #         evaluacion *= -1 
+        #     return evaluacion
+        
+        # if tablas:
+        #     evaluacion = 0
+        #     return evaluacion
+        if self.es_jaque_mate(self.piezas,turno):
             evaluacion = 20000
             if turno == Turno.BLANCAS:
                 evaluacion *= -1 
             return evaluacion
         
-        if tablas:
+        if self.es_tablas(self.piezas):
             evaluacion = 0
             return evaluacion
 
@@ -328,27 +343,95 @@ class Evaluador(Tablero):
         # print("eval: %f" % evaluacion)
         return evaluacion
 
-    def __es_jaque(self,posibles_movimientos,turno):
-        tmp_turno = ''
-        if turno == Turno.BLANCAS:
-            tmp_turno = 'B'
-        elif turno == Turno.NEGRAS:
-            tmp_turno = 'N'        
-        return self.hay_jaque(posibles_movimientos,tmp_turno)
+    # def __es_jaque(self,posibles_movimientos,turno):
+    #     tmp_turno = ''
+    #     if turno == Turno.BLANCAS:
+    #         tmp_turno = 'B'
+    #     elif turno == Turno.NEGRAS:
+    #         tmp_turno = 'N'        
+    #     return self.hay_jaque(posibles_movimientos,tmp_turno)
 
-    def __es_jaque_mate(self,jaque,turno):
-        cant_movimientos_legales = self.__contar_movimientos_legales(turno)
-        if jaque and cant_movimientos_legales == 0:
-            return True
-        else:
-            return False
+    # def __es_jaque_mate(self,jaque,turno):
+    #     cant_movimientos_legales = self.__contar_movimientos_legales(turno)
+    #     if jaque and cant_movimientos_legales == 0:
+    #         return True
+    #     else:
+    #         return False
 
-    def __es_tablas(self,jaque,turno):
-        cant_movimientos_legales = self.__contar_movimientos_legales(turno)
-        if not jaque and cant_movimientos_legales == 0:
+    # def __es_tablas(self,jaque,turno):
+    #     cant_movimientos_legales = self.__contar_movimientos_legales(turno)
+    #     if not jaque and cant_movimientos_legales == 0:
+    #         return True
+    #     else:
+    #         return False
+    def cargar_piezas(self):
+        self.piezas = {
+                Turno.BLANCAS: {},
+                Turno.NEGRAS: {} 
+        }
+        for fila in range(0,8):
+            for columna in range(0,8):
+                tmp_posicion = Posicion(fila,columna)
+                tmp_pieza = self.obtener_pieza_de_casilla(tmp_posicion)
+                if tmp_pieza == 0:
+                    continue
+
+                color = self.get_color_pieza(tmp_posicion)
+                self.piezas[color][tmp_posicion] = []
+
+    def es_jaque_mate(self,piezas,turno):
+        for pieza in piezas[turno].keys():
+            tmp_pieza = abs(self.obtener_pieza_de_casilla(pieza))
+            if tmp_pieza == 6:
+                return False
+        return True
+
+    def es_tablas(self,piezas):
+        cantidad_piezas_blancas = len(piezas[Turno.BLANCAS])
+        cantidad_piezas_negras = len(piezas[Turno.NEGRAS])
+        if (cantidad_piezas_blancas == 1) and (cantidad_piezas_negras == 1):
             return True
-        else:
-            return False
+        elif (cantidad_piezas_blancas == 2) and (cantidad_piezas_negras == 1) or (cantidad_piezas_blancas == 1) and (cantidad_piezas_negras == 2):
+            ##es rey y caballo vs rey o rey y alfil vs rey
+            if self.es_terminal_2_v_1(piezas):
+                return True
+            else:
+                return False
+        elif (cantidad_piezas_blancas == 2) and (cantidad_piezas_negras == 2):
+            ##es rey y caballo o rey y alfil vs rey y caballo o rey y alfil
+            if self.es_terminal_2_v_2(piezas):
+                return True
+            else:
+                return False
+        return False
+
+    def es_terminal_2_v_1(self,piezas):
+        for color in piezas.keys():
+            for pieza in piezas[color].keys():
+                tmp_pieza = abs(self.tablero.obtener_pieza_de_casilla(pieza))
+                if tmp_pieza == 6:
+                    continue
+                if tmp_pieza == 2 or tmp_pieza == 3:
+                    return True
+
+        return False
+    
+    def es_terminal_2_v_2(self,piezas):
+        terminar = False
+        
+        for color in piezas.keys():
+
+            for pieza in piezas[color].keys():
+                tmp_pieza = abs(self.tablero.obtener_pieza_de_casilla(pieza))
+                if tmp_pieza == 6:
+                    continue
+                if tmp_pieza == 2 or tmp_pieza == 3:
+                    if terminar:
+                        return True
+                    terminar = True
+
+        return False
+
     
     ## **************************************************************************************************************************************************************
     ## FUNCION PARA IMPRIMIR LA ESTRUCTURA DE LAS PIEZAS
@@ -673,9 +756,9 @@ class Evaluador(Tablero):
                         continue
                     total_de_piezas[color] += 1
 
-                    valor_de_iniciativa[color][Casilla.AMENAZADA] += len( self.__piezas[color][pieza][tmp_pieza][Casilla.AMENAZADA] )
-                    valor_de_iniciativa[color][Casilla.ATACA] += len( self.__piezas[color][pieza][tmp_pieza][Casilla.ATACA] )
-                    valor_de_iniciativa[color][Casilla.DEFIENDE] += len( self.__piezas[color][pieza][tmp_pieza][Casilla.DEFIENDE] )
+                    valor_de_iniciativa[color][Casilla.AMENAZADA] += len( self.__piezas[color][pieza][tmp_pieza][Casilla.AMENAZADA] ) * 0.5
+                    valor_de_iniciativa[color][Casilla.ATACA] += len( self.__piezas[color][pieza][tmp_pieza][Casilla.ATACA] ) * (self.__valores_de_evaluacion[TipoEvaluacion.MATERIAL][pieza] / 100)
+                    #valor_de_iniciativa[color][Casilla.DEFIENDE] += len( self.__piezas[color][pieza][tmp_pieza][Casilla.DEFIENDE] ) * (self.__valores_de_evaluacion[TipoEvaluacion.MATERIAL][pieza] / 100)
                     valor_de_iniciativa[color][Casilla.ATACADA] -= len( self.__piezas[color][pieza][tmp_pieza][Casilla.ATACADA]) * (self.__valores_de_evaluacion[TipoEvaluacion.MATERIAL][pieza] / 100)
                     valor_de_iniciativa[color][Casilla.DEFENDIDA] += len( self.__piezas[color][pieza][tmp_pieza][Casilla.DEFENDIDA]) * (self.__valores_de_evaluacion[TipoEvaluacion.MATERIAL][pieza] / 100)
         

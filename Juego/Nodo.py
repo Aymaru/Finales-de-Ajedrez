@@ -2,22 +2,26 @@
 import copy
 from collections import deque
 
+from Juego.Posicion import Posicion
 from Juego.Evaluador import Evaluador
 from Juego import Tablero
 from Juego import Movimiento
-from Juego import Estado
-from Juego import Turno
+from Juego.Tipos import Estado
+from Juego.Tipos import Turno
 from Juego import Enrroque
 from Juego import Tablero
 
 
 class Nodo:
 
-    def __init__(self,id,tablero,turno,enrroque,nivel,estado,valor,MAX_NODE):
+    def __init__(self,id,tablero,turno,enrroque,nivel,estado,valor,MAX_NODE,piezas={}):
         self.id = id ## identifica al nodo, lista con los movimientos que llevaron a ese estado
         self.tablero = tablero ## tablero del juego
         self.turno = turno ## turno del movimiento, se usa para generar movimientos legales
-        
+        if piezas == {}:
+            self.cargar_piezas()            
+        else:
+            self.piezas = piezas
         self.enrroque = enrroque
         self.movimientos_legales = deque() ## Posibles nodos hijos
         
@@ -27,16 +31,45 @@ class Nodo:
         self.estado = estado #SOLUCIONADO, VIVO
         self.valor = valor
         self.MAX_NODE = MAX_NODE ## Nivel maximo de profundidad del arbol
+        
+        
         self.iniciar_nodo()
-
         self.evaluador = None
 
-    def iniciar_nodo(self):     
+    def iniciar_nodo(self):
         if self.id:
             movimiento = self.get_id_nodo()
-            self.mover_pieza(movimiento)
+            pieza_objetivo = self.obtener_pieza(movimiento.casilla_objetivo)
+            color = self.tablero.get_color_pieza(movimiento.casilla_objetivo)
+            self.mover_pieza(movimiento)            
+            if pieza_objetivo != None:
+                del self.piezas[color][pieza_objetivo]
+
         ##generar movimientos legales
-        self.generar_movimientos_legales()
+        self.generar_movimientos_legales() ##HAY QUE MODIFICARLO
+    
+    def cargar_piezas(self):
+        self.piezas = {
+                Turno.BLANCAS: {},
+                Turno.NEGRAS: {} 
+        }
+        for fila in range(0,8):
+            for columna in range(0,8):
+                tmp_posicion = Posicion(fila,columna)
+                tmp_pieza = self.tablero.obtener_pieza_de_casilla(tmp_posicion)
+                if tmp_pieza == 0:
+                    continue
+
+                color = self.tablero.get_color_pieza(tmp_posicion)
+                self.piezas[color][tmp_posicion] = []
+
+    def obtener_pieza(self,posicion):
+        color = self.tablero.get_color_pieza(posicion)
+        if color == None:
+            return None
+        for pieza in self.piezas[color].keys():
+            if (posicion.equals(pieza)):
+                return pieza
 
     def buscar_nodo(self,id):
         if self.es_nodo(id):
@@ -57,11 +90,11 @@ class Nodo:
         if self.tablero.es_movimiento_enrroque(movimiento):
             self.tablero.realizar_enrroque(movimiento)
         elif self.tablero.es_movimiento_coronacion(movimiento):
-            if self.turno == Turno.Turno.BLANCAS:
-                self.turno == Turno.Turno.NEGRAS
+            if self.turno == Turno.BLANCAS:
+                self.turno == Turno.NEGRAS
                 pieza_de_coronacion = 5
-            elif self.turno == Turno.Turno.NEGRAS:
-                self.turno == Turno.Turno.BLANCAS
+            elif self.turno == Turno.NEGRAS:
+                self.turno == Turno.BLANCAS
                 pieza_de_coronacion = -5
             self.tablero.realizar_coronamiento(movimiento,pieza_de_coronacion)
         else:
@@ -78,7 +111,7 @@ class Nodo:
 
     def actualizar_estado_enrroque(self,movimiento):
         pieza_a_mover = abs(self.tablero.obtener_pieza_de_casilla(movimiento.casilla_inicial))
-        if self.turno == Turno.Turno.BLANCAS:
+        if self.turno == Turno.BLANCAS:
             if pieza_a_mover == 6:
                 self.enrroque.blancas_corto = False    
                 self.enrroque.blancas_largo = False
@@ -87,7 +120,7 @@ class Nodo:
                     self.enrroque.blancas_largo = False
                 elif movimiento.casilla_inicial.columna == 7:
                     self.enrroque.blancas_corto = False
-        elif self.turno == Turno.Turno.NEGRAS:
+        elif self.turno == Turno.NEGRAS:
             if pieza_a_mover == 6:
                 self.enrroque.negras_corto = False    
                 self.enrroque.negras_largo = False
@@ -99,22 +132,42 @@ class Nodo:
 
     def generar_movimientos_legales(self):
 
-        posibles_movimientos = self.tablero.generar_posibles_movimientos()
-        turno = self.turno_to_string()
-        self.movimientos_legales = self.tablero.obtener_movimientos_legales(posibles_movimientos,turno)
-        self.generar_movimientos_de_enrroque(posibles_movimientos)
+        for pieza in self.piezas[self.turno].keys():
+            
+            pieza_casilla_inicial = abs(self.tablero.obtener_pieza_de_casilla(pieza))
         
-        #posibles_movimientos = self.tablero.generar_posibles_movimientos()
+            if pieza_casilla_inicial == 1:
+                self.piezas[self.turno][pieza] = self.tablero.posibles_movimientos_de_peon(pieza)
+            elif pieza_casilla_inicial == 2:
+                self.piezas[self.turno][pieza] = self.tablero.posibles_movimientos_de_caballo(pieza)
+            elif pieza_casilla_inicial == 3:
+                self.piezas[self.turno][pieza] = self.tablero.posibles_movimientos_de_alfil(pieza)
+            elif pieza_casilla_inicial == 4:
+                self.piezas[self.turno][pieza] = self.tablero.posibles_movimientos_de_torre(pieza)
+            elif pieza_casilla_inicial == 5:
+                self.piezas[self.turno][pieza] = self.tablero.posibles_movimientos_de_dama(pieza)
+            elif pieza_casilla_inicial == 6:
+                self.piezas[self.turno][pieza] = self.tablero.posibles_movimientos_de_rey(pieza)
+            
+            self.movimientos_legales.extend(self.piezas[self.turno][pieza])
+        return
+
+        # posibles_movimientos = self.tablero.generar_posibles_movimientos()
+        # turno = self.turno_to_string()
+        # self.movimientos_legales = self.tablero.obtener_movimientos_legales(posibles_movimientos,turno)
+        # self.generar_movimientos_de_enrroque(posibles_movimientos)
         
-        self.set_es_jaque(posibles_movimientos)
-        self.set_jaque_mate()
-        self.set_es_tablas()
+        # #posibles_movimientos = self.tablero.generar_posibles_movimientos()
+        
+        # self.set_es_jaque(posibles_movimientos)
+        # self.set_jaque_mate()
+        # self.set_es_tablas()
         #if self.es_terminal():
             #self.movimientos_legales = []
 
     
     def generar_movimientos_de_enrroque(self,posibles_movimientos):
-        if self.turno == Turno.Turno.BLANCAS:
+        if self.turno == Turno.BLANCAS:
             posibles_movimientos_negras = self.tablero.posibles_movimientos_de_negras(posibles_movimientos)
             if self.enrroque.blancas_corto:
                 enrroque_bc = self.tablero.generar_enrroque_blancas_corto(posibles_movimientos_negras)
@@ -125,7 +178,7 @@ class Nodo:
                 if enrroque_bl != None:
                     self.movimientos_legales.appendleft(enrroque_bl)
 
-        elif self.turno == Turno.Turno.NEGRAS:
+        elif self.turno == Turno.NEGRAS:
             posibles_movimientos_blancas = self.tablero.posibles_movimientos_de_blancas(posibles_movimientos)
             if self.enrroque.negras_corto:
                 enrroque_nc = self.tablero.generar_enrroque_negras_corto(posibles_movimientos_blancas)
@@ -137,31 +190,98 @@ class Nodo:
                     self.movimientos_legales.appendleft(enrroque_nl)
 
     def turno_to_string(self):
-        if self.turno == Turno.Turno.BLANCAS:
+        if self.turno == Turno.BLANCAS:
             return "B"
-        elif self.turno == Turno.Turno.NEGRAS:
+        elif self.turno == Turno.NEGRAS:
             return "N"
+            
 
+    ## Es terminal cuando, se alcanza el nivel maximo de profundidad del arbol de busqueda,
+    #  cuando hay jaque mate, en este caso es cuando el rey ya fue capturado.            
+    #  cuando el juego debe terminar en tablas, en los siguientes escenarios:
+    #  - Rey contra Rey
+    #  - Rey y caballo contra rey
+    #  - Rey y alfil contra rey
+    #  - Rey y caballo contra rey y caballo
+    #  - Rey y caballo contra rey y alfil
+    #  - Rey y alfil contra rey y caballo
+    #  - Rey y alfil contra rey y alfil
+    ## o cuando el jugador no tiene movimientos disponibles y el rey no se encuentra en jaque, a esto se le llama ahogamiento
     def es_terminal(self):
-        if self.nivel == self.MAX_NODE or self.es_jaque_mate or self.es_tablas:
+        if self.nivel == self.MAX_NODE or self.es_jaque_mate_terminal() or self.es_tablas_terminal():
             return True
-        else:    
+        else:
             return False
+    
+    # def set_es_jaque(self,posibles_movimientos):
+    #     self.es_jaque = self.tablero.hay_jaque(posibles_movimientos,self.turno)
+            
+    def es_jaque_mate_terminal(self):
+        for pieza in self.piezas[self.turno].keys():
+            tmp_pieza = abs(self.tablero.obtener_pieza_de_casilla(pieza))
+            if tmp_pieza == 6:
+                return False
+        return True
 
-    def set_es_jaque(self,posibles_movimientos):
-        self.es_jaque = self.tablero.hay_jaque(posibles_movimientos,self.turno)
+    def es_tablas_terminal(self):
+        cantidad_piezas_blancas = len(self.piezas[Turno.BLANCAS])
+        cantidad_piezas_negras = len(self.piezas[Turno.NEGRAS])
+        if (cantidad_piezas_blancas == 1) and (cantidad_piezas_negras == 1):
+            return True
+        elif (cantidad_piezas_blancas == 2) and (cantidad_piezas_negras == 1) or (cantidad_piezas_blancas == 1) and (cantidad_piezas_negras == 2):
+            ##es rey y caballo vs rey o rey y alfil vs rey
+            if self.es_terminal_2_v_1():
+                return True
+            else:
+                return False
+        elif (cantidad_piezas_blancas == 2) and (cantidad_piezas_negras == 2):
+            ##es rey y caballo o rey y alfil vs rey y caballo o rey y alfil
+            if self.es_terminal_2_v_2():
+                return True
+            else:
+                return False
+        return False
 
-    def set_jaque_mate(self):
-        if self.es_jaque and len(self.movimientos_legales) == 0:
-            self.es_jaque_mate = True
-        else:
-            self.es_jaque_mate = False
+    def es_terminal_2_v_1(self):
+        for color in self.piezas.keys():
+            for pieza in self.piezas[color].keys():
+                tmp_pieza = abs(self.tablero.obtener_pieza_de_casilla(pieza))
+                if tmp_pieza == 6:
+                    continue
+                if tmp_pieza == 2 or tmp_pieza == 3:
+                    return True
 
-    def set_es_tablas(self):
-        if not self.es_jaque and len(self.movimientos_legales) == 0:
-            self.es_tablas = True
-        else:
-            self.es_tablas = False
+        return False
+    
+    def es_terminal_2_v_2(self):
+        terminar = False
+        
+        for color in self.piezas.keys():
+
+            for pieza in self.piezas[color].keys():
+                tmp_pieza = abs(self.tablero.obtener_pieza_de_casilla(pieza))
+                if tmp_pieza == 6:
+                    continue
+                if tmp_pieza == 2 or tmp_pieza == 3:
+                    if terminar:
+                        return True
+                    terminar = True
+
+        return False
+
+    # def set_jaque_mate(self):
+    #     if self.es_jaque and len(self.movimientos_legales) == 0:
+    #         self.es_jaque_mate = True
+    #     else:
+    #         self.es_jaque_mate = False
+
+    # def set_es_tablas(self):
+    #     if not self.es_jaque and len(self.movimientos_legales) == 0:
+    #         self.es_tablas = True
+    #     elif True:
+    #         return
+    #     else:
+    #         self.es_tablas = False
     
     def es_min(self):
         return (self.nivel % 2) != 0
@@ -240,8 +360,8 @@ class Nodo:
         
     ## def actualizar valor
     def actualizar_valor(self):  
-        valor = Evaluador(self.tablero.tablero).evaluar_tablero(self.turno)
-        if (self.es_min() and self.turno == Turno.Turno.BLANCAS) or (self.es_max() and self.turno == Turno.Turno.NEGRAS):
+        valor = Evaluador(self.tablero.tablero).evaluar_tablero(self.piezas,self.turno)
+        if (self.es_min() and self.turno == Turno.BLANCAS) or (self.es_max() and self.turno == Turno.NEGRAS):
             valor = valor * -1
 
         self.valor = min(self.valor,valor)
@@ -250,7 +370,7 @@ class Nodo:
         self.valor = valor
 
     def solucionar_nodo(self):
-        self.estado = Estado.Estado.SOLUCIONADO
+        self.estado = Estado.SOLUCIONADO
     
     def set_estado(self,estado):
         self.estado = estado
@@ -261,19 +381,20 @@ class Nodo:
         id = copy.deepcopy(self.id)
         id.append(movimiento)
         tablero = copy.deepcopy(self.tablero)
-        if self.turno == Turno.Turno.BLANCAS:
-            turno = Turno.Turno.NEGRAS
+        if self.turno == Turno.BLANCAS:
+            turno = Turno.NEGRAS
         else:
-            turno = Turno.Turno.BLANCAS
+            turno = Turno.BLANCAS
         enrroque = copy.deepcopy(self.enrroque)
         nivel = 1 + self.nivel
-        nodo_hijo = Nodo(id,tablero,turno,enrroque,nivel,estado,valor,self.MAX_NODE) #(self,id,tablero,turno,enrroque,nivel,estado,valor,MAX_NODE)
+        nodo_hijo = Nodo(id,tablero,turno,enrroque,nivel,estado,valor,self.MAX_NODE,self.piezas) #(self,id,tablero,turno,enrroque,nivel,estado,valor,MAX_NODE)
         
-        self.hijos.append(nodo_hijo)
+        return nodo_hijo
 
     def generar_todos_los_hijos(self):
         total_de_hijos = self.cantidad_de_hijos_max()
         for index in range (0,total_de_hijos):
-            self.generar_hijo(index,self.valor,self.estado)
+            nodo_hijo = self.generar_hijo(index,self.valor,self.estado)
+            self.hijos.append(nodo_hijo)
 
 

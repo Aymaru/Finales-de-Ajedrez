@@ -78,7 +78,7 @@ class Juego:
         else:
             turno = Turno.NEGRAS
         
-        self.evaluacion_de_tablero = evaluador.evaluar_tablero(turno)
+        self.evaluacion_de_tablero = evaluador.evaluar_tablero({},turno)
         print(self.evaluacion_de_tablero)
             
     def generar_movimientos_de_enrroque(self):

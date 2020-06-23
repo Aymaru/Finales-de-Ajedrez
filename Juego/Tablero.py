@@ -32,6 +32,10 @@ class Tablero:
             self.__generar_tablero_inicial_vacio()
         else:
             self.tablero = tablero
+        self.calculando_movimiento = False
+
+
+        
 
     def __generar_tablero_inicial_vacio(self):
         self.tablero = []
@@ -134,13 +138,19 @@ class Tablero:
         pieza = self.obtener_pieza_de_casilla(posicion)
         if pieza > 0:
             return 'B'
-        return 'N'
+        elif pieza < 0:
+            return 'N'
+        else:
+            return None
 
     def get_color_pieza(self,posicion):
         pieza = self.obtener_pieza_de_casilla(posicion)
         if pieza > 0:
             return Turno.BLANCAS
-        return Turno.NEGRAS
+        elif pieza < 0:
+            return Turno.NEGRAS
+        else:
+            return None
     ####
     ##  Funcionalidades que describen el juego, mover una pieza del tablero, generar los posibles movimientos en un turno, determinar jaque y jaque mate
     ####
@@ -252,7 +262,10 @@ class Tablero:
             pieza_casilla_objetivo = self.obtener_pieza_de_casilla(casilla_objetivo)
 
             if pieza_casilla_objetivo != 0:
-                    color_casilla_objetivo = self.obtener_color_de_pieza(casilla_objetivo)
+                    if self.calculando_movimiento:
+                        color_casilla_objetivo = self.obtener_color_de_pieza(casilla_objetivo)
+                        if color_de_pieza == color_casilla_objetivo:
+                            break
                     posible_movimiento = Movimiento.Movimiento(casilla_inicial,casilla_objetivo)
                     posibles_movimientos.append(posible_movimiento)
                     break
@@ -314,10 +327,12 @@ class Tablero:
 
             else:
                 if pieza_casilla_objetivo != 0:
-                    tmp_color_objetivo = self.obtener_color_de_pieza(casilla_objetivo)
-                    if tmp_color_objetivo != color_de_pieza:
-                        posible_movimiento = Movimiento.Movimiento(casilla_inicial,casilla_objetivo)
-                        posibles_movimientos.append(posible_movimiento)
+                    if self.calculando_movimiento:
+                        tmp_color_objetivo = self.obtener_color_de_pieza(casilla_objetivo)
+                        if tmp_color_objetivo == color_de_pieza:
+                            break
+                    posible_movimiento = Movimiento.Movimiento(casilla_inicial,casilla_objetivo)
+                    posibles_movimientos.append(posible_movimiento)
 
         return posibles_movimientos
                 
@@ -383,13 +398,21 @@ class Tablero:
             for j in dos:
                 casilla_objetivo = Posicion.Posicion(casilla_inicial.fila+i,casilla_inicial.columna+j)                
                 if casilla_objetivo.validar_posicion():
+                    if self.calculando_movimiento:
+                        color_objetivo = self.obtener_color_de_pieza(casilla_objetivo)
+                        if color_de_pieza == color_objetivo:
+                            continue
                     posible_movimiento = Movimiento.Movimiento(casilla_inicial,casilla_objetivo)
                     posibles_movimientos.append(posible_movimiento)
 
         for i in dos:
             for j in unos:
                 casilla_objetivo = Posicion.Posicion(casilla_inicial.fila+i,casilla_inicial.columna+j)
-                if casilla_objetivo.validar_posicion():                    
+                if casilla_objetivo.validar_posicion():
+                    if self.calculando_movimiento:
+                        color_objetivo = self.obtener_color_de_pieza(casilla_objetivo)
+                        if color_de_pieza == color_objetivo:
+                            continue                  
                     posible_movimiento = Movimiento.Movimiento(casilla_inicial,casilla_objetivo)
                     posibles_movimientos.append(posible_movimiento)
                         
@@ -408,10 +431,15 @@ class Tablero:
 
             for columna in range(casilla_inicial.columna-1,casilla_inicial.columna+2):
                 casilla_objetivo = Posicion.Posicion(fila,columna)
-                if casilla_objetivo == casilla_inicial:
+                if casilla_objetivo.equals(casilla_inicial):
                     continue
                 
                 if casilla_objetivo.validar_posicion():
+                    if self.calculando_movimiento:
+                        color_objetivo = self.obtener_color_de_pieza(casilla_objetivo)
+                        pieza = abs(self.obtener_pieza_de_casilla(casilla_objetivo))
+                        if color_de_pieza == color_objetivo or pieza == 6:
+                            continue
                     posible_movimiento = Movimiento.Movimiento(casilla_inicial,casilla_objetivo)
                     posibles_movimientos.append(posible_movimiento)
 

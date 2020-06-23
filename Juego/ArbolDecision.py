@@ -1,7 +1,7 @@
 from collections import deque
 
 from Juego import Nodo
-from Juego import Estado
+from Juego.Estado import Estado
 from Juego import Enrroque
 
 class ArbolDecision:
@@ -26,16 +26,18 @@ class ArbolDecision:
         
         while(True):
             nodo_actual = self.lista.popleft() ## Obtiene y elimina el primer elemento de la lista
-            if not nodo_actual.id and nodo_actual.estado == Estado.Estado.SOLUCIONADO:
+            if not nodo_actual.id and nodo_actual.estado == Estado.SOLUCIONADO:
                 return            
-            if nodo_actual.estado == Estado.Estado.VIVO: ##esta vivo
+            if nodo_actual.estado == Estado.VIVO: ##esta vivo
 
                 if not nodo_actual.es_terminal(): ## No es terminal
                     if nodo_actual.es_max(): ## es MAX
                         ## insertar todos los hijos del nodo en la cabeza de lista
                         nodo_actual.generar_todos_los_hijos()
                         for nodo_tmp in nodo_actual.hijos:
-                            nodo_tmp.set_estado(Estado.Estado.VIVO)
+                            # if nodo_tmp.estado == Estado.INVALIDO:
+                            #     continue
+                            nodo_tmp.set_estado(Estado.VIVO)
                             self.insertar_delante(nodo_tmp)
                         
                     elif nodo_actual.es_min(): ## es MIN
@@ -56,7 +58,7 @@ class ArbolDecision:
                     total_de_hijos = nodo_padre.cantidad_de_hijos_max()
                     hijo_actual = nodo_padre.buscar_nodo_hijo(nodo_actual.get_id_nodo())
                     if hijo_actual != total_de_hijos-1:  ## Si no es el ultimo hijo del padre, insertar el siguiente hermano en la cabeza de lista como VIVO con el valor del nodo
-                        nodo_padre.generar_hijo(hijo_actual+1,nodo_actual.valor,Estado.Estado.VIVO)
+                        nodo_padre.generar_hijo(hijo_actual+1,nodo_actual.valor,Estado.VIVO)
                         nodo_tmp = nodo_padre.get_nodo_hijo(hijo_actual+1)
                         nodo_tmp.set_valor(nodo_actual.valor)
                         self.insertar_delante(nodo_tmp)
