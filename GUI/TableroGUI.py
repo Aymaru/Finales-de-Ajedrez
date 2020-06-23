@@ -612,8 +612,17 @@ class TableroGUI(tk.Frame):
     def colocar_captura_al_paso(self,movimiento):
         casilla_inicial = movimiento.casilla_inicial
         casilla_objetivo = movimiento.casilla_objetivo
-        color_de_pieza = self.master.juego.tablero.get_color_pieza(casilla_inicial)
+        color_de_pieza = self.master.juego.tablero.obtener_color_de_pieza(casilla_inicial)
+        print("alpassant color de pieza ",color_de_pieza)
+        casilla_inicial.imprimir()
         pieza_a_mover = self.__piezas[casilla_inicial.calcular_posicion_tablero()]
+
+        if pieza_a_mover.pieza > 0:
+            color_de_pieza = Turno.BLANCAS
+        else:
+            color_de_pieza = Turno.NEGRAS
+        
+        print("alpassant color de pieza ",color_de_pieza)
         
         tmp_posicion_pantalla_actual = pieza_a_mover.get_posicion_en_tablero()
         tmp_posicion_pantalla_objetivo = Posicion(casilla_objetivo.fila,casilla_objetivo.columna)
@@ -650,7 +659,6 @@ class TableroGUI(tk.Frame):
     def colocar_coronamiento(self,movimiento,pieza_de_coronamiento):
         casilla_inicial = movimiento.casilla_inicial
         casilla_objetivo = movimiento.casilla_objetivo
-        color_de_pieza = self.master.juego.tablero.obtener_color_de_pieza(casilla_inicial)
         pieza_a_mover = self.__piezas[casilla_inicial.calcular_posicion_tablero()]
 
         tmp_posicion_pantalla_actual = pieza_a_mover.get_posicion_en_tablero()
@@ -675,9 +683,6 @@ class TableroGUI(tk.Frame):
     def colocar_enrroque(self,movimiento):
         casilla_inicial = movimiento.casilla_inicial
         casilla_objetivo = movimiento.casilla_objetivo
-        # if self.master.juego.J1 == "N":
-        #     casilla_inicial.invertir()
-        #     casilla_objetivo.invertir()
         pieza_a_mover = self.__piezas[casilla_inicial.calcular_posicion_tablero()]
 
         tmp_posicion_pantalla_actual = pieza_a_mover.get_posicion_en_tablero()
