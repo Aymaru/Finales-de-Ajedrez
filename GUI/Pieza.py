@@ -10,6 +10,12 @@ class Pieza():
         self.pieza = pieza
         self.cargar_imagen()
 
+        ##Propiedades para realizar una animacion de movimiento
+        self.direccion_fila = None
+        self.direccion_columna = None
+        self.posicion_limite = None
+
+
     ##Crea el path para la imagen de la pieza y carga la imagen
     def cargar_imagen(self):
         self.path = './Imagenes/'
@@ -68,6 +74,108 @@ class Pieza():
 
     def get_focus(self):
         self.id_canvas.configure(takefocus=True)
+
+    def realizar_animacion(self):
+        columna_actual,fila_actual = self.canvas.coords(self.id_canvas)
+        if abs(self.pieza) == 2:
+            if self.posicion_limite.columna != columna_actual:
+                self.canvas.move(self.id_canvas, self.direccion_columna, 0)
+                self.canvas.after(self.espera_de_movimiento, self.realizar_animacion)
+
+            elif self.posicion_limite.fila != fila_actual:
+                self.canvas.move(self.id_canvas, 0, self.direccion_fila)
+                self.canvas.after(self.espera_de_movimiento, self.realizar_animacion)
+            else:
+                self.mover_pieza()
+        else:
+            if self.direccion_fila == 1 and self.direccion_columna == 1:
+                if fila_actual < self.posicion_limite.fila or columna_actual < self.posicion_limite.columna:
+                    self.canvas.move(self.id_canvas, self.direccion_columna, self.direccion_fila)
+                    self.canvas.after(self.espera_de_movimiento, self.realizar_animacion)
+                else:
+                    self.mover_pieza()
+                    
+            elif self.direccion_fila == 1 and self.direccion_columna == 0:
+                if fila_actual < self.posicion_limite.fila:
+                    self.canvas.move(self.id_canvas, self.direccion_columna, self.direccion_fila)
+                    self.canvas.after(self.espera_de_movimiento, self.realizar_animacion)
+                else:
+                    self.mover_pieza()
+
+            elif self.direccion_fila == 0 and self.direccion_columna == 1:
+                if columna_actual < self.posicion_limite.columna:
+                    self.canvas.move(self.id_canvas, self.direccion_columna, self.direccion_fila)
+                    self.canvas.after(self.espera_de_movimiento, self.realizar_animacion)
+                else:
+                    self.mover_pieza()
+
+            elif self.direccion_fila == -1 and self.direccion_columna == -1:
+                if fila_actual > self.posicion_limite.fila or columna_actual > self.posicion_limite.columna:
+                    self.canvas.move(self.id_canvas, self.direccion_columna, self.direccion_fila)
+                    self.canvas.after(self.espera_de_movimiento, self.realizar_animacion)
+                else:
+                    self.mover_pieza()
+
+            elif self.direccion_fila == -1 and self.direccion_columna == 0:
+                if fila_actual > self.posicion_limite.fila:
+                    self.canvas.move(self.id_canvas, self.direccion_columna, self.direccion_fila)
+                    self.canvas.after(self.espera_de_movimiento, self.realizar_animacion)
+                else:
+                    self.mover_pieza()
+            elif self.direccion_fila == 0 and self.direccion_columna == -1:
+                if columna_actual > self.posicion_limite.columna:
+                    self.canvas.move(self.id_canvas, self.direccion_columna, self.direccion_fila)
+                    self.canvas.after(self.espera_de_movimiento, self.realizar_animacion)
+                else:
+                    self.mover_pieza()
+            elif self.direccion_fila == -1 and self.direccion_columna == 1:
+                if fila_actual > self.posicion_limite.fila or columna_actual < self.posicion_limite.columna:
+                    self.canvas.move(self.id_canvas, self.direccion_columna, self.direccion_fila)
+                    self.canvas.after(self.espera_de_movimiento, self.realizar_animacion)
+                else:
+                    self.mover_pieza()
+            elif self.direccion_fila == 1 and self.direccion_columna == -1:
+                if fila_actual < self.posicion_limite.fila or columna_actual > self.posicion_limite.columna:
+                    self.canvas.move(self.id_canvas, self.direccion_columna, self.direccion_fila)
+                    self.canvas.after(self.espera_de_movimiento, self.realizar_animacion)
+                else:
+                    self.mover_pieza()
+            else:
+                return
+
+            
+
+    def preparar_animacion(self,movimiento):
+        ##establecer las variables que definen el movimiento
+        self.canvas.lift(self.id_canvas)
+        self.direccion_fila = self.__obtener_direccion_de_movimiento(movimiento,True)
+        self.direccion_columna = self.__obtener_direccion_de_movimiento(movimiento,False)
+        self.posicion_limite = movimiento.casilla_objetivo.calcular_posicion_en_pantalla()
+        self.espera_de_movimiento = 3
+        
+        if self.direccion_fila == 1 or self.direccion_fila == -1:
+            self.posicion_limite.fila = self.posicion_limite.fila + 50
+
+        if self.direccion_columna == 1 or self.direccion_columna == -1:
+            self.posicion_limite.columna = self.posicion_limite.columna + 50
+        
+    def __obtener_direccion_de_movimiento(self,movimiento,fila):
+        if fila:
+            diferencia = movimiento.casilla_objetivo.fila - movimiento.casilla_inicial.fila
+        else:
+            diferencia = movimiento.casilla_objetivo.columna - movimiento.casilla_inicial.columna
+        if diferencia == 0:
+            return 0
+        elif diferencia > 0:
+            return 1
+        else:
+            return -1
+
+    # def move_object(obj_id):
+    # can.move(obj_id, 0, 1)
+    # x0,y0,x1,y1 = can.coords(obj_id)
+    # if y0 < yCan: 
+    #     can.after(5, move_obj, obj_id)
     #movX = posXTablero + (col-1) * 48
     #movY = posYTablero + (fila-1) * 46        
 
