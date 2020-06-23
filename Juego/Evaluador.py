@@ -53,7 +53,7 @@ class Evaluador(Tablero):
                 Pieza.DAMA: 900,
                 Pieza.REY: 20000
             },
-            TipoEvaluacion.MOVILIDAD: 10,
+            TipoEvaluacion.MOVILIDAD: 25,
             TipoEvaluacion.ESTRUCTURA_DE_PEONES: {
                 EstructuraDePeon.AVANZADO: 10,
                 EstructuraDePeon.ADELANTADO: 5,
@@ -92,9 +92,10 @@ class Evaluador(Tablero):
                                 -10, -10,   0,  25,  25,   0, -10, -10,
                                 -10, -10,  10,  25,  25,  10, -10, -10,
                                  10,  10,  25,  50,  50,  25,  10,  10,
-                                 25,  25,  50,  50,  50,  50,  25,  25,
-                                 10,  10,  10,  10,  10,  10,  10,  50,
-                                 10,  10,  10,  10,  10,  10,  10,  50],
+                                 25,  25,  10,  25,  25,  10,  25,  25,
+                                 10,  10,  10,  10,  10,  10,  10,  10,
+                                 10,  10,  10,  10,  10,  10,  10,  10],
+
                     Pieza.CABALLO: [ -50,   0,   0,  10,  10,   0,   0, -50,
                                 -50,  10,  10,   0,   0,  10,  10, -50,
                                   0,  10,   0,  25,  25,   0,  10,   0,
@@ -103,138 +104,152 @@ class Evaluador(Tablero):
                                  25,  25,  50,  50,  50,  50,  25,  25,
                                 -50, -50,  25,   0,   0,  25, -50, -50,
                                 -50, -50,  25,   0,   0,  25, -50, -50],
+
                     Pieza.ALFIL:[   -50, -50,   0, -50, -50,   0, -50, -50,
-                                    -25,   0, -10,   0,   0, -10,   0, -25,
-                                     10,  10,   0,  10,  10,  25, -10,  10,
-                                      0,  10,  50,  25,  25,  50, -10, -10,
-                                     10,  10,  25,  50,  50,  25,  25,  10,
-                                     25,  25,  50,  50,  50,  50,  25,  25,
+                                    -25,   0, -10,  10,  10, -10,   0, -25,
+                                    -10, -10,  25,  25,  25,  25, -10,  10,
+                                    -10, -10,  50,  25,  25,  50, -10, -10,
+                                     10,  10,  25,  25,  25,  25,  25,  10,
+                                     10,  25,  50,  10,  10,  50,  25,  10,
                                     -50, -50, -50, -50, -50, -50, -50, -50,
                                     -50, -50, -50, -50, -50, -50, -50, -50],
-                    Pieza.TORRE: [  -50,   0,   0,  10,  10,   0,   0, -50,
-                                    -50,  10,  10,   0,   0,  10,  10, -50,
-                                      0,  10,   0,  25,  25,  25, -10,  10,
-                                      0,  10,  50,  25,  25,  50, -10, -10,
-                                     10,  10,  25,  50,  50,  25,  25,  10,
-                                     25,  25,  50,  50,  50,  50,  25,  25,
-                                    -50, -50,  25,   0,   0,  25, -50, -50,
+
+                    Pieza.TORRE: [   10,   0,  50,  50,  50,  50,   0,  10,
+                                      0,  10,  10,  25,  25,  10,  10,   0,
+                                      0,   0,   0, -25, -25,   0,   0,   0,
+                                      0,   0,   0, -25, -25,   0,   0,   0,
+                                      0,   0,   0, -25, -25,   0,   0,   0,
+                                    -10, -10, -10, -25, -25, -10, -10, -10,
+                                     25,   0,   0,  25,  25,   0,   0,  25,
+                                     50,  50,  25,  10,  10,  25,  50,  50],
+
+                    Pieza.DAMA: [   -25, -10,   0,  10,  10,   0,   0, -50,
+                                    -10,  10,  10,   0,   0,  10,  10, -50,
+                                     10,  10,   0,   0,   0,   0,  10,  10,
+                                     10, -10,  10,  10,  10,  10, -10,  10,
+                                     10, -10, -10,  50,  50, -10, -10,  10,
+                                     25,  25,  25,  25,  25,  25,  25,  25,
+                                    -50, -50,  25,  50,   0,  25, -50, -50,
                                     -50, -50,  25,   0,   0,  25, -50, -50],
-                    Pieza.DAMA: [   -50,   0,   0,  10,  10,   0,   0, -50,
-                                    -50,  10,  10,   0,   0,  10,  10, -50,
-                                      0,  10,   0,  25,  25,  25, -10,  10,
-                                      0,  10,  50,  25,  25,  50, -10, -10,
-                                     10,  10,  25,  50,  50,  25,  25,  10,
-                                     25,  25,  50,  50,  50,  50,  25,  25,
-                                    -50, -50,  25,   0,   0,  25, -50, -50,
-                                    -50, -50,  25,   0,   0,  25, -50, -50],
-                    Pieza.REY: [    -50,   0,   0,  10,  10,   0,   0, -50,
-                                    -50,  10,  10,   0,   0,  10,  10, -50,
-                                      0,  10,   0,  25,  25,  25, -10,  10,
-                                      0,  10,  50,  25,  25,  50, -10, -10,
-                                     10,  10,  25,  50,  50,  25,  25,  10,
-                                     25,  25,  50,  50,  50,  50,  25,  25,
-                                    -50, -50,  25,   0,   0,  25, -50, -50,
-                                    -50, -50,  25,   0,   0,  25, -50, -50],
+
+                    Pieza.REY: [      0,  50,  25,  10,  10,  10,  25,   0,
+                                     10,  10,  10, -10, -10,  10,  10,  10,
+                                     10,  10,   0, -25, -25,   0,  10,  10,
+                                    -10, -10, -10, -10, -10, -10, -10, -10,
+                                    -25, -25, -25, -25, -25, -25, -25, -25,
+                                    -25, -25, -25, -25, -25, -25, -25, -25,
+                                    -50, -50, -50, -50, -50, -50, -50, -50,
+                                    -50, -50, -50, -50, -50, -50, -50, -50]
                 },
                 FaseDeJuego.DESARROLLO: {
-                    Pieza.PEON: [0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0],
-                    Pieza.CABALLO: [0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0],
-                    Pieza.ALFIL: [0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0],
-                    Pieza.TORRE: [0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0],
-                    Pieza.DAMA: [0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0],
-                    Pieza.REY: [0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0]
+                    Pieza.PEON: [ 0,   0,   0,   0,   0,   0,   0,   0,
+                                 25,  25,  25,   0,   0,  25,  25,  25,
+                                  0, -25, -25,  10,  10, -25, -25,   0,
+                                  0,   0,   0,  25,  25,   0,   0,   0,
+                                 10,  25,  50,  50,  50,  50,  25,  10,
+                                 25,  50,  10,  25,  25,  10,  50,  25,
+                                 25,  25,  25,  25,  25,  25,  25,  25,
+                                 50,  50,  50,  50,  50,  50,  50,  50],
+
+                    Pieza.CABALLO: [ -50, -50, -50, -50, -50, -50, -50, -50,
+                                -50,  10,  10,   0,   0,  10,  10, -25,
+                                  0,  10,   0,  25,  25,   0,  10,   0,
+                                  0,  10,  50,  25,  25,  50,  10,   0,
+                                 10,  10,  25,  50,  50,  25,  25,  10,
+                                 25,  25,  50,  50,  50,  50,  25,  25,
+                                -10, -10,  25,   0,   0,  25, -10, -10,
+                                -10, -10,  25,   0,   0,  25, -10, -10],
+
+                    Pieza.ALFIL:[   -50, -50, -10, -50, -50, -10, -50, -50,
+                                    -25,  10, -10,  10,  10, -10,  10, -25,
+                                      0, -10,  25,  50,  50,  25, -10,   0,
+                                    -10, -10,  50,  50,  50,  50, -10, -10,
+                                     10,  10,  25,  50,  50,  25,  25,  10,
+                                     10,  25,  50,  10,  10,  50,  25,  10,
+                                     10,  10,  25,  25,  25,  25,  10,  10,
+                                    -50, -50, -50, -50, -50, -50, -50, -50],
+
+                    Pieza.TORRE: [   10,   0,  25,  25,  25,  25,   0,  10,
+                                     25,  10,  25,  50,  50,  25,  10,  25,
+                                     25,   0,   0, -10, -10,   0,   0,  25,
+                                     25,  10,  10, -10, -10,  10,  10,  25,
+                                     50,   0,   0, -25, -25,   0,   0,  50,
+                                     50, -10, -10, -25, -25, -10, -10,  50,
+                                     25,  10,  10,  25,  25,  10,  10,  25,
+                                     50,  50,  25,  10,  10,  25,  50,  50],
+
+                    Pieza.DAMA: [   -25, -10, -10,  10,  10, -10, -10, -25,
+                                    -25,  10,  10,   0,   0,  10,  10, -25,
+                                      0,   0,  10,  10,  10,  10,   0,   0,
+                                     10,   0,  25,  25,  25,  25,   0,  10,
+                                     25,   0,  25,  25,  25,  25,   0,  25,
+                                     25,  10,  25,  25,  25,  25,  10,  25,
+                                     50,  50,  25,  50,  50,  25,  50,  50,
+                                     50,  50,  25,  50,  50,  25,  50,  50],
+
+                    Pieza.REY: [      0,  50,  25,  10,  10,  10,  25,   0,
+                                     10,  10,  10, -10, -10,  10,  10,  10,
+                                     10,  10,   0, -25, -25,   0,  10,  10,
+                                    -10, -10, -10, -10, -10, -10, -10, -10,
+                                    -25, -25, -25, -25, -25, -25, -25, -25,
+                                    -25, -25, -25, -25, -25, -25, -25, -25,
+                                    -50, -50, -50, -50, -50, -50, -50, -50,
+                                    -50, -50, -50, -50, -50, -50, -50, -50]
                 },
                 FaseDeJuego.FINAL: {
-                    Pieza.PEON: [0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0],
-                    Pieza.CABALLO: [0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0],
-                    Pieza.ALFIL: [0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0],
-                    Pieza.TORRE: [0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0],
-                    Pieza.DAMA: [0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0],
-                    Pieza.REY: [0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0,
-                                0,0,0,0,0,0,0,0]
+                    Pieza.PEON: [ 0,   0,   0,   0,   0,   0,   0,   0,
+                                -25, -25, -25, -50, -50, -25, -25, -25,
+                                -10, -25, -25, -10, -10, -25, -25,  -10,
+                                  0,   0,   0,  25,  25,   0,   0,   0,
+                                  0,   0,   0,  10,  10,   0,   0,   0,
+                                 10,  10,  10,  25,  25,  10,  10,  10,
+                                 25,  25,  25,  25,  25,  25,  25,  25,
+                                 50,  50,  50,  50,  50,  50,  50,  50],
+
+                    Pieza.CABALLO: [ -50, -50, -50, -50, -50, -50, -50, -50,
+                                -50, -10, -10, -10, -10, -10, -10, -25,
+                                  0,  10,   0,  10,  10,   0,  10,   0,
+                                  0,  10,  25,  25,  25,  25,  10,   0,
+                                 10,  25,  50,  50,  50,  50,  25,  10,
+                                 10,  25,  50,  50,  50,  50,  25,  10,
+                                -50, -10,  25,  10,  10,  25, -10, -50,
+                                -50, -10,  25,  10,  10,  25, -10, -50],
+
+                    Pieza.ALFIL:[   -50, -50, -10, -50, -50, -10, -50, -50,
+                                    -25,  10, -10,  10,  10, -10,  10, -25,
+                                      0,   0,   0,  10,  10,   0,   0,   0,
+                                      0,   0,  25,  25,  25,  25,   0,   0, 
+                                     10,  10,  25,  50,  50,  25,  25,  10,
+                                     10,  25,  50,  10,  10,  50,  25,  10,
+                                     10,  10,  25,  25,  25,  25,  10,  10,
+                                      0,  25,  25,  25,  25,  25,  25,   0],
+
+                    Pieza.TORRE: [   10,   0,  25,  25,  25,  25,   0,  10,
+                                     25,  10,  25,  50,  50,  25,  10,  25,
+                                     25,   0,   0, -10, -10,   0,   0,  25,
+                                     25,  10,  10, -10, -10,  10,  10,  25,
+                                     50,   0,   0, -10, -10,   0,   0,  50,
+                                     50,  10,  10,  10,  10,  10,  10,  50,
+                                     25,  10,  10,  25,  25,  10,  10,  25,
+                                     50,  50,  25,  10,  10,  25,  50,  50],
+
+                    Pieza.DAMA: [   -25, -10, -10,  10,  10, -10, -10, -25,
+                                    -25,  10,  10,   0,   0,  10,  10, -25,
+                                      0,   0,  10,  10,  10,  10,   0,   0,
+                                     10,   0,  25,  25,  25,  25,   0,  10,
+                                     25,   0,  25,  25,  25,  25,   0,  25,
+                                     25,  10,  25,  25,  25,  25,  10,  25,
+                                     50,  50,  25,  50,  50,  25,  50,  50,
+                                     50,  50,  25,  50,  50,  25,  50,  50],
+
+                    Pieza.REY: [      0,  25,  10,   0,   0,  10,  25,   0,
+                                     10,  10,   0,   0,   0,   0,  10,  10,
+                                     10,  10,   0, -10, -10,   0,  10,  10,
+                                      0,   0,  10, -10, -10,  10,   0,   0,
+                                    -10,  10,   0, -25, -25,   0,  10, -10,
+                                    -10,  10,   0, -25, -25,   0,  10, -10,
+                                    -10, -25, -25, -25, -25, -25, -25, -25,
+                                    -50, -50, -50, -50, -50, -50, -50, -50]
                 }
             }
         }
@@ -255,7 +270,7 @@ class Evaluador(Tablero):
     ## DEVUELVE EL VALOR DE LA EVALUACION DEL ESTADO DEL TABLERO PARA LAS PIEZAS DADAS.
     ## **************************************************************************************************************************************************************
 
-    def evaluar_tablero(self,turno):
+    def evaluar_tablero(self,piezas,turno):
         self.__posibles_movimientos = self.generar_posibles_movimientos()
         self.__get_piezas()
         #self.print_piezas()
@@ -265,27 +280,22 @@ class Evaluador(Tablero):
         self.__evaluacion_de_ataque_al_rey()
         self.__evaluacion_de_estructura_de_peones()
         self.__evaluacion_de_control_del_centro()
-        #self.__evaluacion_de_posicionamiento(fase_del_juego)
         self.__evaluacion_de_iniciativa()
 
         fase_del_juego = self.__get_fase_del_juego()
-        jaque = self.__es_jaque(self.__posibles_movimientos,turno)
-        jaque_mate = self.__es_jaque_mate(jaque,turno)
-        tablas = self.__es_tablas(jaque,turno)
         evaluacion = 0
 
-        if jaque:
-            evaluacion = 5000
-            if turno == Turno.BLANCAS:
-                evaluacion *= -1
-        
-        if jaque_mate:
+        if piezas == {}:
+            self.cargar_piezas()
+        else:
+            self.piezas = piezas
+        if self.es_jaque_mate(self.piezas,turno):
             evaluacion = 20000
             if turno == Turno.BLANCAS:
                 evaluacion *= -1 
             return evaluacion
         
-        if tablas:
+        if self.es_tablas(self.piezas):
             evaluacion = 0
             return evaluacion
 
@@ -303,9 +313,9 @@ class Evaluador(Tablero):
             
         elif fase_del_juego == FaseDeJuego.FINAL:
             self.__evaluacion_de_posicionamiento(fase_del_juego)
-            self.__valor_de_ataque_al_rey = 0.7 * self.__valor_de_ataque_al_rey
+            self.__valor_de_ataque_al_rey = self.__valor_de_ataque_al_rey
             self.__valor_de_ataque_al_rey = 0.5 * self.__valor_de_control_del_centro
-            self.__valor_de_iniciativa = self.__valor_de_iniciativa
+            self.__valor_de_iniciativa = 0.5 * self.__valor_de_iniciativa
             
         else:
             return None
@@ -313,7 +323,7 @@ class Evaluador(Tablero):
         evaluacion += self.__valor_material 
         evaluacion += self.__valores_de_evaluacion[TipoEvaluacion.MOVILIDAD] * self.__valor_de_movilidad 
         evaluacion += self.__valor_de_estructura_de_peones
-        #evaluacion += self.__valor_de_posicionamiento
+        evaluacion += self.__valor_de_posicionamiento * 0.1
         evaluacion += self.__valor_de_iniciativa
 
         #self.print_piezas()
@@ -328,27 +338,74 @@ class Evaluador(Tablero):
         # print("eval: %f" % evaluacion)
         return evaluacion
 
-    def __es_jaque(self,posibles_movimientos,turno):
-        tmp_turno = ''
-        if turno == Turno.BLANCAS:
-            tmp_turno = 'B'
-        elif turno == Turno.NEGRAS:
-            tmp_turno = 'N'        
-        return self.hay_jaque(posibles_movimientos,tmp_turno)
+    def cargar_piezas(self):
+        self.piezas = {
+                Turno.BLANCAS: {},
+                Turno.NEGRAS: {} 
+        }
+        for fila in range(0,8):
+            for columna in range(0,8):
+                tmp_posicion = Posicion(fila,columna)
+                tmp_pieza = self.obtener_pieza_de_casilla(tmp_posicion)
+                if tmp_pieza == 0:
+                    continue
 
-    def __es_jaque_mate(self,jaque,turno):
-        cant_movimientos_legales = self.__contar_movimientos_legales(turno)
-        if jaque and cant_movimientos_legales == 0:
-            return True
-        else:
-            return False
+                color = self.get_color_pieza(tmp_posicion)
+                self.piezas[color][tmp_posicion] = []
 
-    def __es_tablas(self,jaque,turno):
-        cant_movimientos_legales = self.__contar_movimientos_legales(turno)
-        if not jaque and cant_movimientos_legales == 0:
+    def es_jaque_mate(self,piezas,turno):
+        for pieza in piezas[turno].keys():
+            tmp_pieza = abs(self.obtener_pieza_de_casilla(pieza))
+            if tmp_pieza == 6:
+                return False
+        return True
+
+    def es_tablas(self,piezas):
+        cantidad_piezas_blancas = len(piezas[Turno.BLANCAS])
+        cantidad_piezas_negras = len(piezas[Turno.NEGRAS])
+        if (cantidad_piezas_blancas == 1) and (cantidad_piezas_negras == 1):
             return True
-        else:
-            return False
+        elif (cantidad_piezas_blancas == 2) and (cantidad_piezas_negras == 1) or (cantidad_piezas_blancas == 1) and (cantidad_piezas_negras == 2):
+            ##es rey y caballo vs rey o rey y alfil vs rey
+            if self.es_terminal_2_v_1(piezas):
+                return True
+            else:
+                return False
+        elif (cantidad_piezas_blancas == 2) and (cantidad_piezas_negras == 2):
+            ##es rey y caballo o rey y alfil vs rey y caballo o rey y alfil
+            if self.es_terminal_2_v_2(piezas):
+                return True
+            else:
+                return False
+        return False
+
+    def es_terminal_2_v_1(self,piezas):
+        for color in piezas.keys():
+            for pieza in piezas[color].keys():
+                tmp_pieza = abs(self.tablero.obtener_pieza_de_casilla(pieza))
+                if tmp_pieza == 6:
+                    continue
+                if tmp_pieza == 2 or tmp_pieza == 3:
+                    return True
+
+        return False
+    
+    def es_terminal_2_v_2(self,piezas):
+        terminar = False
+        
+        for color in piezas.keys():
+
+            for pieza in piezas[color].keys():
+                tmp_pieza = abs(self.tablero.obtener_pieza_de_casilla(pieza))
+                if tmp_pieza == 6:
+                    continue
+                if tmp_pieza == 2 or tmp_pieza == 3:
+                    if terminar:
+                        return True
+                    terminar = True
+
+        return False
+
     
     ## **************************************************************************************************************************************************************
     ## FUNCION PARA IMPRIMIR LA ESTRUCTURA DE LAS PIEZAS
@@ -512,10 +569,15 @@ class Evaluador(Tablero):
         
         contador_movimientos_legales = 0
         if color == Turno.BLANCAS:
-            contador_movimientos_legales = len(self.obtener_movimientos_legales(self.__posibles_movimientos,'B'))
+            for pieza in self.__piezas[Turno.BLANCAS]:
+                for tmp_pieza in self.__piezas[Turno.BLANCAS][pieza]:
+                    if type(tmp_pieza) == type(Posicion(0,0)):
+                        contador_movimientos_legales = contador_movimientos_legales + len(self.__piezas[Turno.BLANCAS][pieza][tmp_pieza][Casilla.ATACA]) + len(self.__piezas[Turno.BLANCAS][pieza][tmp_pieza][Casilla.AMENAZADA])
         else:
-            contador_movimientos_legales = len(self.obtener_movimientos_legales(self.__posibles_movimientos,'N'))
-
+            for pieza in self.__piezas[Turno.NEGRAS]:
+                for tmp_pieza in self.__piezas[Turno.NEGRAS][pieza]:
+                    if type(tmp_pieza) == type(Posicion(0,0)):
+                        contador_movimientos_legales = contador_movimientos_legales + len(self.__piezas[Turno.NEGRAS][pieza][tmp_pieza][Casilla.ATACA]) + len(self.__piezas[Turno.NEGRAS][pieza][tmp_pieza][Casilla.AMENAZADA])
         return contador_movimientos_legales
     
     ##Devuelve el valor de posicionamiento de una pieza en self.__valores_de_evaluacion[TipoDeEvaluacion.POSICIONAMIENTO][FaseDeJuego.?][Pieza.?][posicion]
@@ -630,16 +692,17 @@ class Evaluador(Tablero):
     ##Deja el resultado en self.__valor_de_posicionamiento
     def __evaluacion_de_posicionamiento(self,fase_de_juego):
         valor_de_posicionamiento = { Turno.BLANCAS: 0 , Turno.NEGRAS: 0 }
-
+        cantidad_piezas = { Turno.BLANCAS: 0 , Turno.NEGRAS: 0 }
         for color in self.__piezas.keys():
             for pieza in self.__piezas[color].keys():
 
                 for tmp_posicion in self.__piezas[color][pieza].keys():
                     if type(tmp_posicion) != type(Posicion(0,0)):
                         continue
+                    cantidad_piezas[color] = cantidad_piezas[color] + 1
                     valor_de_posicionamiento[color] += self.__get_valor_de_evaluacion_de_posicionamiento_de_pieza(fase_de_juego,color,pieza,tmp_posicion)
         
-        self.__valor_de_posicionamiento = valor_de_posicionamiento[Turno.BLANCAS] - valor_de_posicionamiento[Turno.NEGRAS]
+        self.__valor_de_posicionamiento = (valor_de_posicionamiento[Turno.BLANCAS]/cantidad_piezas[Turno.BLANCAS]) - (valor_de_posicionamiento[Turno.NEGRAS]/cantidad_piezas[Turno.NEGRAS])
         
     ##Evaluacion de la iniciativa de las piezas
     ##Para ATACA, DEFIENDE, AMENAZADA promedio
@@ -673,9 +736,9 @@ class Evaluador(Tablero):
                         continue
                     total_de_piezas[color] += 1
 
-                    valor_de_iniciativa[color][Casilla.AMENAZADA] += len( self.__piezas[color][pieza][tmp_pieza][Casilla.AMENAZADA] )
-                    valor_de_iniciativa[color][Casilla.ATACA] += len( self.__piezas[color][pieza][tmp_pieza][Casilla.ATACA] )
-                    valor_de_iniciativa[color][Casilla.DEFIENDE] += len( self.__piezas[color][pieza][tmp_pieza][Casilla.DEFIENDE] )
+                    valor_de_iniciativa[color][Casilla.AMENAZADA] += len( self.__piezas[color][pieza][tmp_pieza][Casilla.AMENAZADA] ) * 0.5
+                    valor_de_iniciativa[color][Casilla.ATACA] += len( self.__piezas[color][pieza][tmp_pieza][Casilla.ATACA] ) * (self.__valores_de_evaluacion[TipoEvaluacion.MATERIAL][pieza] / 100)
+                    #valor_de_iniciativa[color][Casilla.DEFIENDE] += len( self.__piezas[color][pieza][tmp_pieza][Casilla.DEFIENDE] ) * (self.__valores_de_evaluacion[TipoEvaluacion.MATERIAL][pieza] / 100)
                     valor_de_iniciativa[color][Casilla.ATACADA] -= len( self.__piezas[color][pieza][tmp_pieza][Casilla.ATACADA]) * (self.__valores_de_evaluacion[TipoEvaluacion.MATERIAL][pieza] / 100)
                     valor_de_iniciativa[color][Casilla.DEFENDIDA] += len( self.__piezas[color][pieza][tmp_pieza][Casilla.DEFENDIDA]) * (self.__valores_de_evaluacion[TipoEvaluacion.MATERIAL][pieza] / 100)
         

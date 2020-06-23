@@ -11,7 +11,8 @@ class Turno(Enum):
 
 class Estado(Enum):
     VIVO = 1,
-    SOLUCIONADO = 2
+    SOLUCIONADO = 2,
+    INVALIDO = 3
     
 class Pieza(Enum):
     PEON = 1,
