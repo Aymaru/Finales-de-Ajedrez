@@ -3,3 +3,5 @@ __pycache__/
 GUI/__pycache__/
 Juego/__pycache__/
 /old
+/logs
+/Logs
