@@ -47,7 +47,8 @@ class Juego:
             self.enrroque_blancas_largo = False
             self.enrroque_negras_corto = False
             self.enrroque_negras_largo = False
-
+        
+        self.cantidad_de_movimientos = 0
         self.movimientos_legales = deque()
         self.posibles_movimientos = deque()
         self.posibles_movimientos_blancas = deque()
@@ -58,6 +59,8 @@ class Juego:
         self.es_tablas = False
         self.es_turno_pc = False
         
+        self.al_passant = None
+
         self.queue = queue.Queue()
         self.calculando_movimiento = False
         
@@ -194,7 +197,10 @@ class Juego:
 
     def set_movimientos_legales(self):
         self.movimientos_legales.clear()
-        self.movimientos_legales.extend(self.tablero.obtener_movimientos_legales(self.posibles_movimientos,self.turno))        
+        self.movimientos_legales.extend(self.tablero.obtener_movimientos_legales(self.posibles_movimientos,self.turno))
+        if self.al_passant != None:
+            self.movimientos_legales.append(self.al_passant)
+            print("al passant")
 
     def set_posibles_movimientos(self):
         self.posibles_movimientos.clear()
@@ -231,8 +237,11 @@ class Juego:
         else:
             return None
 
-    def mover_pieza(self,movimiento_a_realizar): 
-        self.__log.agregar_log(self.tablero,movimiento_a_realizar)    
+    def mover_pieza(self,movimiento_a_realizar):
+        self.cantidad_de_movimientos = self.cantidad_de_movimientos + 1
+        self.__log.agregar_log(self.tablero,movimiento_a_realizar)
+
+        str_mov = self.__log.movimiento_to_string()
         if self.turno == 'B':
             pieza_de_coronamiento = 5
             self.turno = 'N'
@@ -247,8 +256,10 @@ class Juego:
         if self.J1 == "N":
             movimiento_GUI.casilla_inicial.invertir()
             movimiento_GUI.casilla_objetivo.invertir()
-
-        if self.tablero.es_movimiento_enrroque(movimiento_a_realizar):
+        if (self.al_passant != None) and (movimiento_a_realizar.equals(self.al_passant)):
+            self.master.GUI_ajedrez.colocar_captura_al_paso(movimiento_GUI)
+            self.tablero.realizar_captura_al_paso(movimiento_a_realizar)
+        elif self.tablero.es_movimiento_enrroque(movimiento_a_realizar):
             self.master.GUI_ajedrez.colocar_enrroque(movimiento_GUI)
             self.tablero.realizar_enrroque(movimiento_a_realizar)
         elif self.tablero.es_movimiento_coronacion(movimiento_a_realizar):
@@ -258,6 +269,8 @@ class Juego:
             self.master.GUI_ajedrez.mover_pieza(movimiento_GUI)
             self.tablero.mover_pieza(movimiento_a_realizar)
         
+        self.master.GUI_ajedrez.escribir_en_text_box(str(self.cantidad_de_movimientos) + ". " + str_mov)
+        self.set_al_passant(movimiento_a_realizar)
         self.actualizar_turno_pc()
         self.actualizar_estado_de_tablero()
         estado = self.get_estado_log()
@@ -279,6 +292,32 @@ class Juego:
 
 
         #ThreadedTask(self.master).start()
+    
+    def set_al_passant(self,movimiento):
+        pieza = abs(self.tablero.obtener_pieza_de_casilla(movimiento.casilla_objetivo))
+
+        if pieza == 1:
+            filas_avanzadas = abs(movimiento.casilla_inicial.fila - movimiento.casilla_objetivo.fila)
+            if filas_avanzadas == 2:
+                for i in range(movimiento.casilla_objetivo.columna-1,movimiento.casilla_objetivo.columna+2):
+                    if i == movimiento.casilla_objetivo.columna:
+                        continue
+                    tmp_posicion = Posicion(movimiento.casilla_objetivo.fila,i)
+                    pieza_objetivo = abs(self.tablero.obtener_pieza_de_casilla(tmp_posicion))
+                    if pieza_objetivo == 1:
+                        color_pieza_inicial = self.tablero.get_color_pieza(movimiento.casilla_objetivo)
+                        color_pieza_objetivo = self.tablero.get_color_pieza(tmp_posicion)
+                        if color_pieza_inicial != color_pieza_objetivo:
+                            if color_pieza_inicial == Turno.BLANCAS:
+                                fila = movimiento.casilla_objetivo.fila+1
+                            else:
+                                fila = movimiento.casilla_objetivo.fila-1
+                            tmp_posicion_objetivo = Posicion(fila,movimiento.casilla_objetivo.columna)
+                            mov_al_passant = Movimiento.Movimiento(tmp_posicion,tmp_posicion_objetivo)
+                            self.al_passant = mov_al_passant
+                            return True
+        self.al_passant = None
+        return False
     
     def queue_movimiento_a_realizar(self):
         self.queue.put(self.movimiento_a_realizar)

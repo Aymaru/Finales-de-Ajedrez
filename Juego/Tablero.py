@@ -169,6 +169,21 @@ class Tablero:
 
         self.colocar_pieza_en_casilla(pieza_a_mover,movimiento.casilla_objetivo)
     
+    def realizar_captura_al_paso(self,movimiento):
+        pieza_a_mover = self.obtener_pieza_de_casilla(movimiento.casilla_inicial)
+        color_pieza = self.get_color_pieza(movimiento.casilla_inicial)
+        self.limpiar_casilla(movimiento.casilla_inicial)
+        self.colocar_pieza_en_casilla(pieza_a_mover,movimiento.casilla_objetivo)
+        
+        if color_pieza == Turno.BLANCAS:
+            fila = movimiento.casilla_objetivo.fila+1
+            
+        elif color_pieza == Turno.NEGRAS:
+            fila = movimiento.casilla_objetivo.fila-1
+
+        posicion_de_captura = Posicion.Posicion(fila,movimiento.casilla_objetivo.columna)
+        self.limpiar_casilla(posicion_de_captura)
+
     def es_movimiento_enrroque(self,movimiento):
         filas = [0,7]
         columnas = [2,6]

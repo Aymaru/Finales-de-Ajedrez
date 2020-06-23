@@ -52,6 +52,13 @@ class Log:
         new_log_mov.escribir_movimiento(tablero)
         self.historial_de_movimientos.append(new_log_mov)
 
+    def movimiento_to_string(self):
+        cantidad_de_logs = len(self.historial_de_movimientos)
+        if cantidad_de_logs == 0:
+            return
+        return self.historial_de_movimientos[cantidad_de_logs-1].log_movimiento
+
+
     ##Ejemplo de log
     ##timestamp: datetime.datetime().isoformat()
     ##tipo de juego: self.tipo de juego

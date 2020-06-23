@@ -44,9 +44,8 @@ class Nodo:
             self.mover_pieza(movimiento)            
             if pieza_objetivo != None:
                 del self.piezas[color][pieza_objetivo]
-
         ##generar movimientos legales
-        self.generar_movimientos_legales() ##HAY QUE MODIFICARLO
+        self.generar_movimientos_legales() 
     
     def cargar_piezas(self):
         self.piezas = {
@@ -131,6 +130,7 @@ class Nodo:
                     self.enrroque.negras_corto = False
 
     def generar_movimientos_legales(self):
+        self.posibles_movimientos = deque()
 
         for pieza in self.piezas[self.turno].keys():
             
@@ -149,7 +149,10 @@ class Nodo:
             elif pieza_casilla_inicial == 6:
                 self.piezas[self.turno][pieza] = self.tablero.posibles_movimientos_de_rey(pieza)
             
-            self.movimientos_legales.extend(self.piezas[self.turno][pieza])
+            self.posibles_movimientos.extend(self.piezas[self.turno][pieza])
+
+        turno = self.turno_to_string()
+        self.movimientos_legales = self.tablero.obtener_movimientos_legales(self.posibles_movimientos,turno)
         return
 
         # posibles_movimientos = self.tablero.generar_posibles_movimientos()
