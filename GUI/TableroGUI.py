@@ -18,13 +18,14 @@ from Juego.Tipos import Turno
 from Juego.Tipos import Casilla as TCasilla
 
 
+
 ##Imports de GUI
 #from GUI.Configuracion import Configuracion
 from GUI.Label_IMG import Label_IMG
 from GUI.Casilla import Casilla
 from GUI.Pieza import Pieza
 from GUI import Configuracion
-
+from GUI import Animacion
 
 ##Interfaz del Tablero
 class TableroGUI(tk.Frame):
@@ -429,6 +430,7 @@ class TableroGUI(tk.Frame):
                     self.master.juego.set_casilla_objetivo(posicion_seleccionada)
                     if self.master.juego.es_movimiento_a_realizar_legal():                        
                         self.__realizar_movimiento()
+                        tmp_img = self.__piezas
                     self.limpiar_casillas()
                     self.master.juego.limpiar_casilla_inicial()
                     self.master.juego.limpiar_casilla_objetivo()
@@ -441,6 +443,7 @@ class TableroGUI(tk.Frame):
         tmp_casilla_inicial = self.master.juego.casilla_inicial
         if  tmp_casilla_inicial != None:
             tmp_img = self.__piezas[tmp_casilla_inicial.calcular_posicion_tablero()]
+            self.__main_canvas.lift(tk.CURRENT)
             self.__main_canvas.move(tk.CURRENT,event.x - self.__ultima_posicion.columna,event.y - self.__ultima_posicion.fila)
             self.__ultima_posicion = Posicion(event.y,event.x)
             #self.master.update()
@@ -470,7 +473,8 @@ class TableroGUI(tk.Frame):
                     casilla_objetivo.invertir()
                 tmp_img = self.__piezas[ casilla_inicial.calcular_posicion_tablero() ]
                 tmp_img.calcular_posicion_en_tablero(casilla_objetivo)
-                self.__realizar_movimiento()                
+                tmp_img.mover_pieza() #
+                self.__realizar_movimiento()           
             else:
                 movimiento_invalido = True
         else:
@@ -527,66 +531,12 @@ class TableroGUI(tk.Frame):
     def __number_between_range(self,number,first,last):
         return (number >= first and number <= last)
 
+    
     def __animacion_de_movimiento(self,movimiento):
 
-        pieza = self.__obtener_tipo_de_pieza(self.master.juego.tablero.obtener_pieza_de_casilla(movimiento.casilla_inicial))
-        if pieza == None:
-            return
 
-        casilla_inicial = copy.deepcopy(movimiento.casilla_inicial)
-        casilla_objetivo = copy.deepcopy(movimiento.casilla_objetivo)
-        tmp_imagen = self.__piezas[movimiento.casilla_inicial.calcular_posicion_tablero()]
-        direccion_fila = self.__obtener_direccion_de_movimiento(movimiento,True)
-        direccion_columna = self.__obtener_direccion_de_movimiento(movimiento,False)
+        return
 
-        if pieza == TipoPieza.CABALLO:
-            while (not casilla_inicial.fila == casilla_objetivo.fila):
-                self.__animacion_mover_una_casilla(tmp_imagen,direccion_fila,0)
-                casilla_inicial.avanzar_casilla(direccion_fila,0)
-            while (not casilla_inicial.columna == casilla_objetivo.columna):
-                self.__animacion_mover_una_casilla(tmp_imagen,0,direccion_columna)
-                casilla_inicial.avanzar_casilla(0,direccion_columna)
-        else:
-            while (not casilla_inicial.equals(casilla_objetivo) ):
-                #casilla_inicial.imprimir()
-                #casilla_objetivo.imprimir()
-                self.__animacion_mover_una_casilla(tmp_imagen,direccion_fila,direccion_columna)
-                casilla_inicial.avanzar_casilla(direccion_fila,direccion_columna)
-                
-
-    def __animacion_mover_una_casilla(self,img_pieza,direccion_fila,direccion_columna):
-        fila = img_pieza.posicion_en_tablero.fila
-        columna = img_pieza.posicion_en_tablero.columna
-        duracion_de_animacion = 100
-        desplazamiento = 100
-        iteraciones = 5
-        wait = int((duracion_de_animacion / iteraciones)*1000)
-        for desplazamiento in range (0,iteraciones):
-            continue
-            # self.__mover_espacio(img_pieza,desplazamiento,iteraciones,direccion_columna,direccion_fila)
-            # time.sleep(duracion_de_animacion / iteraciones)
-            # self.__main_canvas.update()
-        #self.master.after(0,lambda: self.__mover_espacio(img_pieza,desplazamiento,iteraciones,direccion_columna,direccion_fila,cantidad_de_espacios,wait))            
-
-    def __mover_espacio(self,img_pieza,desplazamiento,iteraciones,direccion_columna,direccion_fila,cantidad_de_espacios,wait):
-        if cantidad_de_espacios == 0:
-            return
-        self.__main_canvas.move(img_pieza,(desplazamiento / iteraciones) * direccion_columna, (desplazamiento / iteraciones) * direccion_fila)
-        
-        self.master.after(wait,lambda: self.__mover_espacio(img_pieza,desplazamiento,iteraciones,direccion_columna,direccion_fila,cantidad_de_espacios,wait))            
-        
-    ##Devuelve la direccion del movimiento en fila o columna, pasar True como ultimo parametro para fila, False para columna
-    def __obtener_direccion_de_movimiento(self,movimiento,fila):
-        if fila:
-            diferencia = movimiento.casilla_objetivo.fila - movimiento.casilla_inicial.fila
-        else:
-            diferencia = movimiento.casilla_objetivo.columna - movimiento.casilla_inicial.columna
-        if diferencia == 0:
-            return 0
-        elif diferencia > 0:
-            return 1
-        else:
-            return -1
 
     def mover_pieza(self,movimiento):
         casilla_inicial = movimiento.casilla_inicial
@@ -600,8 +550,11 @@ class TableroGUI(tk.Frame):
         tmp_posicion_pantalla_objetivo.calcular_posicion_en_pantalla()
         if not tmp_posicion_pantalla_actual.equals(tmp_posicion_pantalla_objetivo):
             ##self.__animacion_de_movimiento(movimiento)
+            pieza_a_mover.preparar_animacion(movimiento)
             pieza_a_mover.calcular_posicion_en_tablero(casilla_objetivo)
-            pieza_a_mover.mover_pieza()
+            Animacion.Animacion(pieza_a_mover).start()
+            #pieza_a_mover.realizar_animacion()
+            #pieza_a_mover.mover_pieza()
         
         pieza_objetivo = self.__piezas[casilla_objetivo.calcular_posicion_tablero()]
         if pieza_objetivo != None:
@@ -612,26 +565,23 @@ class TableroGUI(tk.Frame):
     def colocar_captura_al_paso(self,movimiento):
         casilla_inicial = movimiento.casilla_inicial
         casilla_objetivo = movimiento.casilla_objetivo
-        color_de_pieza = self.master.juego.tablero.obtener_color_de_pieza(casilla_inicial)
-        print("alpassant color de pieza ",color_de_pieza)
-        casilla_inicial.imprimir()
+        
         pieza_a_mover = self.__piezas[casilla_inicial.calcular_posicion_tablero()]
 
         if pieza_a_mover.pieza > 0:
             color_de_pieza = Turno.BLANCAS
         else:
             color_de_pieza = Turno.NEGRAS
-        
-        print("alpassant color de pieza ",color_de_pieza)
-        
         tmp_posicion_pantalla_actual = pieza_a_mover.get_posicion_en_tablero()
         tmp_posicion_pantalla_objetivo = Posicion(casilla_objetivo.fila,casilla_objetivo.columna)
 
         tmp_posicion_pantalla_objetivo.calcular_posicion_en_pantalla()
         if not tmp_posicion_pantalla_actual.equals(tmp_posicion_pantalla_objetivo):
             ##self.__animacion_de_movimiento(movimiento)
+            pieza_a_mover.preparar_animacion(movimiento)
             pieza_a_mover.calcular_posicion_en_tablero(casilla_objetivo)
-            pieza_a_mover.mover_pieza()
+            pieza_a_mover.realizar_animacion()
+            #pieza_a_mover.mover_pieza()
 
         if self.master.juego.J1 == "N":
             casilla_objetivo.invertir()
@@ -666,9 +616,10 @@ class TableroGUI(tk.Frame):
 
         if not tmp_posicion_pantalla_actual.equals(tmp_posicion_pantalla_objetivo):
             ##self.__animacion_de_movimiento(movimiento)
-            
+            pieza_a_mover.preparar_animacion(movimiento)
             pieza_a_mover.calcular_posicion_en_tablero(casilla_objetivo)
-            pieza_a_mover.mover_pieza()
+            pieza_a_mover.realizar_animacion()
+            #pieza_a_mover.mover_pieza()
 
         pieza_objetivo = self.__piezas[casilla_objetivo.calcular_posicion_tablero()]
         if pieza_objetivo != None:
@@ -690,10 +641,11 @@ class TableroGUI(tk.Frame):
         tmp_posicion_pantalla_objetivo.calcular_posicion_en_pantalla()
         if not tmp_posicion_pantalla_actual.equals(tmp_posicion_pantalla_objetivo):
             ##self.__animacion_de_movimiento(movimiento)
+            pieza_a_mover.preparar_animacion(movimiento)
             pieza_a_mover.calcular_posicion_en_tablero(casilla_objetivo)
-            pieza_a_mover.mover_pieza()
-        
-        
+            pieza_a_mover.realizar_animacion()
+            #pieza_a_mover.mover_pieza()
+
         pieza_objetivo = self.__piezas[casilla_objetivo.calcular_posicion_tablero()]
         self.__piezas[casilla_inicial.calcular_posicion_tablero()] = None
         
@@ -708,10 +660,12 @@ class TableroGUI(tk.Frame):
             if self.master.juego.J1 == "N":
                 movimiento_torre.casilla_inicial.invertir()
                 movimiento_torre.casilla_objetivo.invertir()
-            
             ##self.__animacion_de_movimiento(movimiento_torre)
+            torre.preparar_animacion(movimiento)
             torre.calcular_posicion_en_tablero(posicion_torre)
-            torre.mover_pieza()
+            torre.realizar_animacion()
+            #torre.mover_pieza()
+
             self.__piezas[posicion_torre.calcular_posicion_tablero()] = torre
            
         elif casilla_objetivo.columna == 6:
@@ -725,10 +679,12 @@ class TableroGUI(tk.Frame):
             if self.master.juego.J1 == "N":
                 movimiento_torre.casilla_inicial.invertir()
                 movimiento_torre.casilla_objetivo.invertir()
-            
             ##self.__animacion_de_movimiento(movimiento_torre)
+            torre.preparar_animacion(movimiento)
             torre.calcular_posicion_en_tablero(posicion_torre)
-            torre.mover_pieza()
+            torre.realizar_animacion()
+            #torre.mover_pieza()
+            
             self.__piezas[posicion_torre.calcular_posicion_tablero()] = torre
             
 

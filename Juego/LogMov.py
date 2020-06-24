@@ -23,20 +23,20 @@ class LogMov:
         if pieza_inicial == Pieza.PEON:
             self.log_movimiento = "Peon "
         elif pieza_inicial == Pieza.CABALLO:
-            self.log_movimiento = "Caballo de " + str_posicion_inicial + " "
+            self.log_movimiento = "Caballo " + str_posicion_inicial + " "
         elif pieza_inicial == Pieza.ALFIL:
-            self.log_movimiento = "Alfil de " + str_posicion_inicial + " "
+            self.log_movimiento = "Alfil " + str_posicion_inicial + " "
         elif pieza_inicial == Pieza.TORRE:
-            self.log_movimiento = "Torre de " + str_posicion_inicial + " "
+            self.log_movimiento = "Torre " + str_posicion_inicial + " "
         elif pieza_inicial == Pieza.DAMA:
-            self.log_movimiento = "Dama de " + str_posicion_inicial + " "
+            self.log_movimiento = "Dama " + str_posicion_inicial + " "
         elif pieza_inicial == Pieza.REY:
-            self.log_movimiento = "Rey de " + str_posicion_inicial + " "
+            self.log_movimiento = "Rey " + str_posicion_inicial + " "
 
         if pieza_objetivo == Pieza.PEON:
-            self.log_movimiento = self.log_movimiento + "captura peon en " + str_posicion_objetivo
+            self.log_movimiento = self.log_movimiento + "captura peon de " + str_posicion_objetivo
         elif pieza_objetivo == Pieza.CABALLO:
-            self.log_movimiento = self.log_movimiento + "captura caballo en " + str_posicion_objetivo
+            self.log_movimiento = self.log_movimiento + "captura caballo de " + str_posicion_objetivo
         elif pieza_objetivo == Pieza.ALFIL:
             self.log_movimiento = self.log_movimiento + "captura alfil de " + str_posicion_objetivo
         elif pieza_objetivo == Pieza.TORRE:
@@ -44,7 +44,7 @@ class LogMov:
         elif pieza_objetivo == Pieza.DAMA:
             self.log_movimiento = self.log_movimiento + "captura dama de " + str_posicion_objetivo
         else:
-            self.log_movimiento = self.log_movimiento + "a " + str_posicion_objetivo
+            self.log_movimiento = self.log_movimiento + "--> " + str_posicion_objetivo
 
         return
     

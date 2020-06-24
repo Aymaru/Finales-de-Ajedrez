@@ -453,7 +453,7 @@ class Tablero:
                     if self.calculando_movimiento:
                         color_objetivo = self.obtener_color_de_pieza(casilla_objetivo)
                         pieza = abs(self.obtener_pieza_de_casilla(casilla_objetivo))
-                        if color_de_pieza == color_objetivo or pieza == 6:
+                        if color_de_pieza == color_objetivo:
                             continue
                     posible_movimiento = Movimiento.Movimiento(casilla_inicial,casilla_objetivo)
                     posibles_movimientos.append(posible_movimiento)
