@@ -334,14 +334,14 @@ class Juego:
                     self.calculando_movimiento = True
                     ## ejecuta el algoritmo  para seleccionar el siguiente movimiento minimax sss* 
                     ThreadedTask.ThreadedTask(self.master).start() ## se hace en un thread para no bloquear la ejecucion de mainloop y que no se bloquee la GUI
-                    self.master.after(100, self.process_queue) 
+                    self.master.after(10000, self.process_queue) 
             else:
                 return
         elif self.tipo_de_juego == 3:
             if self.calculando_movimiento == False:
                 self.calculando_movimiento = True
                 ThreadedTask.ThreadedTask(self.master).start()
-                self.master.after(100, self.process_queue) 
+                self.master.after(10000, self.process_queue) 
             return
         
     def process_queue(self):
@@ -352,7 +352,7 @@ class Juego:
             self.ejecutar()
             #self.prog_bar.stop()
         except queue.Empty:
-            self.master.after(100, self.process_queue)
+            self.master.after(10, self.process_queue)
 
     def es_casilla_inicial_permitida(self):
         for movimiento in self.movimientos_legales:

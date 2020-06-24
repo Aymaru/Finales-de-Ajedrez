@@ -31,7 +31,7 @@ class ThreadedTask(threading.Thread):
         nivel = 0 ## nivel inicial 0
         estado = Estado.VIVO ## Estado inicial vivo
         valor = 100000 ## +infinito (numero suficientemente grande como para ser mayor a cualquier evaluacion de estado)
-        MAX_NODE = 4 ## Profundidad Maxima del arbol (aumentar de dos en dos)
+        MAX_NODE = 5 ## Profundidad Maxima del arbol (aumentar de dos en dos)
         nodo_inicial = Nodo(id,tablero,turno,enrroque,nivel,estado,valor,MAX_NODE)
         arbol_de_decision = ArbolDecision(nodo_inicial)
 

@@ -18,13 +18,14 @@ from Juego.Tipos import Turno
 from Juego.Tipos import Casilla as TCasilla
 
 
+
 ##Imports de GUI
 #from GUI.Configuracion import Configuracion
 from GUI.Label_IMG import Label_IMG
 from GUI.Casilla import Casilla
 from GUI.Pieza import Pieza
 from GUI import Configuracion
-
+from GUI import Animacion
 
 ##Interfaz del Tablero
 class TableroGUI(tk.Frame):
@@ -429,6 +430,7 @@ class TableroGUI(tk.Frame):
                     self.master.juego.set_casilla_objetivo(posicion_seleccionada)
                     if self.master.juego.es_movimiento_a_realizar_legal():                        
                         self.__realizar_movimiento()
+                        tmp_img = self.__piezas
                     self.limpiar_casillas()
                     self.master.juego.limpiar_casilla_inicial()
                     self.master.juego.limpiar_casilla_objetivo()
@@ -471,7 +473,8 @@ class TableroGUI(tk.Frame):
                     casilla_objetivo.invertir()
                 tmp_img = self.__piezas[ casilla_inicial.calcular_posicion_tablero() ]
                 tmp_img.calcular_posicion_en_tablero(casilla_objetivo)
-                self.__realizar_movimiento()                
+                tmp_img.mover_pieza() #
+                self.__realizar_movimiento()           
             else:
                 movimiento_invalido = True
         else:
@@ -549,7 +552,8 @@ class TableroGUI(tk.Frame):
             ##self.__animacion_de_movimiento(movimiento)
             pieza_a_mover.preparar_animacion(movimiento)
             pieza_a_mover.calcular_posicion_en_tablero(casilla_objetivo)
-            pieza_a_mover.realizar_animacion()
+            Animacion.Animacion(pieza_a_mover).start()
+            #pieza_a_mover.realizar_animacion()
             #pieza_a_mover.mover_pieza()
         
         pieza_objetivo = self.__piezas[casilla_objetivo.calcular_posicion_tablero()]

@@ -132,41 +132,29 @@ class Nodo:
     def generar_movimientos_legales(self):
         self.posibles_movimientos = deque()
 
-        for pieza in self.piezas[self.turno].keys():
+        for color in self.piezas.keys():
+            for pieza in self.piezas[color].keys():
+                
+                pieza_casilla_inicial = abs(self.tablero.obtener_pieza_de_casilla(pieza))
             
-            pieza_casilla_inicial = abs(self.tablero.obtener_pieza_de_casilla(pieza))
-        
-            if pieza_casilla_inicial == 1:
-                self.piezas[self.turno][pieza] = self.tablero.posibles_movimientos_de_peon(pieza)
-            elif pieza_casilla_inicial == 2:
-                self.piezas[self.turno][pieza] = self.tablero.posibles_movimientos_de_caballo(pieza)
-            elif pieza_casilla_inicial == 3:
-                self.piezas[self.turno][pieza] = self.tablero.posibles_movimientos_de_alfil(pieza)
-            elif pieza_casilla_inicial == 4:
-                self.piezas[self.turno][pieza] = self.tablero.posibles_movimientos_de_torre(pieza)
-            elif pieza_casilla_inicial == 5:
-                self.piezas[self.turno][pieza] = self.tablero.posibles_movimientos_de_dama(pieza)
-            elif pieza_casilla_inicial == 6:
-                self.piezas[self.turno][pieza] = self.tablero.posibles_movimientos_de_rey(pieza)
-            
-            self.posibles_movimientos.extend(self.piezas[self.turno][pieza])
+                if pieza_casilla_inicial == 1:
+                    self.piezas[color][pieza] = self.tablero.posibles_movimientos_de_peon(pieza)
+                elif pieza_casilla_inicial == 2:
+                    self.piezas[color][pieza] = self.tablero.posibles_movimientos_de_caballo(pieza)
+                elif pieza_casilla_inicial == 3:
+                    self.piezas[color][pieza] = self.tablero.posibles_movimientos_de_alfil(pieza)
+                elif pieza_casilla_inicial == 4:
+                    self.piezas[color][pieza] = self.tablero.posibles_movimientos_de_torre(pieza)
+                elif pieza_casilla_inicial == 5:
+                    self.piezas[color][pieza] = self.tablero.posibles_movimientos_de_dama(pieza)
+                elif pieza_casilla_inicial == 6:
+                    self.piezas[color][pieza] = self.tablero.posibles_movimientos_de_rey(pieza)
+                
+                self.posibles_movimientos.extend(self.piezas[color][pieza])
 
         turno = self.turno_to_string()
         self.movimientos_legales = self.tablero.obtener_movimientos_legales(self.posibles_movimientos,turno)
         return
-
-        # posibles_movimientos = self.tablero.generar_posibles_movimientos()
-        # turno = self.turno_to_string()
-        # self.movimientos_legales = self.tablero.obtener_movimientos_legales(posibles_movimientos,turno)
-        # self.generar_movimientos_de_enrroque(posibles_movimientos)
-        
-        # #posibles_movimientos = self.tablero.generar_posibles_movimientos()
-        
-        # self.set_es_jaque(posibles_movimientos)
-        # self.set_jaque_mate()
-        # self.set_es_tablas()
-        #if self.es_terminal():
-            #self.movimientos_legales = []
 
     
     def generar_movimientos_de_enrroque(self,posibles_movimientos):
