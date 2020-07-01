@@ -32,3 +32,38 @@ Corregir paths del directorio
 paths
 src.gui/..
 src.game/..
+
+TABLEROS
+
+NRa8 BCc8 BPa7 NTg6 BAa4 NPg4 NAg3 BTb2 BRb1 BDf8
+
+##PAWNS ENDINGS
+#pawn_endgame_using_the_active_king.txt
+NPa7 NPb6 NRd6 NPg6 BPg5 BPa4 BRc4 BPb2
+
+#pawn_endgame_three_vs_three.txt
+NRg8 NPf7 Npg7 NPh7 BPf2 BPg2 BPh2 BRg1
+
+#pawn_endgame_using_an_extra_passed_pawn.txt
+NRc8 NPf7 NPg7 NPh7 NPe5 BPe4 BPa2 BPf2 BPg2 BPh2 BRc1
+
+##ROOK VS KNIGHT ENDINDS
+#rook_vs_knight_two_pawns_each.txt
+NRf8 NPa7 NPb7 NPf7 NPg7 NCc6 NPh7 BPh3 BPa2 BPb2 BPf2 BPg2 BTe1 BRg1
+
+#rook_vs_knight_with_pawns.txt
+NRf7 NPg7 NPh7 NCf6 BPg2 BPh2 BTe1 BRg1
+
+##BISHOPS ENDINGS
+#opposite_color_bishops_two_extra_pawns.txt
+NRe8 NPg7 NPc6 NPf6 NAb5 BAc5 BPb4 BPf4 BPa3 BRe3 BPg3 BPh2
+
+#the_bishop_pair.txt
+NTe8 NRg8 NCc7 NAe7 NPf7 NPg7 NPh7 NPa6 NPf6 NPb5 BPb3 BAe3 BPg3 BPa2 BPa2 BPe2 BPf2 BAg2 BPh2 BTa1 BRg1
+
+##KNIGHT ENDINGS
+#knight_endgame_kingside_majority.txt
+NRf8 NPa7 NPb7 NPf7 NPg7 NCf6 NPh6 NPc5 BPe3 BCf3 BPh3 BPa2 BPb2 BPf2 BPg2 BRg1
+
+#knight_Endgame_space_advantage.txt
+NCe8 NPa7 NRe7 NPf7 NPg7 NPb6 NPh6 BPb5 BPe5 BPh5 BRe4 BPf4 PBg4 BCf3

@@ -37,7 +37,8 @@ class TipoEvaluacion(Enum):
     ESTRUCTURA_DE_PEONES = 3,
     ATAQUE_AL_REY = 4,
     POSICIONAMIENTO = 5,
-    CONTROL_DEL_CENTRO = 6
+    CONTROL_DEL_CENTRO = 6,
+    BONO = 7
 
 class FaseDeJuego(Enum):
     APERTURA = 0,

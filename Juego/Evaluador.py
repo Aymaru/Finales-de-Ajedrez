@@ -53,6 +53,7 @@ class Evaluador(Tablero):
                 Pieza.DAMA: 900,
                 Pieza.REY: 20000
             },
+            TipoEvaluacion.BONO: 10,
             TipoEvaluacion.MOVILIDAD: 25,
             TipoEvaluacion.ESTRUCTURA_DE_PEONES: {
                 EstructuraDePeon.AVANZADO: 10,
@@ -262,6 +263,7 @@ class Evaluador(Tablero):
         self.__valor_de_posicionamiento = 0 ##self.__evaluacion_de_posicionamiento()
         self.__valor_de_iniciativa = 0 ##self.__evaluacion_de_iniciativa()
         self.__valor_de_control_del_centro = 0 ##self.__evaluacion_de_control_del_centro()
+        self.__valor_de_bonos = 0 ##self.__evaluacion_de_bonos()
         
     ## **************************************************************************************************************************************************************
     ## FUNCION PRINCIPAL QUE EVALUA EL TABLERO
@@ -779,14 +781,83 @@ class Evaluador(Tablero):
         self.__valor_de_control_del_centro = valor_de_control_del_centro[Turno.BLANCAS] - valor_de_control_del_centro[Turno.NEGRAS]
 
     ##Bonos
-    ## bono por doble alfil
-    ## bono de dama
-    ## bono de torres conectadas
+    ##Otorga bonos positivos o negativos, si se cumplen algunas condiciones para cada jugador.
+    ##Se evalua la posicion de cada jugador y se le otorga un valor positivo a cada uno.
+    ##El valor de la evaluacion del nodo es: __evaluar_bonos(Turno.BLANCAS) - __evaluar_bonos(Turno.NEGRAS)
+    ##El resultado se deja en self.__valor_de_bonos
+    def __evaluacion_de_bonos(self):
+        self.__valor_de_bonos = self.__evaluar_bonos(Turno.BLANCAS,Turno.NEGRAS)
+
+        return
     
     ## **************************************************************************************************************************************************************
     ## FUNCIONES AUXILIARES DE EVALUACION DEL ESTADO DEL TABLERO
     ## **************************************************************************************************************************************************************
+    def __evaluar_bonos(self,color):
+        valor = 0
+        bono = self.__valores_de_evaluacion[TipoEvaluacion.BONO]
 
+        ## doble alfil
+        if (len(self.__piezas[color][Pieza.ALFIL]) == 2):
+            valor = valor + bono
+        
+        ## dama
+        if (len(self.__piezas[color][Pieza.DAMA]) == 1):
+            valor = valor + bono
+
+        ## torres conectadas
+        if len(self.__piezas[color][Pieza.TORRE].keys()):
+            for tmp_pieza in self.__piezas[color][Pieza.TORRE].keys():
+                return
+        ## alfil en diagonal del rey, torre, dama enemiga
+        ## torre en columna del rey o dama enemiga
+        ## torre en fila o columna abierta (fila,columna abierta: no hay peones en fila o columna)
+        ## alfil conectado con dama
+        ## torre conectada con dama
+
+
+        
+        return
+    
+    def __es_fila_abierta(self,posicion):
+        arriba = Posicion(posicion.fila-1,posicion.columna)
+        abajo = Posicion(posicion.fila+1,posicion.columna)
+
+        if arriba.validar_posicion():
+            recta = self.__obtener_recta(posicion,arriba)
+        elif abajo.validar_posicion():
+            recta = self.__obtener_recta(posicion,abajo)
+        
+        for color in self.piezas.keys():
+            for tmp_pieza in self.piezas[color][Pieza.PEON].keys():
+                valor = recta.fila * tmp_pieza.columna + recta.columna
+                if tmp_pieza.fila == valor:
+                    return False       
+
+        return True
+    
+    def __es_columna_abierta(self,posicion):
+        derecha = Posicion(posicion.fila,posicion.columna+1)
+        izquierda = Posicion(posicion.fila,posicion.columna-1)
+
+        if derecha.validar_posicion():
+            recta = self.__obtener_recta(posicion,derecha)
+        elif izquierda.validar_posicion():
+            recta = self.__obtener_recta(posicion,izquierda)
+
+        for color in self.piezas.keys():
+            for tmp_pieza in self.piezas[color][Pieza.PEON].keys():
+                valor = recta.fila * tmp_pieza.columna + recta.columna
+                if tmp_pieza.fila == valor:
+                    return False       
+
+        return True
+
+    def __obtener_recta(self,posicion1,posicion2):
+        m = (posicion2.fila - posicion1.fila) / (posicion2.columna, posicion1.columna)
+        b = (m * posicion1.columna) + posicion1.fila
+        recta = Posicion(m,b)
+        return recta
 
     def __evaluar_estructura_peones(self,color,estructura_de_peon):
 
