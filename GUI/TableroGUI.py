@@ -580,7 +580,7 @@ class TableroGUI(tk.Frame):
             ##self.__animacion_de_movimiento(movimiento)
             pieza_a_mover.preparar_animacion(movimiento)
             pieza_a_mover.calcular_posicion_en_tablero(casilla_objetivo)
-            pieza_a_mover.realizar_animacion()
+            Animacion.Animacion(pieza_a_mover).start()
             #pieza_a_mover.mover_pieza()
 
         if self.master.juego.J1 == "N":
@@ -618,7 +618,7 @@ class TableroGUI(tk.Frame):
             ##self.__animacion_de_movimiento(movimiento)
             pieza_a_mover.preparar_animacion(movimiento)
             pieza_a_mover.calcular_posicion_en_tablero(casilla_objetivo)
-            pieza_a_mover.realizar_animacion()
+            Animacion.Animacion(pieza_a_mover).start()
             #pieza_a_mover.mover_pieza()
 
         pieza_objetivo = self.__piezas[casilla_objetivo.calcular_posicion_tablero()]
@@ -643,7 +643,7 @@ class TableroGUI(tk.Frame):
             ##self.__animacion_de_movimiento(movimiento)
             pieza_a_mover.preparar_animacion(movimiento)
             pieza_a_mover.calcular_posicion_en_tablero(casilla_objetivo)
-            pieza_a_mover.realizar_animacion()
+            Animacion.Animacion(pieza_a_mover).start()
             #pieza_a_mover.mover_pieza()
 
         pieza_objetivo = self.__piezas[casilla_objetivo.calcular_posicion_tablero()]
@@ -661,9 +661,9 @@ class TableroGUI(tk.Frame):
                 movimiento_torre.casilla_inicial.invertir()
                 movimiento_torre.casilla_objetivo.invertir()
             ##self.__animacion_de_movimiento(movimiento_torre)
-            torre.preparar_animacion(movimiento)
+            torre.preparar_animacion(movimiento_torre)
             torre.calcular_posicion_en_tablero(posicion_torre)
-            torre.realizar_animacion()
+            Animacion.Animacion(torre).start()
             #torre.mover_pieza()
 
             self.__piezas[posicion_torre.calcular_posicion_tablero()] = torre
@@ -680,9 +680,9 @@ class TableroGUI(tk.Frame):
                 movimiento_torre.casilla_inicial.invertir()
                 movimiento_torre.casilla_objetivo.invertir()
             ##self.__animacion_de_movimiento(movimiento_torre)
-            torre.preparar_animacion(movimiento)
+            torre.preparar_animacion(movimiento_torre)
             torre.calcular_posicion_en_tablero(posicion_torre)
-            torre.realizar_animacion()
+            Animacion.Animacion(torre).start()
             #torre.mover_pieza()
             
             self.__piezas[posicion_torre.calcular_posicion_tablero()] = torre
