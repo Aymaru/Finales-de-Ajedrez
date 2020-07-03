@@ -37,7 +37,9 @@ class ArbolDecision:
                             nodo_tmp.set_estado(Estado.VIVO)
                             self.insertar_delante(nodo_tmp)
                     elif nodo_actual.es_min(): ## es MIN
-                        ## insertar el primer hijo del nodo en la cabeza de lista                         
+                        ## insertar el primer hijo del nodo en la cabeza de lista
+                        #print("nodo antes de fallo:")                     
+                        #nodo_tmp.get_id_nodo().imprimir()
                         nodo_tmp = nodo_actual.generar_hijo(0,nodo_actual.valor,nodo_actual.estado)
                         nodo_actual.hijos.append(nodo_tmp)
                         self.insertar_delante(nodo_tmp)
@@ -125,10 +127,3 @@ class ArbolDecision:
         self.lista.rotate(-index)
         self.lista.appendleft(nodo)
         self.lista.rotate(index)
-
-    ##def eliminar sucesores
-    ##def #_hijos_nodo(nodo): int
-
-    ##def #_de_hijo(nodo,padre): int
-
-    ##def #_de_hijos_de

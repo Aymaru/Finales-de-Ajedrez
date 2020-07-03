@@ -291,7 +291,8 @@ class Evaluador(Tablero):
             self.cargar_piezas()
         else:
             self.piezas = piezas
-        if self.es_jaque_mate(self.piezas,turno):
+
+        if self.es_jaque_mate(turno):
             evaluacion = 20000
             if turno == Turno.BLANCAS:
                 evaluacion *= -1 
@@ -325,7 +326,7 @@ class Evaluador(Tablero):
         evaluacion += self.__valor_material 
         evaluacion += self.__valores_de_evaluacion[TipoEvaluacion.MOVILIDAD] * self.__valor_de_movilidad 
         evaluacion += self.__valor_de_estructura_de_peones
-        evaluacion += self.__valor_de_posicionamiento * 0.1
+        #evaluacion += self.__valor_de_posicionamiento * 0.1
         evaluacion += self.__valor_de_iniciativa
 
         #self.print_piezas()
@@ -345,6 +346,7 @@ class Evaluador(Tablero):
                 Turno.BLANCAS: {},
                 Turno.NEGRAS: {} 
         }
+
         for fila in range(0,8):
             for columna in range(0,8):
                 tmp_posicion = Posicion(fila,columna)
@@ -355,12 +357,14 @@ class Evaluador(Tablero):
                 color = self.get_color_pieza(tmp_posicion)
                 self.piezas[color][tmp_posicion] = []
 
-    def es_jaque_mate(self,piezas,turno):
-        for pieza in piezas[turno].keys():
-            tmp_pieza = abs(self.obtener_pieza_de_casilla(pieza))
-            if tmp_pieza == 6:
-                return False
-        return True
+    def es_jaque_mate(self,turno):        
+        self.__posibles_movimientos
+        if turno == Turno.BLANCAS:
+            turno = 'B'
+        else:
+            turno = 'N'
+        movimientos_legales = self.obtener_movimientos_legales(self.__posibles_movimientos,turno)
+        return self.hay_jaque_mate(movimientos_legales)
 
     def es_tablas(self,piezas):
         cantidad_piezas_blancas = len(piezas[Turno.BLANCAS])
@@ -738,8 +742,8 @@ class Evaluador(Tablero):
                         continue
                     total_de_piezas[color] += 1
 
-                    valor_de_iniciativa[color][Casilla.AMENAZADA] += len( self.__piezas[color][pieza][tmp_pieza][Casilla.AMENAZADA] ) * 0.5
-                    valor_de_iniciativa[color][Casilla.ATACA] += len( self.__piezas[color][pieza][tmp_pieza][Casilla.ATACA] ) * (self.__valores_de_evaluacion[TipoEvaluacion.MATERIAL][pieza] / 100)
+                    #valor_de_iniciativa[color][Casilla.AMENAZADA] += len( self.__piezas[color][pieza][tmp_pieza][Casilla.AMENAZADA] ) * 0.5
+                    #valor_de_iniciativa[color][Casilla.ATACA] += len( self.__piezas[color][pieza][tmp_pieza][Casilla.ATACA] ) * (self.__valores_de_evaluacion[TipoEvaluacion.MATERIAL][pieza] / 100)
                     #valor_de_iniciativa[color][Casilla.DEFIENDE] += len( self.__piezas[color][pieza][tmp_pieza][Casilla.DEFIENDE] ) * (self.__valores_de_evaluacion[TipoEvaluacion.MATERIAL][pieza] / 100)
                     valor_de_iniciativa[color][Casilla.ATACADA] -= len( self.__piezas[color][pieza][tmp_pieza][Casilla.ATACADA]) * (self.__valores_de_evaluacion[TipoEvaluacion.MATERIAL][pieza] / 100)
                     valor_de_iniciativa[color][Casilla.DEFENDIDA] += len( self.__piezas[color][pieza][tmp_pieza][Casilla.DEFENDIDA]) * (self.__valores_de_evaluacion[TipoEvaluacion.MATERIAL][pieza] / 100)

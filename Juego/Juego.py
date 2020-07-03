@@ -281,17 +281,7 @@ class Juego:
         self.limpiar_casilla_inicial() 
         self.limpiar_casilla_objetivo()
         self.limpiar_movimiento_a_realizar()
-        #time.sleep(1)
-        #self.ejecutar()
-
-        ##if tipo == 1 (todos los movimientos son del jug)
-
-        ##if tipo == 2 (calcula el siguiente movimiento de la pc)
-
-        ##if tipo == 3 (todos los mov de la pc)
-
-
-        #ThreadedTask(self.master).start()
+  
     
     def set_al_passant(self,movimiento):
         pieza = abs(self.tablero.obtener_pieza_de_casilla(movimiento.casilla_objetivo))

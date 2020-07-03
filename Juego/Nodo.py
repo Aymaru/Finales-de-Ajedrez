@@ -32,6 +32,9 @@ class Nodo:
         self.valor = valor
         self.MAX_NODE = MAX_NODE ## Nivel maximo de profundidad del arbol
         
+        self.es_tablas = False
+        self.es_jaque_mate = False
+        self.es_jaque = False
         
         self.iniciar_nodo()
         self.evaluador = None
@@ -199,21 +202,20 @@ class Nodo:
     #  - Rey y alfil contra rey y alfil
     ## o cuando el jugador no tiene movimientos disponibles y el rey no se encuentra en jaque, a esto se le llama ahogamiento
     def es_terminal(self):
-        if self.nivel == self.MAX_NODE or self.es_jaque_mate_terminal() or self.es_tablas_terminal():
+        self.set_es_jaque(self.posibles_movimientos)
+        self.set_jaque_mate()
+        self.set_es_tablas()
+        if not self.es_tablas:
+            self.es_tablas = self.es_tablas_terminal()
+
+        if self.nivel == self.MAX_NODE or self.es_jaque_mate or self.es_tablas or len(self.movimientos_legales) == 0:
             return True
         else:
             return False
     
-    # def set_es_jaque(self,posibles_movimientos):
-    #     self.es_jaque = self.tablero.hay_jaque(posibles_movimientos,self.turno)
+    def set_es_jaque(self,posibles_movimientos):
+        self.es_jaque = self.tablero.hay_jaque(posibles_movimientos,self.turno)
             
-    def es_jaque_mate_terminal(self):
-        for pieza in self.piezas[self.turno].keys():
-            tmp_pieza = abs(self.tablero.obtener_pieza_de_casilla(pieza))
-            if tmp_pieza == 6:
-                return False
-        return True
-
     def es_tablas_terminal(self):
         cantidad_piezas_blancas = len(self.piezas[Turno.BLANCAS])
         cantidad_piezas_negras = len(self.piezas[Turno.NEGRAS])
@@ -260,19 +262,17 @@ class Nodo:
 
         return False
 
-    # def set_jaque_mate(self):
-    #     if self.es_jaque and len(self.movimientos_legales) == 0:
-    #         self.es_jaque_mate = True
-    #     else:
-    #         self.es_jaque_mate = False
+    def set_jaque_mate(self):
+        if self.es_jaque and len(self.movimientos_legales) == 0:
+            self.es_jaque_mate = True
+        else:
+            self.es_jaque_mate = False
 
-    # def set_es_tablas(self):
-    #     if not self.es_jaque and len(self.movimientos_legales) == 0:
-    #         self.es_tablas = True
-    #     elif True:
-    #         return
-    #     else:
-    #         self.es_tablas = False
+    def set_es_tablas(self):
+        if not self.es_jaque and len(self.movimientos_legales) == 0:
+            self.es_tablas = True
+        else:
+            self.es_tablas = False
     
     def es_min(self):
         return (self.nivel % 2) != 0
@@ -350,7 +350,7 @@ class Nodo:
         return self.hijos[hijo]
         
     ## def actualizar valor
-    def actualizar_valor(self):  
+    def actualizar_valor(self):
         valor = Evaluador(self.tablero.tablero).evaluar_tablero(self.piezas,self.turno)
         if (self.es_min() and self.turno == Turno.BLANCAS) or (self.es_max() and self.turno == Turno.NEGRAS):
             valor = valor * -1
@@ -367,7 +367,7 @@ class Nodo:
         self.estado = estado
 
     def generar_hijo(self,hijo,valor,estado): ##hijo es el indice en el que se encuentra el movimiento en movimientos legales
-        
+        #print("cantidad total de hijos: %d, hijo a crear: %d" % (self.cantidad_de_hijos_max(),hijo))
         movimiento = self.movimientos_legales[hijo]
         id = copy.deepcopy(self.id)
         id.append(movimiento)
